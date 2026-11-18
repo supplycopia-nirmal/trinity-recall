@@ -41,6 +41,11 @@ class Settings:
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
+    # Serper.dev (Google News & Web Intelligence)
+    SERPER_API_KEY: str = os.getenv("SERPER_API_KEY", "6b1246a8cc66919a3a6d1532067badecadca4b59")
+    SERPER_NEWS_URL: str = os.getenv("SERPER_NEWS_URL", "https://google.serper.dev/news")
+    SERPER_SEARCH_URL: str = os.getenv("SERPER_SEARCH_URL", "https://google.serper.dev/search")
+
     # GitHub Repository Configuration
     GITHUB_REPO_URL: str = os.getenv("GITHUB_REPO_URL", "https://github.com/supplycopia-nirmal/trinity-recall.git")
     GITHUB_PAT: str = os.getenv("GITHUB_PAT", "")
