@@ -84,31 +84,32 @@ class LogisticsService:
             "pre_landfall_directive": {
                 "facility": "FACILITY-65",
                 "recommended_buffer_units": 450,
-                "sourcing_dc": "DC-04 (Dublin Inland Master Hub)",
+                "sourcing_facility": "FACILITY-150 (Central Health System Supply Hub)",
                 "lead_time_advantage": "+18 Days DoS Buffer Protection",
                 "action_ready": True
             }
         }
 
-    def stage_storm_buffer(self, dc_id: str = "DC-04", facility: str = "FACILITY-65", units: int = 450) -> Dict[str, Any]:
+    def stage_storm_buffer(self, source_facility: str = "FACILITY-150", facility: str = "FACILITY-65", units: int = 450, dc_id: Optional[str] = None) -> Dict[str, Any]:
         """
-        Executes pre-emptive 72-hour storm buffer staging from an inland DC to a coastal hospital hub.
+        Executes pre-emptive 72-hour storm buffer staging from an inland central supply facility to a coastal hospital hub.
         Creates an incident ticket in Jira TRM and records the action in Trinity Audit Trail.
         """
+        src = dc_id if (dc_id and dc_id != "DC-04") else source_facility
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         case_id = f"TRM-{datetime.now().strftime('%m%d%H%M')}"
-        summary = f"Pre-Landfall Weather Buffer Staging: {dc_id} -> {facility} (450 Priority Units)"
+        summary = f"Pre-Storm Weather Buffer Staging: {src} -> {facility} ({units} Priority Units)"
         description = (
-            f"PRE-LANDFALL SEVERE WEATHER BUFFER DISPATCH MANIFEST\n\n"
+            f"PRE-STORM SEVERE WEATHER BUFFER DISPATCH MANIFEST\n\n"
             f"Directive: NOAA Coastal Gale Advisory 72-Hour Advance Shield\n"
-            f"Sourcing Facility: {dc_id} (Inland Reserve Master Hub)\n"
-            f"Destination Facility: {facility}\n"
+            f"Originating Facility: {src} (Central Health System Supply Hub)\n"
+            f"Destination Facility: {facility} (Coastal Acute Care Center)\n"
             f"Total Pre-Emptive Units: {units} Units (Trocar, Saline & Respiratory Consumables)\n"
-            f"Carrier: CH Dedicated Reefer Fleet Unit #CH-9942\n"
-            f"Corridor: Inland Interstate I-70 W to I-77 S (Zero Coastal Flood Exposure)\n"
+            f"Carrier: Inter-Facility Emergency Logistics Fleet #TH-402\n"
+            f"Corridor: Inland Highway Transit Corridor (Zero Coastal Flood Exposure)\n"
             f"Runway Protected: +18 Days DoS\n"
             f"Timestamp: {timestamp_str}\n"
-            f"EDI 214 Shipment Status: STAGED & EN ROUTE"
+            f"Logistics Status: BUFFER STAGED & EN ROUTE"
         )
 
         jira_key = case_id
@@ -133,14 +134,14 @@ class LogisticsService:
                 product_id="2B8011",
                 facility=facility,
                 details={
-                    "type_label": "Pre-Landfall Storm Buffer Staged",
-                    "action_name": f"Pre-Landfall 72h Storm Buffer ({units} units)",
-                    "sourcing_dc": dc_id,
+                    "type_label": "Pre-Storm Weather Buffer Staged",
+                    "action_name": f"Pre-Storm 72h Weather Buffer ({units} units)",
+                    "sourcing_facility": src,
                     "target_facility": facility,
                     "staged_units": units,
                     "runway_extension": "+18 Days",
                     "jira_key": jira_key,
-                    "carrier": "Dedicated Reefer Fleet #CH-9942",
+                    "carrier": "Emergency Medical Logistics #TH-402",
                     "status": "Dispatched"
                 }
             )
@@ -152,10 +153,10 @@ class LogisticsService:
             "status": "BUFFER_STAGED_SUCCESSFULLY",
             "case_id": jira_key,
             "facility": facility,
-            "sourcing_dc": dc_id,
+            "sourcing_facility": src,
             "staged_units": units,
             "runway_protection_days": 18,
-            "message": f"Pre-landfall storm buffer ({units} units) staged from {dc_id} to {facility}. Workflow #{jira_key} registered. Hospital runway shielded through storm event."
+            "message": f"Pre-storm buffer ({units} units) staged from {src} to {facility}. Workflow #{jira_key} registered. Hospital runway shielded through storm event."
         }
 
 logistics_service = LogisticsService()

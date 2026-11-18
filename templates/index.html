@@ -152,28 +152,84 @@
             margin-top: 8px;
         }
 
-        /* Disruption Table in Brief */
-        .disruption-table {
-            font-size: 0.83rem;
-            background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .disruption-table thead th {
-            background-color: #F8FAFC;
+        /* Disruption Intelligence Brief (Ask The Bee) & Table Styling (Cardinal Health Standard) */
+        #radar-ai-summary {
+            font-family: 'Mulish', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            font-size: 0.875rem !important;
+            line-height: 1.6 !important;
             color: #1E293B;
-            font-weight: 700;
-            border-bottom: 1px solid #CBD5E1;
-            font-size: 0.8rem;
-            text-transform: uppercase;
         }
-        .disruption-table tbody tr:hover {
-            background-color: #F8FAFC;
+        #radar-ai-summary * {
+            font-family: 'Mulish', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+        #radar-ai-summary h5 {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 1.05rem !important;
+            font-weight: 700 !important;
+            color: var(--primary-color, #C41230) !important;
+            margin-top: 1.25rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        #radar-ai-summary h6 {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 0.92rem !important;
+            font-weight: 700 !important;
+            color: #0F172A !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.4rem !important;
+        }
+        #radar-ai-summary p {
+            font-size: 0.875rem !important;
+            line-height: 1.6 !important;
+            color: #334155 !important;
+            margin-bottom: 0.65rem !important;
+        }
+        #radar-ai-summary ul, #radar-ai-summary ol {
+            font-size: 0.875rem !important;
+            color: #334155 !important;
+            margin-bottom: 0.65rem !important;
+            padding-left: 1.5rem !important;
+        }
+        #radar-ai-summary li {
+            margin-bottom: 0.35rem !important;
+            line-height: 1.5 !important;
+        }
+        #radar-ai-summary table, 
+        .disruption-table {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 0.83rem !important;
+            background-color: #FFFFFF !important;
+            border: 1px solid #CBD5E1 !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 1rem !important;
+            border-radius: 6px !important;
+            overflow: hidden !important;
+        }
+        #radar-ai-summary table th, 
+        .disruption-table thead th {
+            background-color: #F8FAFC !important;
+            color: #1E293B !important;
+            font-weight: 700 !important;
+            border: 1px solid #CBD5E1 !important;
+            border-bottom: 2px solid #94A3B8 !important;
+            font-size: 0.80rem !important;
+            text-transform: uppercase !important;
+            padding: 8px 12px !important;
+            letter-spacing: 0.3px !important;
+        }
+        #radar-ai-summary table td, 
         .disruption-table td {
-            color: #334155;
-            vertical-align: top;
+            color: #334155 !important;
+            border: 1px solid #E2E8F0 !important;
+            padding: 8px 12px !important;
+            vertical-align: top !important;
+            font-size: 0.83rem !important;
+        }
+        #radar-ai-summary table tr:hover, 
+        .disruption-table tbody tr:hover {
+            background-color: #F8FAFC !important;
         }
 
         .navbar-logo {
@@ -864,12 +920,6 @@
                         </a>
                     </li>
                 </ul>
-
-                <!-- Contextual Hint on Selected Workflow -->
-                <div class="d-none d-xl-flex align-items-center gap-2 text-muted small pe-2" style="font-size: 0.75rem;">
-                    <i class="fas fa-info-circle text-primary"></i>
-                    <span>Health System Workflow: Select a product to drill down into hospital facilities and dispatch actions.</span>
-                </div>
             </div>
         </div>
 
@@ -1186,7 +1236,7 @@
                     </div>
                 </div>
 
-                <!-- NOAA & MARITIME TELEMETRY PRE-LANDFALL STAGING BANNER -->
+                <!-- NOAA SEVERE ADVISORY & COASTAL FACILITY EMERGENCY BUFFER BANNER -->
                 <div id="radar-weather-banner" class="alert alert-warning border-warning shadow-sm mb-4 d-none" style="border-radius: 10px;">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                         <div class="d-flex align-items-start gap-3">
@@ -1197,13 +1247,13 @@
                                     <strong class="text-dark" id="radar-storm-title">Atlantic Coastal Gale &amp; Severe Inbound Storm Surge (Category 3 Cone)</strong>
                                 </div>
                                 <div class="small text-muted mt-1" id="radar-storm-desc">
-                                    72-hour pre-landfall window active for coastal distribution corridors. High-risk exposure for coastal inpatient facility accounts (Facility-65).
+                                    72-hour pre-landfall storm window active for coastal service areas. High-risk procedural exposure for coastal inpatient facilities (FACILITY-65 &amp; FACILITY-72).
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-sm btn-danger fw-bold shadow-sm" id="btn-stage-storm-buffer" onclick="openStormBufferModal('DC-04', 'FACILITY-65', 450)">
-                                <i class="fas fa-truck-fast me-1"></i>Stage 72h Pre-Landfall Buffer (DC-04 &rarr; Facility-65)
+                            <button type="button" class="btn btn-sm btn-danger fw-bold shadow-sm" id="btn-stage-storm-buffer" onclick="openStormBufferModal('FACILITY-150', 'FACILITY-65', 450)">
+                                <i class="fas fa-truck-fast me-1"></i>Stage 72h Pre-Storm Buffer (FACILITY-65 &amp; FACILITY-72)
                             </button>
                         </div>
                     </div>
@@ -1213,12 +1263,12 @@
                 <div class="card border mb-4" style="background-color: #FAFAFC; border-color: var(--border-color) !important; border-radius: 10px;">
                     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                         <div class="fw-bold d-flex align-items-center" style="color: var(--text-heading);">
-                            <i class="fas fa-cube text-warning me-2 fs-5"></i>
+                            <img src="/static/bee_logo.png" alt="Ask The Bee" style="width: 22px; height: 22px; object-fit: contain;" class="me-2">
                             <span>Ask The Bee Disruption Intelligence Brief</span>
                         </div>
                         <span class="badge bg-light text-dark border">Ground-Truth Synthesis</span>
                     </div>
-                    <div class="card-body p-4" id="radar-ai-summary" style="font-size: 0.92rem; line-height: 1.6;">
+                    <div class="card-body p-4" id="radar-ai-summary" style="font-family: 'Mulish', sans-serif; font-size: 0.875rem; line-height: 1.6;">
                         Select a supplier scope and click <strong>Scan Scope</strong> to generate a targeted threat brief.
                     </div>
                 </div>
@@ -3336,7 +3386,7 @@
                                 <h5 class="modal-title fw-bold text-white mb-0" id="stormBufferModalLabel">Pre-Landfall Weather Buffer Staging Protocol</h5>
                                 <span class="badge bg-warning text-dark font-monospace py-0 px-2" style="font-size: 0.68rem; font-weight: 700;">NOAA SEVERE ADVISORY</span>
                             </div>
-                            <div class="text-white-50 small" style="font-size: 0.72rem;">Autonomous multi-echelon deployment from Inland DC-04 (Dublin, OH) to Coastal Health Facilities</div>
+                            <div class="text-white-50 small" style="font-size: 0.72rem;">Emergency inter-facility buffer pre-positioning from Central Supply Hub (FACILITY-150) to Coastal Facilities</div>
                         </div>
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -3674,6 +3724,7 @@
             await loadRecalls(1);
             await loadAuditTrail();
             loadJiraMetadata();
+            loadRadarManufacturers();
             setupCharts();
         });
 
@@ -5301,7 +5352,44 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
         let isRadarScanning = false;
         let selectedVendorPill = "ALL";
 
+        let radarManufacturersLoaded = false;
+        async function loadRadarManufacturers() {
+            if (radarManufacturersLoaded) return;
+            try {
+                const radarSelect = document.getElementById("radar-mfg-select");
+                if (!radarSelect) return;
+                const res = await fetch("/api/suppliers");
+                if (!res.ok) return;
+                const data = await res.json();
+                const suppliers = data.suppliers || [];
+                if (suppliers.length === 0) return;
+
+                const existingVals = new Set(Array.from(radarSelect.options).map(o => o.value));
+                const optGroup = document.createElement("optgroup");
+                optGroup.label = `All Other Network Suppliers (${suppliers.length} Total Manufacturers)`;
+
+                suppliers.forEach(m => {
+                    const mName = m.manufacturer;
+                    if (!existingVals.has(mName)) {
+                        const opt = document.createElement("option");
+                        opt.value = mName;
+                        const spendStr = m.total_spend ? ` ($${(m.total_spend / 1e6).toFixed(2)}M)` : (m.recalled_catalogs ? ` (${m.recalled_catalogs} recalls)` : '');
+                        opt.textContent = `${mName}${spendStr}`;
+                        optGroup.appendChild(opt);
+                    }
+                });
+
+                if (optGroup.children.length > 0) {
+                    radarSelect.appendChild(optGroup);
+                    radarManufacturersLoaded = true;
+                }
+            } catch (err) {
+                console.warn("Could not load all manufacturers for radar scope:", err);
+            }
+        }
+
         function autoScanRadarIfEmpty() {
+            loadRadarManufacturers();
             if (!radarHasScanned && !isRadarScanning) {
                 scanRadar();
             }
@@ -5341,12 +5429,121 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
             scanRadar();
         }
 
+        function formatInlineMarkdown(text) {
+            if (!text) return "";
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\[\[ACTION:(.*?):(.*?):(.*?)\]\]/g, (match, actionType, param, label) => {
+                    const isExcel = actionType === 'DOWNLOAD_EXCEL';
+                    const icon = isExcel ? '<i class="fas fa-file-excel text-success me-1"></i>' : '<i class="fas fa-bolt text-danger me-1"></i>';
+                    const btnClass = isExcel ? 'btn btn-xs btn-outline-success fw-bold' : 'btn btn-xs btn-outline-danger fw-bold';
+                    return `<button class="${btnClass} ms-1" onclick="executeChatAction('${actionType}', '${param}')">${icon}${label}</button>`;
+                })
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-danger fw-semibold">$1 <i class="fas fa-external-link-alt fa-xs"></i></a>');
+        }
+
         function formatRadarMarkdown(text) {
             if (!text) return "";
-            if (window.marked && typeof marked.parse === 'function') {
-                return marked.parse(text);
+
+            const lines = text.split("\n");
+            const out = [];
+            let inTable = false;
+            let tableHeaderParsed = false;
+            let inList = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const rawLine = lines[i];
+                const line = rawLine.trim();
+
+                // Markdown Table handling
+                if (line.startsWith("|") && line.endsWith("|")) {
+                    if (inList) { out.push("</ul>"); inList = false; }
+
+                    // Separator row: |---|---|
+                    if (/^\|[\s\-:]+(\|[\s\-:]+)+\|$/.test(line)) {
+                        tableHeaderParsed = true;
+                        continue;
+                    }
+
+                    const cells = line.slice(1, -1).split("|").map(c => c.trim());
+
+                    if (!inTable) {
+                        inTable = true;
+                        tableHeaderParsed = false;
+                        out.push('<div class="table-responsive my-3"><table class="table table-sm table-bordered disruption-table">');
+                    }
+
+                    if (!tableHeaderParsed) {
+                        out.push('<thead class="table-light"><tr>');
+                        cells.forEach(c => out.push(`<th class="py-2 px-3 fw-bold">${formatInlineMarkdown(c)}</th>`));
+                        out.push("</tr></thead><tbody>");
+                    } else {
+                        out.push("<tr>");
+                        cells.forEach(c => {
+                            let cellHtml = formatInlineMarkdown(c);
+                            const lower = c.toLowerCase();
+                            if (lower === "critical" || lower === "high") {
+                                cellHtml = `<span class="badge bg-danger">${c}</span>`;
+                            } else if (lower === "moderate" || lower === "medium") {
+                                cellHtml = `<span class="badge bg-warning text-dark">${c}</span>`;
+                            } else if (lower === "low") {
+                                cellHtml = `<span class="badge bg-secondary">${c}</span>`;
+                            }
+                            out.push(`<td class="py-2 px-3 align-top">${cellHtml}</td>`);
+                        });
+                        out.push("</tr>");
+                    }
+                    continue;
+                } else if (inTable) {
+                    out.push("</tbody></table></div>");
+                    inTable = false;
+                    tableHeaderParsed = false;
+                }
+
+                // Headers
+                if (line.startsWith("#### ")) {
+                    if (inList) { out.push("</ul>"); inList = false; }
+                    out.push(`<h6 class="fw-bold mt-3 mb-2 text-dark">${formatInlineMarkdown(line.slice(5))}</h6>`);
+                    continue;
+                }
+                if (line.startsWith("### ")) {
+                    if (inList) { out.push("</ul>"); inList = false; }
+                    out.push(`<h5 class="fw-bold mt-3 mb-2" style="color: var(--primary-color, #C41230);">${formatInlineMarkdown(line.slice(4))}</h5>`);
+                    continue;
+                }
+                if (line.startsWith("## ") || line.startsWith("# ")) {
+                    if (inList) { out.push("</ul>"); inList = false; }
+                    out.push(`<h5 class="fw-bold mt-3 mb-2 text-dark">${formatInlineMarkdown(line.replace(/^#+\s*/, ""))}</h5>`);
+                    continue;
+                }
+
+                // Lists
+                if (line.startsWith("- ") || line.startsWith("* ")) {
+                    if (!inList) { out.push('<ul class="mb-2 ps-3">'); inList = true; }
+                    out.push(`<li class="mb-1">${formatInlineMarkdown(line.slice(2))}</li>`);
+                    continue;
+                }
+                if (/^\d+\.\s+/.test(line)) {
+                    if (inList) { out.push("</ul>"); inList = false; }
+                    const num = line.match(/^\d+\./)[0];
+                    out.push(`<div class="mb-2 ps-2"><strong>${num}</strong> ${formatInlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</div>`);
+                    continue;
+                }
+
+                if (inList) { out.push("</ul>"); inList = false; }
+
+                if (!line) {
+                    out.push('<div class="my-2"></div>');
+                } else {
+                    out.push(`<p class="mb-2 text-dark" style="line-height: 1.6;">${formatInlineMarkdown(line)}</p>`);
+                }
             }
-            return escapeHtml(text).replace(/\n/g, '<br>');
+
+            if (inTable) out.push("</tbody></table></div>");
+            if (inList) out.push("</ul>");
+
+            return out.join("\n");
         }
 
         async function scanRadar() {
@@ -5685,8 +5882,8 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
             banner.classList.remove("d-none");
         }
 
-        function openStormBufferModal(dcId = "DC-04", facility = "FACILITY-65", units = 450) {
-            renderStormBufferModalContent(dcId, facility, units);
+        function openStormBufferModal(sourceFacility = "FACILITY-150", facility = "FACILITY-65", units = 450) {
+            renderStormBufferModalContent(sourceFacility, facility, units);
             const modalEl = document.getElementById("stormBufferModal");
             if (modalEl) {
                 const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -5694,7 +5891,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
             }
         }
 
-        function renderStormBufferModalContent(dcId = "DC-04", facility = "FACILITY-65", units = 450) {
+        function renderStormBufferModalContent(sourceFacility = "FACILITY-150", facility = "FACILITY-65", units = 450) {
             const container = document.getElementById("storm-buffer-modal-body");
             if (!container) return;
 
@@ -5702,9 +5899,9 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 <div class="alert alert-danger border-0 d-flex align-items-center gap-3 p-3 mb-4" style="background-color: #FEF2F2; border-left: 4px solid #DC2626 !important; border-radius: 8px;">
                     <i class="fas fa-triangle-exclamation text-danger fa-2x"></i>
                     <div>
-                        <div class="fw-bold text-danger" style="font-size: 0.95rem;">Atlantic Coastal Gale Pre-Landfall Staging Protocol Active</div>
+                        <div class="fw-bold text-danger" style="font-size: 0.95rem;">Atlantic Coastal Gale Pre-Storm Staging Protocol Active</div>
                         <div class="text-dark small" style="font-size: 0.8rem; line-height: 1.45;">
-                            NOAA Category 3 Gale &amp; Storm Surge trajectory indicates high probability of coastal interstate and bridge closures in Southeast corridors within 72 hours. Multi-echelon protocol pre-positions critical inpatient buffer units from inland distribution hubs before coastal route disruptions occur.
+                            NOAA Category 3 Gale &amp; Storm Surge trajectory indicates high probability of coastal roadway and bridge disruptions within 72 hours. Protocol pre-positions critical inpatient buffer units from inland central facility reserves before coastal route disruptions occur.
                         </div>
                     </div>
                 </div>
@@ -5714,11 +5911,11 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded border h-100">
                             <div class="text-uppercase text-muted fw-bold small mb-2" style="font-size: 0.70rem;">
-                                <i class="fas fa-warehouse text-primary me-1"></i>Sourcing Distribution Hub
+                                <i class="fas fa-warehouse text-primary me-1"></i>Originating Facility Hub
                             </div>
-                            <div class="fw-bold text-dark fs-6">${escapeHtml(dcId)} &mdash; Dublin Inland Reserve Hub (OH)</div>
+                            <div class="fw-bold text-dark fs-6">${escapeHtml(sourceFacility)} &mdash; Central Health System Supply Hub</div>
                             <div class="text-muted small mt-1" style="font-size: 0.74rem;">
-                                <i class="fas fa-shield-alt text-success me-1"></i>100% Operational &bull; Zero Inundation Exposure &bull; 4,200 Pallet Reserve
+                                <i class="fas fa-shield-alt text-success me-1"></i>100% Operational &bull; Zero Inundation Exposure &bull; Central Clinical Reserve
                             </div>
                         </div>
                     </div>
@@ -5744,7 +5941,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 <div class="card border mb-4 shadow-sm" style="border-radius: 8px;">
                     <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center border-bottom">
                         <span class="fw-bold text-dark small">
-                            <i class="fas fa-boxes-stacked text-primary me-1"></i>Pre-Landfall Cargo Manifest (450 Priority Units)
+                            <i class="fas fa-boxes-stacked text-primary me-1"></i>Pre-Storm Facility Cargo Manifest (450 Priority Units)
                         </span>
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-monospace" style="font-size: 0.70rem;">
                             HIGH CLINICAL HAZARD ITEMS
@@ -5818,20 +6015,20 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded border h-100">
                             <div class="fw-bold text-dark small mb-1">
-                                <i class="fas fa-route text-success me-1"></i>Safe Inland Transit Corridor
+                                <i class="fas fa-route text-success me-1"></i>High-Priority Inter-Facility Corridor
                             </div>
                             <div class="text-muted small" style="font-size: 0.74rem;">
-                                Rerouted via Inland Interstate I-70 W to I-77 S corridors. Bypasses coastal low-lying floodplains. Dedicated Temperature-Regulated Express Reefer Unit <strong>#CH-9942</strong>.
+                                Rerouted via inland regional highway corridors bypassing coastal low-lying floodplains. Dedicated emergency medical logistics unit <strong>#TH-402</strong>.
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded border h-100">
                             <div class="fw-bold text-dark small mb-1">
-                                <i class="fas fa-file-contract text-primary me-1"></i>Dual Enterprise Workflow Governance
+                                <i class="fas fa-file-contract text-primary me-1"></i>Health System Workflow Governance
                             </div>
                             <div class="text-muted small" style="font-size: 0.74rem;">
-                                Dispatch automatically binds an Atlassian Jira Priority Incident (TRM Project) and audit log record with live EDI 214 tracking integration.
+                                Dispatch automatically binds an Atlassian Jira Priority Incident (TRM Project) and audit log record with continuous tracking.
                             </div>
                         </div>
                     </div>
@@ -5842,8 +6039,8 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">
                         Cancel / Review Later
                     </button>
-                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btn-confirm-storm-buffer" onclick="confirmStormBufferDispatch('${escapeHtml(dcId)}', document.getElementById('storm-buffer-target-facility')?.value || '${escapeHtml(facility)}', ${units})">
-                        <i class="fas fa-truck-fast me-1"></i>Authorize &amp; Dispatch 72h Pre-Landfall Buffer (450 Units)
+                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btn-confirm-storm-buffer" onclick="confirmStormBufferDispatch('${escapeHtml(sourceFacility)}', document.getElementById('storm-buffer-target-facility')?.value || '${escapeHtml(facility)}', ${units})">
+                        <i class="fas fa-truck-fast me-1"></i>Authorize &amp; Dispatch 72h Pre-Storm Buffer (450 Units)
                     </button>
                 </div>
             `;
@@ -5852,11 +6049,11 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
         function updateStormBufferTarget(newFacility) {
             const btn = document.getElementById("btn-confirm-storm-buffer");
             if (btn) {
-                btn.setAttribute("onclick", `confirmStormBufferDispatch('DC-04', '${newFacility}', 450)`);
+                btn.setAttribute("onclick", `confirmStormBufferDispatch('FACILITY-150', '${newFacility}', 450)`);
             }
         }
 
-        async function confirmStormBufferDispatch(dcId = "DC-04", facility = "FACILITY-65", units = 450) {
+        async function confirmStormBufferDispatch(sourceFacility = "FACILITY-150", facility = "FACILITY-65", units = 450) {
             const container = document.getElementById("storm-buffer-modal-body");
             const btn = document.getElementById("btn-confirm-storm-buffer");
             if (btn) {
@@ -5868,7 +6065,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 const res = await fetch("/api/logistics/stage-storm-buffer", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ dc_id: dcId, facility: facility, units: units })
+                    body: JSON.stringify({ source_facility: sourceFacility, facility: facility, units: units })
                 });
                 const data = await res.json();
                 const caseId = data.case_id || "TRM-1030";
@@ -5880,9 +6077,9 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             <div class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
                                 <i class="fas fa-check-circle fa-2x"></i>
                             </div>
-                            <h5 class="fw-bold text-dark mb-1">Pre-Landfall Storm Buffer Dispatched &amp; Secured</h5>
+                            <h5 class="fw-bold text-dark mb-1">Pre-Storm Buffer Dispatched &amp; Secured</h5>
                             <p class="text-muted small mb-4" style="max-width: 500px; margin: 0 auto; font-size: 0.82rem;">
-                                450 critical care units have been released from <strong>${escapeHtml(dcId)}</strong> and are rolling to <strong>${escapeHtml(facility)}</strong> via the protected I-70/I-77 inland corridor.
+                                450 critical care units have been released from <strong>${escapeHtml(sourceFacility)}</strong> and are rolling to <strong>${escapeHtml(facility)}</strong> via the protected inland highway corridor.
                             </p>
 
                             <div class="card bg-light border p-3 text-start mb-4 mx-auto" style="max-width: 580px; font-size: 0.80rem; border-radius: 10px;">
@@ -5899,14 +6096,14 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                                     </div>
                                     <div class="col-6">
                                         <span class="text-muted small">Assigned Carrier &amp; Rig:</span>
-                                        <div class="fw-bold text-dark">Dedicated Reefer Unit #CH-9942</div>
+                                        <div class="fw-bold text-dark">Emergency Medical Logistics #TH-402</div>
                                     </div>
                                     <div class="col-6">
                                         <span class="text-muted small">Facility Runway Protected:</span>
                                         <div class="fw-bold text-success">+${protectedDays} Days (Full Shield)</div>
                                     </div>
                                     <div class="col-12 mt-2 pt-2 border-top">
-                                        <span class="text-muted small">EDI 214 Shipment Status:</span>
+                                        <span class="text-muted small">Logistics Status:</span>
                                         <div class="text-success fw-bold font-monospace mt-1">
                                             <i class="fas fa-circle text-success fs-xs me-1 animate-pulse"></i>STAGED &amp; EN ROUTE &bull; ETA 9.5 Hours (62.5 Hours Prior to Coastal Landfall)
                                         </div>
@@ -5931,16 +6128,16 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 if (bannerBtn) {
                     bannerBtn.className = "btn btn-sm btn-success fw-bold shadow-sm";
                     bannerBtn.innerHTML = `<i class="fas fa-check-circle me-1"></i>Buffer Dispatched &bull; ${escapeHtml(caseId)}`;
-                    bannerBtn.onclick = () => openStormBufferModal(dcId, facility, units);
+                    bannerBtn.onclick = () => openStormBufferModal(sourceFacility, facility, units);
                 }
                 const stormDesc = document.getElementById("radar-storm-desc");
                 if (stormDesc) {
-                    stormDesc.innerHTML = `<span class="badge bg-success text-white me-1"><i class="fas fa-shield-alt me-1"></i>BUFFER EN ROUTE</span> 450 units rolling from ${escapeHtml(dcId)} to ${escapeHtml(facility)}. Facility runway extended by +${protectedDays} days prior to storm landfall window.`;
+                    stormDesc.innerHTML = `<span class="badge bg-success text-white me-1"><i class="fas fa-shield-alt me-1"></i>BUFFER EN ROUTE</span> 450 units rolling from ${escapeHtml(sourceFacility)} to ${escapeHtml(facility)}. Facility runway extended by +${protectedDays} days prior to storm landfall window.`;
                 }
 
                 showToast(
                     "Storm Buffer Staged",
-                    `450 critical units dispatched from ${dcId} to ${facility}. Workflow #${caseId} registered. Hospital runway shielded by +${protectedDays} days.`
+                    `450 critical units dispatched from ${sourceFacility} to ${facility}. Workflow #${caseId} registered. Hospital runway shielded by +${protectedDays} days.`
                 );
 
             } catch (e) {
@@ -5948,7 +6145,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 showToast("Storm Buffer Error", "Unable to trigger storm buffer staging. Please verify network connectivity.", "danger");
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = `<i class="fas fa-truck-fast me-1"></i>Authorize &amp; Dispatch 72h Pre-Landfall Buffer (450 Units)`;
+                    btn.innerHTML = `<i class="fas fa-truck-fast me-1"></i>Authorize &amp; Dispatch 72h Pre-Storm Buffer (450 Units)`;
                 }
             }
         }

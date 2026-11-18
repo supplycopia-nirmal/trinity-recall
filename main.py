@@ -70,7 +70,8 @@ class DisruptionRadarRequest(BaseModel):
     scenario: Optional[str] = ""
 
 class StageStormBufferRequest(BaseModel):
-    dc_id: Optional[str] = "DC-04"
+    source_facility: Optional[str] = "FACILITY-150"
+    dc_id: Optional[str] = None
     facility: Optional[str] = "FACILITY-65"
     units: Optional[int] = 450
 
@@ -822,13 +823,13 @@ def scan_disruption_radar(req: DisruptionRadarRequest):
                 f"| Node Type | Specific Facility / Location | Exposure Context | Critical Risks & Failure Modes |\n"
                 f"|---|---|---|---|---|\n"
                 f"| OEM Manufacturing Plant | Becton Dickinson / Medtronic Plants | Upstream Assembly & Sterilization | EO gas sterilizer emission audits & component allocations |\n"
-                f"| Master Distribution Hub | Regional DC Ingestion Docks (DC-04) | Primary Fulfillment Center | Quarantining intercepted PO lines prior to pick/pack |\n"
+                f"| Central Supply Facility Hub | FACILITY-150 (Central Medical Supply Hub) | Primary Fulfillment Hub | Quarantining intercepted PO lines prior to unit dispatch |\n"
                 f"| Customer Health System Node | FACILITY-65 / FACILITY-72 / FACILITY-136 | Acute Inpatient OR & Cath Labs | Par-level depletion below 7-day critical safety threshold |\n\n"
                 f"#### Geographic, Natural Hazard & Geopolitical Disruptions\n"
                 f"| Region / Corridor | Disruption Type (Storms, Cyber, Geopolitical) | Likelihood | Supply Continuity & Transport Impact |\n"
                 f"|---|---|---|---|---|\n"
-                f"| Gulf Coast & Southeast Coast | Tropical Hurricanes / Storm Surge | Moderate | Sterile packaging plant shutdowns and truck freight rerouting |\n"
-                f"| Midwest Intermodal Rail Hub | Ingestion Freight Congestion | High | +4 days railhead container dwell before DC cross-dock transfer |\n"
+                f"| Gulf Coast & Southeast Coast | Tropical Hurricanes / Storm Surge | Moderate | Sterile packaging disruptions and emergency inter-facility rerouting |\n"
+                f"| Midwest Intermodal Rail Hub | Ingestion Freight Congestion | High | +4 days railhead container dwell before facility cross-dock transfer |\n"
                 f"| Global Maritime Shipping Corridors | Canal Dwell & Geopolitical Rerouting | High | Container shipping transit stretches by +14 days around Cape routes |\n"
                 f"| Healthcare EDI Clearinghouse Gateways | Ransomware & Cyber Infiltration | High | Automated EDI-850 PO transmission freeze requiring manual fallback |\n\n"
                 f"#### Healthcare Cyber Infrastructure & EDI Clearinghouse Integrity\n"
@@ -961,13 +962,21 @@ def scan_disruption_radar(req: DisruptionRadarRequest):
             }
         }
 
+@app.get("/api/manufacturers")
+async def get_all_manufacturers_list():
+    """Returns directory of all manufacturers for the vendor scope filter."""
+    suppliers = data_service.get_all_suppliers()
+    return suppliers
+
 @app.post("/api/logistics/stage-storm-buffer")
 async def trigger_stage_storm_buffer(req: StageStormBufferRequest):
     """Executes a 72-hour pre-landfall storm buffer staging protocol to coastal hospital facilities."""
+    src = req.source_facility or req.dc_id or "FACILITY-150"
     return logistics_service.stage_storm_buffer(
-        dc_id=req.dc_id or "DC-04",
+        source_facility=src,
         facility=req.facility or "FACILITY-65",
-        units=req.units or 450
+        units=req.units or 450,
+        dc_id=req.dc_id
     )
 
 if __name__ == "__main__":
