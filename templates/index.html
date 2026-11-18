@@ -792,52 +792,6 @@
         <!-- TAB 1: RECALLED PRODUCTS & FACILITY EXPOSURE (FULL WIDTH) -->
         <!-- ======================================================== -->
         <div id="tab-recalls" class="tab-pane-content">
-            <!-- 8-STAGE HEALTH SYSTEM OPERATING MODEL PIPELINE STEPPER -->
-            <div class="pipeline-stepper-wrap">
-                <div class="d-flex align-items-center me-3 flex-shrink-0">
-                    <span class="text-muted fw-bold" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;">Operating Model Pipeline:</span>
-                    <button type="button" class="btn btn-xs btn-outline-primary rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" style="width: 20px; height: 20px; font-size: 0.7rem;" onclick="openOperatingModelInfoModal()" title="View Operating Model Stages Guide & RACI Matrix">
-                        <i class="fas fa-info"></i>
-                    </button>
-                </div>
-                <div class="pipeline-step-item active" onclick="filterByPipelineStage(0, this)">
-                    <span class="pipeline-step-num"><i class="fas fa-layer-group"></i></span>
-                    <span>All Stages</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(1, this)">
-                    <span class="pipeline-step-num">1</span>
-                    <span>Receive &amp; Register</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(2, this)">
-                    <span class="pipeline-step-num">2</span>
-                    <span>Assess &amp; Assign</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(3, this)">
-                    <span class="pipeline-step-num">3</span>
-                    <span>Locate Products</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(4, this)">
-                    <span class="pipeline-step-num">4</span>
-                    <span>Contain Exposure</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(5, this)">
-                    <span class="pipeline-step-num">5</span>
-                    <span>Identify Patients</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(6, this)">
-                    <span class="pipeline-step-num">6</span>
-                    <span>Manage Follow-Up</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(7, this)">
-                    <span class="pipeline-step-num">7</span>
-                    <span>Correct / Dispose</span>
-                </div>
-                <div class="pipeline-step-item" onclick="filterByPipelineStage(8, this)">
-                    <span class="pipeline-step-num">8</span>
-                    <span>Verify &amp; Close</span>
-                </div>
-            </div>
-
             <div class="card-executive mb-3">
                 <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2 bg-white rounded-top">
                     <!-- Search Input -->
@@ -1141,28 +1095,6 @@
                             <span class="small text-muted" style="font-size: 0.72rem;">unresolved tickets</span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- 8-STAGE HOSPITAL RECALL OPERATING MODEL PIPELINE (EXECUTIVE FUNNEL) -->
-            <div class="card-executive p-3 bg-white mb-3 shadow-xs border">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-1 border-bottom">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="fw-bold text-dark text-uppercase small" style="font-size: 0.76rem; letter-spacing: 0.5px;">
-                            <i class="fas fa-route text-primary me-1"></i>8-STAGE HOSPITAL RECALL OPERATING MODEL PIPELINE
-                        </span>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">Active Lifecycle Funnel</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="text-muted small" style="font-size: 0.70rem;">Click any stage to filter dashboard alerts:</span>
-                        <button class="btn btn-xs btn-outline-secondary py-0.5 px-2" onclick="clearDashboardStageFilter()" id="dash-stage-filter-clear-btn" style="font-size: 0.68rem; display: none;">
-                            <i class="fas fa-times me-1"></i>Show All Stages
-                        </button>
-                    </div>
-                </div>
-                <div class="row g-2" id="dash-operating-pipeline-row">
-                    <!-- Dynamically populated 8 stage cards with active cases, SLA, and percentage -->
-                    <div class="col-12 text-center py-2 text-muted small"><div class="spinner-border spinner-border-sm text-primary me-1"></div>Loading operating model pipeline...</div>
                 </div>
             </div>
 
@@ -3445,7 +3377,6 @@
         let riskScoreChartInstance = null;
         let financialRecoveryChartInstance = null;
         let hospitalComplianceChartInstance = null;
-        let activeDashboardStageFilter = null;
 
         let dashCurrentPage = 1;
         const dashPageSize = 15;
@@ -5644,8 +5575,6 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     });
                 }
 
-                // 5. 8-STAGE OPERATING MODEL PIPELINE (EXECUTIVE FUNNEL)
-                renderDashboardOperatingPipeline(data.operating_model_pipeline || []);
 
                 // 6. FINANCIAL SPEND RESTITUTION & RECOVERY VELOCITY CHART
                 const fin = data.financial_recovery || {};
@@ -5782,75 +5711,6 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
             }
         }
 
-        function renderDashboardOperatingPipeline(stages) {
-            const rowEl = document.getElementById('dash-operating-pipeline-row');
-            if (!rowEl) return;
-
-            if (!stages || stages.length === 0) {
-                rowEl.innerHTML = `<div class="col-12 text-center py-2 text-muted small">No operating stages data.</div>`;
-                return;
-            }
-
-            rowEl.innerHTML = stages.map(s => {
-                const isActive = activeDashboardStageFilter === s.step;
-                const borderStyle = isActive ? `border: 2px solid ${s.color} !important; background-color: #F8FAFC !important;` : `border-left: 3.5px solid ${s.color} !important;`;
-                const activeBadge = isActive ? `<span class="badge bg-primary text-white" style="font-size: 0.58rem;">FILTERED</span>` : `<span class="badge bg-light text-muted border" style="font-size: 0.60rem;">SLA: ${s.sla}</span>`;
-
-                return `
-                <div class="col-6 col-md-3 col-xl" style="min-width: 12.5%;">
-                    <div class="p-2.5 ps-3 rounded-2 border bg-light h-100 cursor-pointer transition-all dash-step-box" onclick="filterByDashboardStage(${s.step})" style="${borderStyle}" title="Click to filter dashboard records for ${s.name}">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="badge font-monospace" style="background-color: ${s.color}; color: #fff; font-size: 0.62rem;">STEP ${s.step}</span>
-                            ${activeBadge}
-                        </div>
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.74rem;">${escapeHtml(s.name)}</div>
-                        <div class="d-flex align-items-baseline justify-content-between mt-1">
-                            <span class="fs-6 fw-bold text-dark font-monospace">${(s.active_cases || 0).toLocaleString()}</span>
-                            <span class="text-muted small" style="font-size: 0.65rem;">${s.pct || 0}% cases</span>
-                        </div>
-                        <div class="progress mt-1.5" style="height: 3.5px;">
-                            <div class="progress-bar" role="progressbar" style="width: ${Math.min(100, (s.pct || 1) * 3)}%; background-color: ${s.color};"></div>
-                        </div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function filterByDashboardStage(step) {
-            if (activeDashboardStageFilter === step) {
-                clearDashboardStageFilter();
-                return;
-            }
-            activeDashboardStageFilter = step;
-            const clearBtn = document.getElementById('dash-stage-filter-clear-btn');
-            if (clearBtn) clearBtn.style.display = 'inline-block';
-
-            // Filter risk score or action needed to reflect stage focus
-            const actionSelect = document.getElementById('df-action');
-            if (actionSelect) {
-                if (step === 3 || step === 4) {
-                    actionSelect.value = 'Stock Pull Required';
-                } else if (step === 1 || step === 2) {
-                    actionSelect.value = 'Purchasing Violation';
-                }
-            }
-
-            loadDashboardOverview();
-            loadDashboardAlertsTable(1);
-            showToast(`Filtered by Step ${step}`, `Dashboard records filtered to reflect Stage ${step} operating model focus.`);
-        }
-
-        function clearDashboardStageFilter() {
-            activeDashboardStageFilter = null;
-            const clearBtn = document.getElementById('dash-stage-filter-clear-btn');
-            if (clearBtn) clearBtn.style.display = 'none';
-            const actionSelect = document.getElementById('df-action');
-            if (actionSelect) actionSelect.value = 'ALL';
-
-            loadDashboardOverview();
-            loadDashboardAlertsTable(1);
-        }
 
         // ========================================================
         // 8. DASHBOARD PO ALERT RECORDS TABLE (12 COLUMNS - MATCHING SCREENSHOT 5)
