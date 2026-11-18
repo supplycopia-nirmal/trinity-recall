@@ -39,12 +39,12 @@ class LogisticsService:
                     "Saint-Gobain Tubing Plant (Clearwater, FL)",
                     "Sterigenics Sterilization Hub (Atlanta, GA)"
                 ],
-                "impacted_facilities": ["FACILITY-65", "FACILITY-72", "FACILITY-118", "FACILITY-142"],
+                "impacted_facilities": ["FACILITY-65", "FACILITY-72", "FACILITY-136"],
                 "critical_procedural_skus": [
                     {"catalog": "2B8011", "desc": "Baxter 0.9% NaCl Viaflex 1000mL", "normal_dos": 8.2, "storm_risk": "STOCKOUT_RISK"},
                     {"catalog": "367861", "desc": "BD Vacutainer Plus Tubes 4mL", "normal_dos": 14.0, "storm_risk": "DELAY_VULNERABLE"}
                 ],
-                "directive": "Execute 72-hour advance buffer staging from inland reserve DC-04 (Dublin, OH) to coastal hospital facilities.",
+                "directive": "Execute 72-hour advance buffer staging from central supply hub FACILITY-150 to coastal hospital facilities (FACILITY-65, FACILITY-72 & FACILITY-136).",
                 "status": "PRE_LANDFALL_BUFFER_RECOMMENDED"
             }
         ]
