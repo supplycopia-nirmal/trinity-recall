@@ -1417,10 +1417,10 @@
                                     <div class="col-md-2 col-4">
                                         <label class="form-label text-muted small mb-1" style="font-size: 0.72rem;">Risk Score</label>
                                         <select id="df-risk" class="form-select form-select-sm" style="font-size: 0.75rem;">
-                                            <option value="ALL">All Scores</option>
-                                            <option value="Critical">Critical (Class I)</option>
-                                            <option value="Medium">Medium (Class II)</option>
-                                            <option value="Low">Low (Class III)</option>
+                                            <option value="ALL">All Risk Scores</option>
+                                            <option value="Critical">Critical (Score 75–100)</option>
+                                            <option value="Medium">Medium (Score 40–74)</option>
+                                            <option value="Low">Low (Score &lt; 40)</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-4">
@@ -1576,23 +1576,28 @@
                     <table class="table table-custom table-hover w-100" style="font-size: 0.78rem;">
                         <thead>
                             <tr>
-                                <th>FACILITY</th>
-                                <th>MANUFACTURER</th>
-                                <th class="text-end">QTY ORDERED</th>
-                                <th>CATALOG #</th>
-                                <th>PRODUCT DESCRIPTION</th>
-                                <th>CODE INFORMATION</th>
-                                <th>RECALL REASON</th>
-                                <th>SUGGESTED ALTERNATIVE</th>
-                                <th class="text-end">AVG PO COST</th>
-                                <th>ASSIGNEE</th>
-                                <th class="text-center">COMMUNICATE</th>
-                                <th class="text-center">WORKFLOW</th>
+                                <th style="min-width: 95px;">RISK SCORE</th>
+                                <th style="min-width: 155px;">ACTION NEEDED</th>
+                                <th style="min-width: 95px;">PO DATE</th>
+                                <th style="min-width: 95px;">RECALL DATE</th>
+                                <th style="min-width: 110px;">PO NUMBER</th>
+                                <th style="min-width: 140px;">FACILITY</th>
+                                <th style="min-width: 130px;">MANUFACTURER</th>
+                                <th class="text-end" style="min-width: 95px;">QTY ORDERED</th>
+                                <th style="min-width: 100px;">CATALOG #</th>
+                                <th style="min-width: 180px;">PRODUCT DESCRIPTION</th>
+                                <th style="min-width: 140px;">CODE INFORMATION</th>
+                                <th style="min-width: 160px;">RECALL REASON</th>
+                                <th style="min-width: 150px;">SUGGESTED ALTERNATIVE</th>
+                                <th class="text-end" style="min-width: 105px;">AVG PO COST</th>
+                                <th style="min-width: 70px;">ASSIGNEE</th>
+                                <th class="text-center" style="min-width: 105px;">COMMUNICATE</th>
+                                <th class="text-center" style="min-width: 120px;">WORKFLOW</th>
                             </tr>
                         </thead>
                         <tbody id="dashboard-alerts-tbody">
                             <tr>
-                                <td colspan="12" class="text-center py-5 text-muted">
+                                <td colspan="17" class="text-center py-5 text-muted">
                                     <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
                                     <div>Loading PO alert line items...</div>
                                 </td>
@@ -6993,7 +6998,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
         async function loadDashboardAlertsTable(page = 1) {
             dashCurrentPage = page;
             const tbody = document.getElementById('dashboard-alerts-tbody');
-            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary mb-2"></div><div>Querying PO alert line items...</div></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="17" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary mb-2"></div><div>Querying PO alert line items...</div></td></tr>`;
 
             const params = getDashboardFilterParams();
             params.set('page', page);
@@ -7016,7 +7021,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 document.getElementById('dash-next-btn').disabled = page >= dashTotalPages;
 
                 if (!currentAlertItems || currentAlertItems.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="12" class="text-center py-5 text-muted"><i class="fas fa-filter me-2 text-warning"></i>No PO alert line items match the selected filter criteria. Try broadening your dates or clearing filters.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="17" class="text-center py-5 text-muted"><i class="fas fa-filter me-2 text-warning"></i>No PO alert line items match the selected filter criteria. Try broadening your dates or clearing filters.</td></tr>`;
                     return;
                 }
 
@@ -7026,11 +7031,39 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     const reason = (row.recall_reason || 'N/A').length > 28 ? row.recall_reason.substring(0, 28) + '...' : row.recall_reason;
                     const facShort = (row.facility_display || row.facility || '').replace(/Trinity Health Regional Care Site |Trinity Health Hospital |Trinity /gi, '');
                     const avgSpend = row.total_spend || (row.quantity * 145.5);
+                    const riskSev = row.risk_severity || (row.risk_score >= 75 ? 'Critical' : (row.risk_score >= 40 ? 'Medium' : 'Low'));
+                    const riskScoreVal = row.risk_score_val || row.risk_score || 50;
+
+                    const sevBadgeClass = riskSev === 'Critical' ? 'bg-danger text-white' : (riskSev === 'Medium' ? 'bg-warning text-dark' : 'bg-secondary text-white');
+                    const actionBadge = row.action_needed === 'Purchasing Violation'
+                        ? `<span class="badge bg-danger text-white text-nowrap" style="font-size:0.72rem;"><i class="fas fa-ban me-1"></i>Purchasing Violation</span>`
+                        : `<span class="badge bg-warning text-dark text-nowrap" style="font-size:0.72rem;"><i class="fas fa-boxes-packing me-1"></i>Stock Pull Required</span>`;
 
                     return `
                     <tr class="align-middle">
                         <td>
-                            <div class="fw-bold text-dark text-truncate" style="max-width: 125px;" title="${escapeHtml(row.facility_display)}">${escapeHtml(facShort)}</div>
+                            <span class="badge ${sevBadgeClass} font-monospace fw-bold" style="font-size:0.70rem;">
+                                ${escapeHtml(riskSev)}
+                            </span>
+                            <div class="small font-monospace text-muted mt-0.5" style="font-size:0.70rem;">
+                                Score: <strong class="text-dark">${riskScoreVal}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            ${actionBadge}
+                        </td>
+                        <td>
+                            <span class="font-monospace text-dark text-nowrap">${escapeHtml(row.po_date || 'N/A')}</span>
+                        </td>
+                        <td>
+                            <span class="font-monospace text-muted text-nowrap">${escapeHtml(row.recall_date || 'N/A')}</span>
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-bold text-dark text-nowrap">${escapeHtml(row.po_number || 'N/A')}</span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark text-truncate" style="max-width: 140px;" title="${escapeHtml(row.facility_display)}">${escapeHtml(facShort)}</div>
+                            <div class="text-muted font-monospace small" style="font-size:0.68rem;">${escapeHtml(row.facility)}</div>
                         </td>
                         <td>
                             <div class="fw-bold text-dark text-truncate" style="max-width: 130px;" title="${escapeHtml(row.manufacturer)}">${escapeHtml((row.manufacturer || '').toUpperCase())}</div>
@@ -7051,20 +7084,20 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             <div class="text-dark small text-truncate" style="max-width: 155px;" title="${escapeHtml(row.recall_reason)}">${escapeHtml(reason)}</div>
                         </td>
                         <td>
-                            <span class="fw-semibold small ${row.suggested_alternative === 'No Sub Found' ? 'text-success' : 'text-primary'}" title="${escapeHtml(row.suggested_alternative)}">
+                            <span class="fw-semibold small ${row.suggested_alternative === 'No Sub Found' ? 'text-secondary' : 'text-success'}" title="${escapeHtml(row.suggested_alternative)}">
                                 ${escapeHtml(row.suggested_alternative || 'No Sub Found')}
                             </span>
                         </td>
                         <td class="text-end font-monospace fw-bold text-dark">$${avgSpend.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td><span class="text-secondary small">-</span></td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary py-1 px-3 fw-bold text-nowrap shadow-xs" onclick="openAlertEmailModal(${idx})" title="Auto-generate clinical directive via Ask The Bee">
-                                Email
+                            <button class="btn btn-sm btn-primary py-1 px-2.5 fw-bold text-nowrap shadow-xs" onclick="openAlertEmailModal(${idx})" title="Auto-generate clinical directive via Ask The Bee">
+                                <i class="fas fa-envelope me-1"></i>Email
                             </button>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-sm text-white py-1 px-3 fw-bold text-nowrap shadow-xs" style="background-color: #0052CC;" onclick="openAlertJiraTicketModal(${idx})" title="Create Jira TRM issue with Ask The Bee description & attachments">
-                                Create Ticket
+                            <button class="btn btn-sm text-white py-1 px-2.5 fw-bold text-nowrap shadow-xs" style="background-color: #0052CC;" onclick="openAlertJiraTicketModal(${idx})" title="Create Jira TRM issue with Ask The Bee description & attachments">
+                                <i class="fab fa-jira me-1"></i>Create Ticket
                             </button>
                         </td>
                     </tr>
@@ -7073,7 +7106,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
 
             } catch (err) {
                 console.error("Error loading dashboard alerts table:", err);
-                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load PO alert records: ${escapeHtml(err.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="17" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load PO alert records: ${escapeHtml(err.message)}</td></tr>`;
             }
         }
 

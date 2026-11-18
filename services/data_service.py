@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 from config import settings
+from services.risk_service import risk_service
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +100,40 @@ class DataService:
                 df["action_simple"] = df["action_needed"].apply(
                     lambda x: "Stock Pull Required" if "Stock" in str(x) else "Order Stop Required"
                 )
+
+                # 4-Vector Disruption & Clinical Hazard Risk Engine (Project Mosaic / Cardinal Health Formula)
+                unique_combos = df[["catalog", "fda_classification", "action_simple", "product_description"]].drop_duplicates()
+                risk_map = {}
+                for _, row in unique_combos.iterrows():
+                    c_str = str(row["catalog"])
+                    act = str(row["action_simple"])
+                    r = risk_service.calculate_risk(
+                        fda_classification=row["fda_classification"],
+                        product_desc=row["product_description"],
+                        days_of_supply=5.0 if act == "Order Stop Required" else 14.0,
+                        has_external_threat=(act == "Order Stop Required")
+                    )
+                    risk_map[(c_str, act)] = r["score"]
+
+                keys = list(zip(df["catalog"].astype(str), df["action_simple"].astype(str)))
+                raw_scores = [risk_map.get(k, 50) for k in keys]
+                sev_list = df["_severity_upper"].str.upper().tolist() if "_severity_upper" in df.columns else ["MEDIUM"] * len(df)
+
+                final_scores = []
+                final_sevs = []
+                for calc_score, sev_up in zip(raw_scores, sev_list):
+                    if sev_up == "CRITICAL":
+                        final_scores.append(max(75, calc_score))
+                        final_sevs.append("Critical")
+                    elif sev_up == "LOW":
+                        final_scores.append(min(39, calc_score))
+                        final_sevs.append("Low")
+                    else:
+                        final_scores.append(min(74, max(40, calc_score)))
+                        final_sevs.append("Medium")
+
+                df["risk_score"] = final_scores
+                df["risk_severity"] = final_sevs
 
                 self._df = df
                 self._build_products_index()
@@ -431,12 +466,13 @@ class DataService:
                 df = df[df["action_simple"] == "Order Stop Required"]
 
         if risk_score and risk_score.strip() and risk_score != "ALL":
-            if "Critical" in risk_score or "Class I" in risk_score:
-                df = df[df["fda_classification"] == "Class I"]
-            elif "Medium" in risk_score or "Class II" in risk_score:
-                df = df[df["fda_classification"] == "Class II"]
-            elif "Low" in risk_score or "Class III" in risk_score:
-                df = df[df["fda_classification"] == "Class III"]
+            r_clean = risk_score.upper().strip()
+            if "CRITICAL" in r_clean:
+                df = df[df["risk_severity"] == "Critical"]
+            elif "MEDIUM" in r_clean:
+                df = df[df["risk_severity"] == "Medium"]
+            elif "LOW" in r_clean:
+                df = df[df["risk_severity"] == "Low"]
 
         if po_date_from and po_date_from.strip():
             df = df[df["po_date"] >= po_date_from.strip()]
@@ -540,11 +576,11 @@ class DataService:
         else:
             mfg_data = {"labels": [], "counts": []}
 
-        # 4. Risk Score breakdown
+        # 4. Risk Score breakdown (aligned with Cardinal Health 4-Vector Model)
         if not df.empty:
-            critical_count = int((df["fda_classification"] == "Class I").sum())
-            medium_count = int((df["fda_classification"] == "Class II").sum())
-            low_count = int((df["fda_classification"] == "Class III").sum())
+            critical_count = int((df["risk_severity"] == "Critical").sum())
+            medium_count = int((df["risk_severity"] == "Medium").sum())
+            low_count = int((df["risk_severity"] == "Low").sum())
         else:
             critical_count, medium_count, low_count = 0, 0, 0
 
@@ -703,12 +739,9 @@ class DataService:
             event = self._fda_lookup.get(eid, {})
             
             raw_cls = getattr(r, "fda_classification", "Class II")
-            if raw_cls == "Class I":
-                score_label = "75 - Critical"
-            elif raw_cls == "Class II":
-                score_label = "50 - Medium"
-            else:
-                score_label = "30 - Low"
+            score_num = int(getattr(r, "risk_score", 50))
+            sev_str = str(getattr(r, "risk_severity", "Medium"))
+            score_label = f"{score_num} - {sev_str}"
 
             # Parse recall date format YYYYMMDD -> YYYY-MM-DD
             rec_date_raw = str(getattr(r, "fda_recall_date", "")).split(".")[0].strip()
@@ -732,7 +765,10 @@ class DataService:
             items.append({
                 "id": getattr(r, "id", ""),
                 "alert_type": "Recall Match",
-                "risk_score": score_label,
+                "risk_score": score_num,
+                "risk_score_val": score_num,
+                "risk_score_label": score_label,
+                "risk_severity": sev_str,
                 "fda_classification": raw_cls,
                 "action_needed": "Purchasing Violation" if getattr(r, "action_simple", "") == "Order Stop Required" else "Stock Pull Required",
                 "po_date": str(getattr(r, "po_date", "N/A")),
