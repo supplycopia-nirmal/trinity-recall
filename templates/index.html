@@ -22,6 +22,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Marked.js for Rich Formatted AI Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         :root {
             --sc-red-alert: #DC2626;
@@ -967,8 +970,10 @@
                     <div class="row g-2 align-items-center">
                         <div class="col-md-5">
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" id="supplier-search-input" class="form-control border-start-0" placeholder="Search by manufacturer name (e.g. Medtronic, Zimmer, Stryker)..." onkeyup="if(event.key==='Enter') loadAllSuppliers()">
+                                <button class="btn btn-outline-secondary border bg-white text-muted" type="button" onclick="loadAllSuppliers()" title="Search Suppliers">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <input type="text" id="supplier-search-input" class="form-control" placeholder="Search by manufacturer name (e.g. Medtronic, Zimmer, Stryker)..." onkeyup="if(event.key==='Enter') loadAllSuppliers()" oninput="clearTimeout(window._supSearchDebounce); window._supSearchDebounce = setTimeout(loadAllSuppliers, 350)">
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -1483,7 +1488,7 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive" style="overflow: visible; min-height: 220px;">
                     <table class="table table-custom table-hover w-100" id="jira-issues-table">
                         <thead>
                             <tr>
@@ -1642,7 +1647,7 @@
                         <!-- Navigation Bar Back to Step 1 -->
                         <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
                             <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" onclick="goToWizardStep1()">
-                                <i class="fas fa-arrow-left me-1.5"></i>&larr; Back to Hospital Facilities
+                                <i class="fas fa-arrow-left me-1.5"></i>Back to Hospital Facilities
                             </button>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 fw-bold" style="font-size: 0.75rem;">
@@ -1762,9 +1767,10 @@
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label class="form-label small fw-bold text-dark mb-0">Subject Line</label>
-                                <!-- AI CLINICAL MEMO BUTTON -->
-                                <button type="button" class="btn btn-xs btn-outline-primary fw-bold px-2 py-0.5 rounded-pill shadow-xs" onclick="draftAIClinicalMemo()" id="btn-draft-memo">
-                                    <i class="fas fa-wand-magic-sparkles text-primary me-1"></i>Draft AI Clinical Memo
+                                <!-- AI CLINICAL MEMO BUTTON (ASK THE BEE) -->
+                                <button type="button" class="btn btn-xs btn-outline-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill shadow-xs d-flex align-items-center gap-1" style="background: #FFFBEB; border-color: #FCD34D;" onclick="draftAIClinicalMemo()" id="btn-draft-memo">
+                                    <i class="fas fa-cube text-warning" style="font-size: 0.72rem;"></i>
+                                    <span>Ask The Bee &bull; Draft Directive</span>
                                 </button>
                             </div>
                             <input type="text" id="w2-field-subject" required class="form-control form-control-sm">
@@ -1773,14 +1779,20 @@
                         <!-- Message Body with AI Generation Spinner -->
                         <div class="mb-3 position-relative">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label small fw-bold text-dark mb-0">Directives & Clinical Safety Instructions</label>
-                                <span class="badge bg-light text-muted border small" style="font-size: 0.7rem;">Clinical Officer Tone</span>
+                                <label class="form-label small fw-bold text-dark mb-0">Directives &amp; Clinical Safety Instructions</label>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="badge bg-light text-muted border small" style="font-size: 0.7rem;">Clinical Officer Tone</span>
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2" onclick="toggleW2MessageView()" id="btn-toggle-w2-preview">
+                                        <i class="fas fa-eye me-1"></i>Preview
+                                    </button>
+                                </div>
                             </div>
-                            <div id="w2-ai-loading-indicator" class="d-none alert alert-info py-2 px-3 small mb-2 d-flex align-items-center gap-2">
-                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                <span>LLM generating Chief Medical Officer Clinical Safety Directive & Bedside Guidance...</span>
+                            <div id="w2-ai-loading-indicator" class="d-none alert alert-warning py-2 px-3 small mb-2 d-flex align-items-center gap-2" style="background-color: #FFFBEB; border-color: #FDE68A;">
+                                <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                                <span class="text-dark small">Ask The Bee synthesizing Chief Medical Officer Clinical Safety Directive &amp; Bedside Guidance...</span>
                             </div>
                             <textarea id="w2-field-message" rows="7" required class="form-control form-control-sm font-monospace" style="font-size: 0.8rem; line-height: 1.45;"></textarea>
+                            <div id="w2-field-preview" class="d-none p-3 border rounded-2 bg-white" style="font-size: 0.82rem; line-height: 1.5; min-height: 150px; max-height: 280px; overflow-y: auto;"></div>
                         </div>
 
                         <!-- Supporting Document Attachment Pill -->
@@ -2044,7 +2056,11 @@
                             </div>
                             <div class="col-6">
                                 <label class="form-label small fw-bold text-dark">Claim Amount ($)</label>
-                                <input type="number" step="0.01" id="sup-field-claim" value="5000.00" class="form-control form-control-sm font-monospace">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light">$</span>
+                                    <input type="text" id="sup-field-claim-display" value="5,000.00" class="form-control form-control-sm font-monospace fw-bold text-dark" onblur="formatSupplierClaimInput(this)" onfocus="this.value = unformatCurrency(this.value)">
+                                    <input type="hidden" id="sup-field-claim" value="5000.00">
+                                </div>
                             </div>
                         </div>
 
@@ -2059,8 +2075,24 @@
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label small fw-bold text-dark">Official Demand Message</label>
-                            <textarea id="sup-field-message" rows="4" required class="form-control form-control-sm" style="font-size: 0.8rem; line-height: 1.4;"></textarea>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label small fw-bold text-dark mb-0">Official Demand Message</label>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <button type="button" class="btn btn-xs btn-outline-warning text-dark fw-bold px-2 py-0.5 rounded-pill shadow-xs d-flex align-items-center gap-1" style="background: #FFFBEB; border-color: #FCD34D;" onclick="draftAISupplierDemand()" id="btn-draft-sup-ai">
+                                        <i class="fas fa-cube text-warning" style="font-size: 0.72rem;"></i>
+                                        <span>Ask The Bee &bull; Draft Demand</span>
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2" onclick="toggleSupplierMessageView()" id="btn-toggle-sup-preview">
+                                        <i class="fas fa-eye me-1"></i>Preview
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="sup-ai-spinner" class="d-none alert alert-warning py-2 px-3 small mb-2 d-flex align-items-center gap-2" style="background-color: #FFFBEB; border-color: #FDE68A;">
+                                <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                                <span class="text-dark small">Ask The Bee is synthesizing formal commercial demand &amp; RMA restitution notice...</span>
+                            </div>
+                            <textarea id="sup-field-message" rows="5" required class="form-control form-control-sm font-monospace" style="font-size: 0.8rem; line-height: 1.45;"></textarea>
+                            <div id="sup-message-preview" class="d-none p-3 border rounded-2 bg-white" style="font-size: 0.82rem; line-height: 1.5; min-height: 120px; max-height: 220px; overflow-y: auto;"></div>
                         </div>
                     </div>
 
@@ -2264,19 +2296,19 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 6B: CLINICAL SAFETY EMAIL (GPT-6 LUNA CO-PILOT)    -->
+    <!-- MODAL 6B: CLINICAL SAFETY EMAIL (ASK THE BEE CO-PILOT)   -->
     <!-- ======================================================== -->
     <div class="modal fade" id="modalAlertEmail" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-consistent-width modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header py-3 border-bottom text-white" style="background-color: #1E60D5;">
+                <div class="modal-header py-3 border-bottom text-white" style="background-color: #0A2540;">
                     <div class="d-flex align-items-center gap-2">
                         <i class="fas fa-envelope-open-text fs-4 text-white"></i>
                         <div>
                             <div class="d-flex align-items-center gap-2">
                                 <h6 class="fw-bold mb-0 text-white">Clinical Safety Communication Dispatch</h6>
-                                <span class="badge text-white px-2 py-0.5 rounded-pill" style="background: rgba(255,255,255,0.25); font-size: 0.68rem;">
-                                    <i class="fas fa-wand-magic-sparkles me-1 text-warning"></i>GPT-6 Luna Enterprise Co-Pilot
+                                <span class="badge text-dark px-2.5 py-0.5 rounded-pill fw-bold shadow-xs d-inline-flex align-items-center gap-1" style="background: #FEF3C7; color: #92400E; font-size: 0.68rem; border: 1px solid #FCD34D;">
+                                    <i class="fas fa-cube text-warning" style="font-size: 0.72rem;"></i>Ask The Bee &bull; Enterprise Safety
                                 </span>
                             </div>
                             <div class="small text-white-50" style="font-size: 0.72rem;">Auto-Generated Clinical Cease-Use Directive &amp; Nursing Leadership Alert</div>
@@ -2321,21 +2353,27 @@
                         <div class="card p-3 bg-white border rounded-3 shadow-2xs">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label class="form-label small fw-bold text-dark mb-0">Subject Line</label>
-                                <button type="button" class="btn btn-xs btn-outline-primary fw-bold px-2 py-0.5 rounded-pill" onclick="regenerateAlertEmailAI()" id="btn-regen-email-ai">
-                                    <i class="fas fa-rotate me-1 text-primary"></i>Regenerate with GPT-6 Luna
+                                <button type="button" class="btn btn-xs btn-outline-warning text-dark fw-bold px-2 py-0.5 rounded-pill shadow-xs d-flex align-items-center gap-1" style="background: #FFFBEB; border-color: #FCD34D;" onclick="regenerateAlertEmailAI()" id="btn-regen-email-ai">
+                                    <i class="fas fa-rotate me-1 text-warning"></i>Regenerate with Ask The Bee
                                 </button>
                             </div>
                             <input type="text" id="alert-email-subject" required class="form-control form-control-sm mb-3">
 
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label small fw-bold text-dark mb-0">Clinical Directive Body (Generated by GPT-6 Luna)</label>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;">Verified Clinical Policy</span>
+                                <label class="form-label small fw-bold text-dark mb-0">Clinical Directive Body</label>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;">Verified Clinical Policy</span>
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2" onclick="toggleAlertEmailView()" id="btn-toggle-email-preview">
+                                        <i class="fas fa-eye me-1"></i>Preview
+                                    </button>
+                                </div>
                             </div>
-                            <div id="alert-email-ai-spinner" class="d-none alert alert-info py-2 px-3 small mb-2 d-flex align-items-center gap-2">
-                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                <span>GPT-6 Luna synthesizing clinical cease-use directive &amp; bedside safety instructions...</span>
+                            <div id="alert-email-ai-spinner" class="d-none alert alert-warning py-2 px-3 small mb-2 d-flex align-items-center gap-2" style="background-color: #FFFBEB; border-color: #FDE68A;">
+                                <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                                <span class="text-dark small">Ask The Bee synthesizing clinical cease-use directive &amp; bedside safety instructions...</span>
                             </div>
                             <textarea id="alert-email-body" rows="9" required class="form-control form-control-sm font-monospace" style="font-size: 0.78rem; line-height: 1.45;"></textarea>
+                            <div id="alert-email-preview" class="d-none p-3 border rounded-2 bg-white" style="font-size: 0.82rem; line-height: 1.5; min-height: 180px; max-height: 320px; overflow-y: auto;"></div>
 
                             <div class="mt-2.5 p-2 bg-light border rounded-2 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center gap-2">
@@ -2520,7 +2558,7 @@
                                         <i class="fas fa-file-word text-primary"></i>
                                         <label for="jira-attach-docx" class="font-monospace text-dark mb-0 cursor-pointer" id="jira-attach-docx-label">clinical_safety_briefing.docx</label>
                                     </div>
-                                    <span class="badge bg-white text-muted border">GPT-6 Luna Memo</span>
+                                    <span class="badge bg-white text-dark border"><i class="fas fa-cube text-warning me-1"></i>Ask The Bee Directive</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center gap-2">
@@ -4039,7 +4077,8 @@
                 if (data.status === 'success' && data.memo) {
                     subjectField.value = data.memo.subject || subjectField.value;
                     messageField.value = data.memo.body || messageField.value;
-                    showToast('AI Clinical Memo Generated', 'Clinical directive and bedside guidance drafted with OpenAI.');
+                    renderW2MessagePreview(data.memo.body || messageField.value);
+                    showToast('Ask The Bee Generated Directive', 'Clinical cease-use directive & bedside guidance synthesized.');
                 } else {
                     alert('Could not generate clinical memo.');
                 }
@@ -4048,8 +4087,37 @@
                 alert('Error generating AI clinical memo.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fas fa-wand-magic-sparkles text-primary me-1"></i>Draft AI Clinical Memo`;
+                btn.innerHTML = `<i class="fas fa-cube text-warning" style="font-size: 0.72rem;"></i><span>Ask The Bee &bull; Draft Directive</span>`;
                 indicator.classList.add('d-none');
+            }
+        }
+
+        function renderW2MessagePreview(text) {
+            const previewEl = document.getElementById('w2-field-preview');
+            if (!previewEl) return;
+            const content = text || document.getElementById('w2-field-message').value;
+            if (window.marked) {
+                previewEl.innerHTML = marked.parse(content);
+            } else {
+                previewEl.innerHTML = content.replace(/\n/g, '<br>');
+            }
+        }
+
+        function toggleW2MessageView() {
+            const previewEl = document.getElementById('w2-field-preview');
+            const textareaEl = document.getElementById('w2-field-message');
+            const btn = document.getElementById('btn-toggle-w2-preview');
+            if (!previewEl || !textareaEl) return;
+
+            if (previewEl.classList.contains('d-none')) {
+                renderW2MessagePreview(textareaEl.value);
+                textareaEl.classList.add('d-none');
+                previewEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-edit me-1"></i>Edit`;
+            } else {
+                previewEl.classList.add('d-none');
+                textareaEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
             }
         }
 
@@ -4141,15 +4209,128 @@
         // ========================================================
         // 4. SUPPLIER ACTION CENTER
         // ========================================================
+        function formatCurrencyNumber(val) {
+            const num = parseFloat(val);
+            if (isNaN(num)) return '0.00';
+            return num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function unformatCurrency(str) {
+            if (!str) return '';
+            return str.replace(/[^0-9.]/g, '');
+        }
+
+        function formatSupplierClaimInput(input) {
+            const clean = unformatCurrency(input.value);
+            const num = parseFloat(clean) || 0;
+            document.getElementById('sup-field-claim').value = num.toFixed(2);
+            input.value = formatCurrencyNumber(num);
+        }
+
         function openSupplierModal(manufacturer, catalog, productDesc, claimAmount) {
+            const amt = parseFloat(claimAmount) || 5000.0;
             document.getElementById('sup-field-mfg').value = manufacturer;
             document.getElementById('sup-field-catalog').value = catalog;
-            document.getElementById('sup-field-claim').value = (claimAmount || 5000).toFixed(2);
+            document.getElementById('sup-field-claim').value = amt.toFixed(2);
+            document.getElementById('sup-field-claim-display').value = formatCurrencyNumber(amt);
             document.getElementById('sup-field-recipients').value = `recall-coordinator@${manufacturer.toLowerCase().replace(/[^a-z]/g, '')}.com, returns@distributor.com`;
             document.getElementById('sup-field-subject').value = `TRINITY HEALTH RECALL CLAIM: Request for RMA & 100% Credit - Cat ${catalog}`;
-            document.getElementById('sup-field-message').value = `Dear Supplier Recall Coordinator at ${manufacturer}:\n\nTrinity Health System has identified multiple hospital purchases of recalled catalog ${catalog} (${productDesc}).\n\nUnder our master supply agreement, we request:\n1. Immediate issuance of Return Material Authorization (RMA) with pre-paid return freight labels.\n2. Full 100% credit memo for all quarantined inventory and return shipments.\n3. Confirmation of non-recalled alternative availability.\n\nPlease reply within 48 business hours with RMA paperwork.`;
+            document.getElementById('sup-field-message').value = `Dear Supplier Recall Coordinator at ${manufacturer}:
+
+Trinity Health System has identified multiple hospital purchases of recalled catalog ${catalog} (${productDesc}).
+
+Under our master supply agreement, we request:
+1. Immediate issuance of Return Material Authorization (RMA) with pre-paid return freight labels.
+2. Full 100% credit memo for all quarantined inventory and return shipments.
+3. Confirmation of non-recalled alternative availability.
+
+Please reply within 48 business hours with RMA paperwork.`;
+
+            // Reset preview
+            const previewEl = document.getElementById('sup-message-preview');
+            const textareaEl = document.getElementById('sup-field-message');
+            if (previewEl && textareaEl) {
+                previewEl.classList.add('d-none');
+                textareaEl.classList.remove('d-none');
+                const btn = document.getElementById('btn-toggle-sup-preview');
+                if (btn) btn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
+            }
 
             modalSupplierActionInstance.show();
+        }
+
+        async function draftAISupplierDemand() {
+            const btn = document.getElementById('btn-draft-sup-ai');
+            const spinner = document.getElementById('sup-ai-spinner');
+            const mfg = document.getElementById('sup-field-mfg').value;
+            const cat = document.getElementById('sup-field-catalog').value;
+            const claimAmt = parseFloat(document.getElementById('sup-field-claim').value) || 5000.0;
+            const actionType = document.getElementById('sup-field-action-type').value;
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                const res = await fetch('/api/supplier/draft-demand', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        manufacturer: mfg,
+                        catalog: cat,
+                        product_description: activeProductForDrawer ? activeProductForDrawer.product_description : '',
+                        claim_amount: claimAmt,
+                        action_type: actionType
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.letter) {
+                        if (data.letter.subject) document.getElementById('sup-field-subject').value = data.letter.subject;
+                        if (data.letter.body) {
+                            document.getElementById('sup-field-message').value = data.letter.body;
+                            renderSupplierMessagePreview(data.letter.body);
+                        }
+                        showToast('Ask The Bee Generated Demand', `Official RMA & restitution demand synthesized for ${mfg}.`);
+                    }
+                } else {
+                    alert('Could not auto-draft demand letter.');
+                }
+            } catch (err) {
+                console.error("AI demand draft error:", err);
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        }
+
+        function renderSupplierMessagePreview(text) {
+            const previewEl = document.getElementById('sup-message-preview');
+            if (!previewEl) return;
+            const content = text || document.getElementById('sup-field-message').value;
+            if (window.marked) {
+                previewEl.innerHTML = marked.parse(content);
+            } else {
+                previewEl.innerHTML = content.replace(/\n/g, '<br>');
+            }
+        }
+
+        function toggleSupplierMessageView() {
+            const previewEl = document.getElementById('sup-message-preview');
+            const textareaEl = document.getElementById('sup-field-message');
+            const btn = document.getElementById('btn-toggle-sup-preview');
+            if (!previewEl || !textareaEl) return;
+
+            if (previewEl.classList.contains('d-none')) {
+                renderSupplierMessagePreview(textareaEl.value);
+                textareaEl.classList.add('d-none');
+                previewEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-edit me-1"></i>Edit`;
+            } else {
+                previewEl.classList.add('d-none');
+                textareaEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
+            }
         }
 
         function openGenericSupplierModal() {
@@ -4248,36 +4429,51 @@
                 }
 
                 container.innerHTML = `
-                <div class="text-muted small mb-2 fw-semibold">Found <strong class="text-dark">${data.total}</strong> recalled products matching "${q}":</div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted small fw-semibold">Showing <strong class="text-dark">${data.total}</strong> recalled items matching query:</span>
+                    <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem;">FDA Enforcement Database Active</span>
+                </div>
                 ` + data.items.map(item => `
-                    <div class="card-executive p-3 mb-2 d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="${item.fda_classification === 'Class I' ? 'badge-class-1' : 'badge-class-2'}">${item.fda_classification}</span>
-                                <span class="font-monospace fw-bold text-dark" style="font-size: 0.82rem;">Catalog #${item.catalog}</span>
-                                <span class="text-muted small">&bull; ${item.manufacturer}</span>
-                            </div>
-                            <div class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">${item.product_description}</div>
-                            
-                            <!-- Highlighted Reason for Recall -->
-                            <div class="alert alert-warning py-1.5 px-2.5 small mb-2" style="font-size: 0.78rem; line-height: 1.4;">
-                                <strong class="text-dark">FDA Reason for Recall:</strong> ${item.fda_reason_for_recall}
+                    <div class="card border rounded-3 p-3 mb-2.5 bg-white shadow-2xs hover-lift transition-all" style="border-color: #E2E8F0 !important;">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+                            <div class="flex-grow-1">
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1.5">
+                                    <span class="${item.fda_classification === 'Class I' ? 'badge-class-1' : 'badge-class-2'} px-2 py-0.5 rounded-pill" style="font-size: 0.68rem; font-weight: 700;">${item.fda_classification}</span>
+                                    <span class="font-monospace fw-bold text-dark px-1.5 py-0.5 bg-light rounded border" style="font-size: 0.78rem;">CAT #${item.catalog}</span>
+                                    <span class="text-secondary small fw-semibold">&bull; ${item.manufacturer}</span>
+                                    ${item.recall_date_display ? `<span class="badge bg-light text-muted border px-2 py-0.5" style="font-size: 0.68rem;"><i class="far fa-calendar-alt me-1"></i>${item.recall_date_display}</span>` : ''}
+                                </div>
+                                <div class="fw-bold text-dark mb-2" style="font-size: 0.92rem; letter-spacing: -0.01em;">${item.product_description}</div>
+                                
+                                <!-- Sleek Reason Callout Box -->
+                                <div class="p-2.5 rounded-2 mb-2.5" style="background-color: #F8FAFC; border-left: 3px solid ${item.fda_classification === 'Class I' ? '#DC2626' : '#F59E0B'}; font-size: 0.78rem; line-height: 1.45;">
+                                    <div class="text-muted fw-bold text-uppercase mb-0.5" style="font-size: 0.68rem; letter-spacing: 0.03em;">FDA Hazard &amp; Root Cause</div>
+                                    <div class="text-dark">${item.fda_reason_for_recall}</div>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center gap-3 pt-1 text-muted" style="font-size: 0.76rem;">
+                                    <span class="d-flex align-items-center gap-1.5">
+                                        <i class="fas fa-hospital text-muted" style="font-size: 0.72rem;"></i>
+                                        <span>Exposure: <strong class="text-dark">${item.facilities_count} Facilities</strong></span>
+                                    </span>
+                                    <span class="text-muted">&bull;</span>
+                                    <span class="d-flex align-items-center gap-1.5">
+                                        <i class="fas fa-dollar-sign text-muted" style="font-size: 0.72rem;"></i>
+                                        <span>Spend at Risk: <strong class="text-dark font-monospace fw-bold">$${item.total_spend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span>
+                                    </span>
+                                </div>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-3 small text-muted" style="font-size: 0.75rem;">
-                                <span>Impacted Facilities: <strong class="text-dark">${item.facilities_count} Hospitals</strong></span>
-                                <span>Spend at Risk: <strong class="text-success font-monospace">$${item.total_spend.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></span>
-                                <span>Recall Date: <strong class="text-dark">${item.recall_date_display || 'N/A'}</strong></span>
+                            <div class="d-flex flex-column gap-1.5 align-self-stretch align-self-md-start" style="min-width: 160px;">
+                                <button onclick="openFacilitiesDrawer('${item.catalog}')" class="btn btn-sm btn-dark fw-bold w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5 shadow-2xs" style="font-size: 0.78rem;">
+                                    <span>Hospital Impact</span>
+                                    <i class="fas fa-chevron-right" style="font-size: 0.68rem;"></i>
+                                </button>
+                                <button onclick="openSupplierModal('${item.manufacturer.replace(/'/g, "\\'")}', '${item.catalog}', '${item.product_description.replace(/'/g, "\\'")}', ${item.total_spend})" class="btn btn-sm btn-outline-secondary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5" style="font-size: 0.76rem;">
+                                    <i class="fas fa-paper-plane text-muted" style="font-size: 0.7rem;"></i>
+                                    <span>Supplier RMA</span>
+                                </button>
                             </div>
-                        </div>
-
-                        <div class="d-flex flex-column gap-1.5" style="min-width: 150px;">
-                            <button onclick="openFacilitiesDrawer('${item.catalog}')" class="btn btn-sm btn-dark fw-bold w-100 shadow-sm" style="font-size: 0.78rem;">
-                                View Facilities <i class="fas fa-chevron-right ms-1"></i>
-                            </button>
-                            <button onclick="openSupplierModal('${item.manufacturer.replace(/'/g, "\\'")}', '${item.catalog}', '${item.product_description.replace(/'/g, "\\'")}', ${item.total_spend})" class="btn btn-sm btn-outline-brand w-100" style="font-size: 0.75rem;">
-                                Supplier RMA
-                            </button>
                         </div>
                     </div>
                 `).join('');
@@ -4835,13 +5031,13 @@
                         <td class="text-end font-monospace fw-bold text-dark">$${avgSpend.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td><span class="text-secondary small">-</span></td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary py-1 px-2.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-xs" onclick="openAlertEmailModal(${idx})" title="Auto-generate clinical cease-use memo via GPT-6 Luna">
-                                <i class="fas fa-envelope"></i> Email
+                            <button class="btn btn-sm btn-primary py-1 px-3 fw-bold text-nowrap shadow-xs" onclick="openAlertEmailModal(${idx})" title="Auto-generate clinical directive via Ask The Bee">
+                                Email
                             </button>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-sm text-white py-1 px-2.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-xs" style="background-color: #0052CC;" onclick="openAlertJiraTicketModal(${idx})" title="Create Jira TRM issue with GPT-6 Luna description & attachments">
-                                <i class="fab fa-jira"></i> Create Ticket
+                            <button class="btn btn-sm text-white py-1 px-3 fw-bold text-nowrap shadow-xs" style="background-color: #0052CC;" onclick="openAlertJiraTicketModal(${idx})" title="Create Jira TRM issue with Ask The Bee description & attachments">
+                                Create Ticket
                             </button>
                         </td>
                     </tr>
@@ -4870,7 +5066,7 @@
             document.getElementById('alert-email-recipients').value = `cno@${(row.facility || 'trinity').toLowerCase()}.trinity-health.org, safety-officer@trinity-health.org`;
             document.getElementById('alert-email-attachment-name').innerText = `po_${row.po_number || 'alert'}_manifest.csv, clinical_directive_${row.catalog}.docx`;
 
-            // Auto-generate Clinical Memo via LLM (GPT-6 Luna)
+            // Auto-generate Clinical Memo via LLM (Ask The Bee)
             await regenerateAlertEmailAI();
 
             if (modalAlertEmailInstance) {
@@ -4910,6 +5106,7 @@
                     const memo = data.memo || data;
                     document.getElementById('alert-email-subject').value = memo.subject || `URGENT [${row.fda_classification || 'Class I'}] CLINICAL SAFETY DIRECTIVE: Cease Clinical Use of Cat ${row.catalog} (${row.manufacturer})`;
                     document.getElementById('alert-email-body').value = memo.body || '';
+                    renderAlertEmailPreview(memo.body || '');
                 } else {
                     fallbackAlertEmailDraft(row);
                 }
@@ -4919,6 +5116,35 @@
             } finally {
                 if (spinner) spinner.classList.add('d-none');
                 if (regenBtn) regenBtn.disabled = false;
+            }
+        }
+
+        function renderAlertEmailPreview(text) {
+            const previewEl = document.getElementById('alert-email-preview');
+            if (!previewEl) return;
+            const content = text || document.getElementById('alert-email-body').value;
+            if (window.marked) {
+                previewEl.innerHTML = marked.parse(content);
+            } else {
+                previewEl.innerHTML = content.replace(/\n/g, '<br>');
+            }
+        }
+
+        function toggleAlertEmailView() {
+            const previewEl = document.getElementById('alert-email-preview');
+            const textareaEl = document.getElementById('alert-email-body');
+            const btn = document.getElementById('btn-toggle-email-preview');
+            if (!previewEl || !textareaEl) return;
+
+            if (previewEl.classList.contains('d-none')) {
+                renderAlertEmailPreview(textareaEl.value);
+                textareaEl.classList.add('d-none');
+                previewEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-edit me-1"></i>Edit`;
+            } else {
+                previewEl.classList.add('d-none');
+                textareaEl.classList.remove('d-none');
+                btn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
             }
         }
 
@@ -4948,7 +5174,7 @@ Code / Lot Parameters: ${row.code_information || 'All active lots on file'}
 4. APPROVED CLINICAL BIO-EQUIVALENTS
 • Suggested Alternative: ${row.suggested_alternative || 'Formulary-approved substitute staged in Central Supply'}.
 
-[Generated by GPT-6 Luna Enterprise Clinical Safety Co-Pilot]`;
+[Synthesized by SupplyCopia Ask The Bee Enterprise Safety Co-Pilot]`;
         }
 
         async function submitAlertEmail(e) {
@@ -4979,7 +5205,7 @@ Code / Lot Parameters: ${row.code_information || 'All active lots on file'}
 
                 if (res.ok) {
                     if (modalAlertEmailInstance) modalAlertEmailInstance.hide();
-                    showToast("Clinical Alert Dispatched", `Notification sent to ${recipients} via GPT-6 Luna Enterprise Co-Pilot.`);
+                    showToast("Clinical Alert Dispatched", `Notification sent to ${recipients} via Ask The Bee.`);
                     loadAuditTrail();
                 } else {
                     alert("Failed to dispatch email.");
@@ -5011,7 +5237,7 @@ Code / Lot Parameters: ${row.code_information || 'All active lots on file'}
 
             // AI-generated incident description & coordinator briefing
             document.getElementById('jira-case-custom-desc').value = 
-`[GPT-6 Luna Clinical Incident Briefing]:
+`[Ask The Bee Clinical Incident Briefing]:
 High-priority recall exposure detected on PO #${row.po_number}.
 - Facility: ${row.facility_display}
 - Quantity at Risk: ${(row.quantity || 0).toLocaleString()} units ($${(row.total_spend || (row.quantity * 145.5)).toLocaleString('en-US', {minimumFractionDigits: 2})})
@@ -5333,7 +5559,7 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                                     </span>
                                 `}
                                 <button type="button" class="btn btn-xs btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
-                                        data-bs-toggle="dropdown" aria-expanded="false" style="padding: 3px 6px;">
+                                        data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="padding: 3px 6px;">
                                     <span class="visually-hidden">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 210px; font-size: 0.78rem;">

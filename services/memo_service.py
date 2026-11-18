@@ -128,7 +128,102 @@ All clinical personnel must immediately execute the following mandatory containm
 
 5. APPROVED CLINICAL ALTERNATIVES & SUPPORT
 • {substitute_info or "Pre-approved clinical bio-equivalents are staged in Central Sterile Processing and available for immediate requisition."}
-• For emergency clinical consultations, contact the Hospital Safety Officer or Pharmacy Recall Coordinator immediately."""
+• For emergency clinical consultations, contact the Hospital Safety Officer or Pharmacy Recall Coordinator immediately.
+
+[Synthesized by SupplyCopia Ask The Bee Enterprise Safety Co-Pilot]"""
+
+        return {"subject": subject, "body": body}
+
+    def generate_supplier_demand(
+        self,
+        manufacturer: str,
+        catalog: str,
+        product_description: str,
+        claim_amount: float,
+        action_type: str = "RMA Return & 100% Credit Claim"
+    ) -> Dict[str, str]:
+        """
+        Generates an authoritative commercial and regulatory demand letter to a medical device supplier
+        for immediate RMA return labels, credit memo processing, or replacement inventory.
+        """
+        claim_formatted = f"${claim_amount:,.2f}"
+        if self._client:
+            prompt = f"""You are the Vice President of Strategic Sourcing & Supply Chain Operations at Trinity Health System.
+A clinical product recall has impacted our hospital network. We are issuing an official commercial demand to the manufacturer.
+
+SUPPLIER / RECALL DETAILS:
+- Manufacturer: {manufacturer}
+- Catalog Number: {catalog}
+- Product Description: {product_description}
+- Action Requested: {action_type}
+- Total Audited Claim / Spend Value: {claim_formatted}
+
+REQUIREMENTS:
+1. Provide an official SUBJECT line for formal correspondence.
+2. Draft an executive, legally sound, and assertive commercial demand letter requesting:
+   - Immediate Return Material Authorization (RMA) issuance with pre-paid return shipping containers and freight waybills.
+   - 100% financial credit memo totaling {claim_formatted} credited against our master AP account.
+   - Immediate verification of non-affected lot replacements if required.
+   - Strict 48-hour SLA deadline for compliance under our Group Purchasing / Master Supply Agreement.
+
+Do not include markdown triple-backtick blocks. Return in format:
+SUBJECT: <subject>
+BODY:
+<body>
+"""
+            try:
+                resp = self._client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "You are an executive healthcare supply chain officer and legal contracting specialist drafting official supplier demand letters for Trinity Health."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=600
+                )
+                content = resp.choices[0].message.content.strip()
+                if "SUBJECT:" in content and "BODY:" in content:
+                    parts = content.split("BODY:", 1)
+                    return {
+                        "subject": parts[0].replace("SUBJECT:", "").strip(),
+                        "body": parts[1].strip()
+                    }
+                else:
+                    return {
+                        "subject": f"TRINITY HEALTH OFFICIAL RECALL DEMAND: {action_type} - Cat #{catalog} ({manufacturer})",
+                        "body": content
+                    }
+            except Exception as e:
+                logger.error(f"OpenAI supplier demand error: {e}. Using deterministic letter.")
+
+        subject = f"TRINITY HEALTH OFFICIAL DEMAND: {action_type} - Catalog #{catalog} ({manufacturer})"
+        body = f"""ATTENTION: Director of Quality Assurance, Regulatory Affairs & Recall Compliance
+SUPPLIER: {manufacturer}
+DATE: Official Demand Notice
+RE: RECALL CORRECTIVE ACTION & FINANCIAL RECOVERY — CATALOG #{catalog}
+
+Dear Supplier Recall Coordinator:
+
+Trinity Health System has identified substantial purchase exposure and quarantined inventory across our hospital network for Catalog #{catalog} ({product_description}) subject to active recall actions.
+
+Pursuant to the terms of our Master Supply Agreement and standard GPO commercial warranties, Trinity Health formally demands:
+
+1. RETURN MATERIAL AUTHORIZATION (RMA) ISSUANCE
+Immediately issue pre-authorized RMA return paperwork and furnish pre-paid hazardous/freight return shipping waybills for all quarantined inventory across our facilities within forty-eight (48) hours of receipt of this notice.
+
+2. FINANCIAL RESTITUTION & 100% CREDIT MEMO
+Process an immediate 100% credit memo in the amount of {claim_formatted} against Trinity Health's master accounts payable balance, covering purchase price, handling fees, and logistical containment costs incurred.
+
+3. SUPPLY CONTINUITY & ALTERNATIVE CONVERSION
+Confirm availability of validated, non-recalled alternative lots or bio-equivalent clinical substitutes to prevent procedural interruptions at our acute care sites.
+
+Please confirm receipt and furnish RMA documentation to our Central Recall Coordination Office within 48 business hours.
+
+Sincerely,
+Central Supply Chain & Patient Safety Operations
+Trinity Health System
+
+[Synthesized by SupplyCopia Ask The Bee Enterprise Sourcing Co-Pilot]"""
 
         return {"subject": subject, "body": body}
 

@@ -51,6 +51,13 @@ class GenerateClinicalMemoRequest(BaseModel):
     recall_reason: Optional[str] = ""
     estimated_units: Optional[float] = 0
 
+class GenerateSupplierDemandRequest(BaseModel):
+    manufacturer: str
+    catalog: str
+    product_description: Optional[str] = ""
+    claim_amount: Optional[float] = 5000.00
+    action_type: Optional[str] = "RMA Return & 100% Credit Claim"
+
 class QuarantineLotRequest(BaseModel):
     facility: str
     catalog: str
@@ -450,6 +457,20 @@ async def generate_clinical_memo(payload: GenerateClinicalMemoRequest):
         estimated_units=payload.estimated_units or 0
     )
     return {"status": "success", "memo": memo}
+
+@app.post("/api/supplier/draft-demand")
+async def generate_supplier_demand(payload: GenerateSupplierDemandRequest):
+    """
+    Generates an executive supplier demand and RMA claim message powered by Ask The Bee AI.
+    """
+    letter = clinical_memo_service.generate_supplier_demand(
+        manufacturer=payload.manufacturer,
+        catalog=payload.catalog,
+        product_description=payload.product_description or "Medical Device / Clinical Supply",
+        claim_amount=payload.claim_amount or 5000.0,
+        action_type=payload.action_type or "RMA Return & 100% Credit Claim"
+    )
+    return {"status": "success", "letter": letter}
 
 # Jira Workflow Management Endpoints
 @app.get("/api/jira/status")
