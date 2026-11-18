@@ -502,14 +502,72 @@
             margin-left: 0.48rem !important;
         }
         /* General adjacent icon-text spacing helper */
-        .icon-text-gap {
-            display: inline-flex;
+        /* Universal Loading Overlay */
+        #global-app-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            z-index: 99999;
+            display: flex;
             align-items: center;
-            gap: 0.45rem;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease-in-out;
+        }
+        #global-app-loader.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .global-loader-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 20px 28px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 440px;
+        }
+        .global-loader-bee {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #FFFBEB;
+            border: 2px solid #FCD34D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #D97706;
+            font-size: 1.15rem;
+            animation: pulse-gold 1.4s infinite ease-in-out;
+        }
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.35); }
+            50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
         }
     </style>
 </head>
 <body>
+
+    <!-- GLOBAL HIGH-CLASS LOADING OVERLAY -->
+    <div id="global-app-loader" aria-hidden="true">
+        <div class="global-loader-card">
+            <div class="global-loader-bee">
+                <i class="fas fa-cube fa-spin" style="--fa-animation-duration: 2s;"></i>
+            </div>
+            <div>
+                <div class="fw-bold text-dark" id="global-loader-title" style="font-size: 0.92rem;">Processing Request...</div>
+                <div class="text-muted small" id="global-loader-msg" style="font-size: 0.78rem;">Please wait a moment while output is rendered.</div>
+            </div>
+        </div>
+    </div>
 
     <!-- CLEAN EXECUTIVE HEADER (Full Width, Uncrowded) -->
     <header class="header-white py-2.5 px-4 shadow-sm" id="mainAppHeader">
@@ -5050,6 +5108,21 @@ Please reply within 48 business hours with RMA paperwork.`;
             }
         }
 
+        // Universal App Loading Indicator Helpers
+        function showAppLoader(title = "Processing...", msg = "Please wait a moment while output is rendered.") {
+            const loader = document.getElementById('global-app-loader');
+            const titleEl = document.getElementById('global-loader-title');
+            const msgEl = document.getElementById('global-loader-msg');
+            if (titleEl) titleEl.innerText = title;
+            if (msgEl) msgEl.innerText = msg;
+            if (loader) loader.classList.add('active');
+        }
+
+        function hideAppLoader() {
+            const loader = document.getElementById('global-app-loader');
+            if (loader) loader.classList.remove('active');
+        }
+
         async function openAlertEmailModal(itemIndex) {
             const row = currentAlertItems[itemIndex];
             if (!row) return;
@@ -5066,12 +5139,27 @@ Please reply within 48 business hours with RMA paperwork.`;
             document.getElementById('alert-email-recipients').value = `cno@${(row.facility || 'trinity').toLowerCase()}.trinity-health.org, safety-officer@trinity-health.org`;
             document.getElementById('alert-email-attachment-name').innerText = `po_${row.po_number || 'alert'}_manifest.csv, clinical_directive_${row.catalog}.docx`;
 
-            // Auto-generate Clinical Memo via LLM (Ask The Bee)
-            await regenerateAlertEmailAI();
+            // Reset view to editor and show loading state inside modal
+            const previewEl = document.getElementById('alert-email-preview');
+            const textareaEl = document.getElementById('alert-email-body');
+            const previewBtn = document.getElementById('btn-toggle-email-preview');
+            if (previewEl && textareaEl) {
+                previewEl.classList.add('d-none');
+                textareaEl.classList.remove('d-none');
+                if (previewBtn) previewBtn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
+            }
 
+            // Immediately display deterministic subject and draft while Ask The Bee synthesizes
+            document.getElementById('alert-email-subject').value = `URGENT [${row.fda_classification || 'Class I'}] CLINICAL SAFETY DIRECTIVE: Immediate Cease-Use of Cat #${row.catalog} - ${row.manufacturer}`;
+            textareaEl.value = `Synthesizing clinical cease-use directive & bedside safety instructions via Ask The Bee...`;
+
+            // Show lightbox immediately so the user never waits!
             if (modalAlertEmailInstance) {
                 modalAlertEmailInstance.show();
             }
+
+            // Synthesize with Ask The Bee in background with live spinner inside modal
+            regenerateAlertEmailAI();
         }
 
         async function regenerateAlertEmailAI() {
