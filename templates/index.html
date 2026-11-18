@@ -1028,10 +1028,10 @@
                     <div class="row g-2 align-items-center">
                         <div class="col-md-5">
                             <div class="input-group input-group-sm">
-                                <button class="btn btn-outline-secondary border bg-white text-muted" type="button" onclick="loadAllSuppliers()" title="Search Suppliers">
+                                <button class="btn btn-outline-secondary border bg-white text-muted" type="button" onclick="clearTimeout(window._supSearchDebounce); loadAllSuppliers();" title="Search Suppliers">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                <input type="text" id="supplier-search-input" class="form-control" placeholder="Search by manufacturer name (e.g. Medtronic, Zimmer, Stryker)..." onkeyup="if(event.key==='Enter') loadAllSuppliers()" oninput="clearTimeout(window._supSearchDebounce); window._supSearchDebounce = setTimeout(loadAllSuppliers, 350)">
+                                <input type="text" id="supplier-search-input" class="form-control" placeholder="Search by manufacturer name (e.g. Medtronic, Zimmer, Stryker)..." onkeyup="if(event.key==='Enter') { clearTimeout(window._supSearchDebounce); loadAllSuppliers(); }" oninput="clearTimeout(window._supSearchDebounce); window._supSearchDebounce = setTimeout(loadAllSuppliers, 350)">
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -2108,17 +2108,52 @@
                         </div>
 
                         <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label small fw-bold text-dark">Catalog Number</label>
-                                <input type="text" id="sup-field-catalog" required class="form-control form-control-sm font-monospace">
+                            <div class="col-7">
+                                <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center">
+                                    <span>Recalled Catalogs to Return</span>
+                                    <span class="badge bg-light text-muted border" id="sup-catalog-selected-badge" style="font-size: 0.65rem;">1 Selected</span>
+                                </label>
+                                
+                                <!-- Catalog Dropdown with Checkbox Multi-Select -->
+                                <div class="dropdown w-100">
+                                    <button class="btn btn-sm btn-white border form-select text-start d-flex justify-content-between align-items-center font-monospace" type="button" id="sup-catalog-dropdown-btn" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" style="font-size: 0.78rem;">
+                                        <span class="text-truncate" id="sup-catalog-dropdown-label">Select catalog(s)...</span>
+                                    </button>
+                                    <div class="dropdown-menu p-2 shadow-lg border w-100" style="max-height: 260px; overflow-y: auto; font-size: 0.78rem; min-width: 290px;">
+                                        <div class="d-flex justify-content-between align-items-center pb-1.5 mb-1.5 border-bottom">
+                                            <span class="small fw-bold text-dark">Manufacturer Catalogs</span>
+                                            <div class="btn-group btn-group-xs">
+                                                <button type="button" class="btn btn-xs btn-link text-primary p-0 pe-2" onclick="selectAllSupplierCatalogs(true)">Select All</button>
+                                                <button type="button" class="btn btn-xs btn-link text-secondary p-0" onclick="selectAllSupplierCatalogs(false)">Clear</button>
+                                            </div>
+                                        </div>
+                                        <div id="sup-catalog-checkbox-list" class="d-flex flex-column gap-1">
+                                            <!-- Dynamically populated -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="sup-field-catalog" required>
                             </div>
-                            <div class="col-6">
+                            <div class="col-5">
                                 <label class="form-label small fw-bold text-dark">Claim Amount ($)</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light">$</span>
                                     <input type="text" id="sup-field-claim-display" value="5,000.00" class="form-control form-control-sm font-monospace fw-bold text-dark" onblur="formatSupplierClaimInput(this)" onfocus="this.value = unformatCurrency(this.value)">
                                     <input type="hidden" id="sup-field-claim" value="5000.00">
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Hospital Return & Purchase Visibility Box -->
+                        <div class="mb-3 p-2.5 rounded-2 border bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark small" style="font-size: 0.75rem;">
+                                    <i class="fas fa-hospital me-1.5 text-primary"></i>Hospitals Purchasing &amp; Returning These Items
+                                </span>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" id="sup-impacted-hospitals-count-badge" style="font-size: 0.68rem;">0 Hospitals</span>
+                            </div>
+                            <div id="sup-impacted-hospitals-box" class="d-flex flex-column gap-1 bg-white p-2 rounded border" style="max-height: 110px; overflow-y: auto; font-size: 0.74rem;">
+                                <div class="text-muted text-center py-2">Select catalog(s) above to view impacted hospital sites.</div>
                             </div>
                         </div>
 
@@ -2161,6 +2196,103 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODAL 5B: RECALLED CATALOGS LIGHTBOX BY MANUFACTURER     -->
+    <!-- ======================================================== -->
+    <div class="modal fade" id="modalSupplierCatalogs" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 900px;">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header py-3 border-bottom text-white" style="background-color: #0A2540;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-boxes-stacked fs-5 text-white"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-white" id="modal-sup-cat-title">Recalled Catalogs &bull; Manufacturer</h6>
+                            <div class="small text-white-50" style="font-size: 0.72rem;">Complete inventory of affected medical device catalogs and hospital exposure</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <span class="text-muted small fw-semibold" id="modal-sup-cat-count">Loading catalogs...</span>
+                        <input type="text" id="modal-sup-cat-filter" class="form-control form-control-sm" placeholder="Filter catalogs..." style="max-width: 230px;" onkeyup="filterSupplierCatalogsModal()">
+                    </div>
+                    <div class="border rounded-2 bg-white overflow-hidden shadow-2xs">
+                        <div class="table-responsive" style="max-height: 440px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0" style="font-size: 0.78rem;">
+                                <thead class="table-light sticky-top border-bottom text-muted">
+                                    <tr>
+                                        <th style="width: 14%;">Catalog #</th>
+                                        <th style="width: 34%;">Product Description</th>
+                                        <th style="width: 12%;" class="text-center">FDA Risk</th>
+                                        <th style="width: 12%;" class="text-center">Hospitals</th>
+                                        <th style="width: 14%;" class="text-end">Spend at Risk</th>
+                                        <th style="width: 14%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-sup-cat-tbody">
+                                    <tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-top py-2 d-flex justify-content-between">
+                    <span class="text-muted small" style="font-size: 0.72rem;">Trinity Health Recall Command Center</span>
+                    <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODAL 5C: IMPACTED HOSPITALS LIGHTBOX BY MANUFACTURER    -->
+    <!-- ======================================================== -->
+    <div class="modal fade" id="modalSupplierHospitals" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 900px;">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header py-3 border-bottom text-white" style="background-color: #0A2540;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-hospital fs-5 text-white"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-white" id="modal-sup-hosp-title">Hospitals Impacted &bull; Manufacturer</h6>
+                            <div class="small text-white-50" style="font-size: 0.72rem;">Acute care facilities, purchasing volume, and affected catalog lines</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <span class="text-muted small fw-semibold" id="modal-sup-hosp-count">Loading hospitals...</span>
+                        <input type="text" id="modal-sup-hosp-filter" class="form-control form-control-sm" placeholder="Filter hospitals..." style="max-width: 230px;" onkeyup="filterSupplierHospitalsModal()">
+                    </div>
+                    <div class="border rounded-2 bg-white overflow-hidden shadow-2xs">
+                        <div class="table-responsive" style="max-height: 440px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0" style="font-size: 0.78rem;">
+                                <thead class="table-light sticky-top border-bottom text-muted">
+                                    <tr>
+                                        <th style="width: 35%;">Hospital Facility</th>
+                                        <th style="width: 14%;" class="text-center">Catalogs Count</th>
+                                        <th style="width: 14%;" class="text-center">PO Alerts</th>
+                                        <th style="width: 17%;" class="text-end">Spend Exposure</th>
+                                        <th style="width: 20%;">Catalog Samples</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-sup-hosp-tbody">
+                                    <tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-top py-2 d-flex justify-content-between">
+                    <span class="text-muted small" style="font-size: 0.72rem;">Trinity Health Recall Command Center</span>
+                    <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3208,6 +3340,8 @@
         let modalNotifyInventoryInstance = null;
         let modalNotifyOrderInstance = null;
         let modalSupplierActionInstance = null;
+        let modalSupplierCatalogsInstance = null;
+        let modalSupplierHospitalsInstance = null;
         let catalogDetailsModalInstance = null;
         let modalAlertEmailInstance = null;
         let toastInstance = null;
@@ -3242,6 +3376,10 @@
             modalNotifyInventoryInstance = new bootstrap.Modal(document.getElementById('modalNotifyInventory'));
             modalNotifyOrderInstance = new bootstrap.Modal(document.getElementById('modalNotifyOrder'));
             modalSupplierActionInstance = new bootstrap.Modal(document.getElementById('modalSupplierAction'));
+            const supCatEl = document.getElementById('modalSupplierCatalogs');
+            if (supCatEl) modalSupplierCatalogsInstance = new bootstrap.Modal(supCatEl);
+            const supHospEl = document.getElementById('modalSupplierHospitals');
+            if (supHospEl) modalSupplierHospitalsInstance = new bootstrap.Modal(supHospEl);
             modalRegisterJiraCaseInstance = new bootstrap.Modal(document.getElementById('modalRegisterJiraCase'));
             modalPurchaseOrderDetailsInstance = new bootstrap.Modal(document.getElementById('modalPurchaseOrderDetails'));
             modalOperatingModelInfoInstance = new bootstrap.Modal(document.getElementById('modalOperatingModelInfo'));
@@ -4285,24 +4423,14 @@
             input.value = formatCurrencyNumber(num);
         }
 
-        function openSupplierModal(manufacturer, catalog, productDesc, claimAmount) {
-            const amt = parseFloat(claimAmount) || 5000.0;
+        let activeSupplierCatalogsData = [];
+        let activeSupplierHospitalsData = [];
+        let modalCatalogsData = [];
+        let modalHospitalsData = [];
+
+        async function openSupplierModal(manufacturer, catalog, productDesc, claimAmount) {
             document.getElementById('sup-field-mfg').value = manufacturer;
-            document.getElementById('sup-field-catalog').value = catalog;
-            document.getElementById('sup-field-claim').value = amt.toFixed(2);
-            document.getElementById('sup-field-claim-display').value = formatCurrencyNumber(amt);
             document.getElementById('sup-field-recipients').value = `recall-coordinator@${manufacturer.toLowerCase().replace(/[^a-z]/g, '')}.com, returns@distributor.com`;
-            document.getElementById('sup-field-subject').value = `TRINITY HEALTH RECALL CLAIM: Request for RMA & 100% Credit - Cat ${catalog}`;
-            document.getElementById('sup-field-message').value = `Dear Supplier Recall Coordinator at ${manufacturer}:
-
-Trinity Health System has identified multiple hospital purchases of recalled catalog ${catalog} (${productDesc}).
-
-Under our master supply agreement, we request:
-1. Immediate issuance of Return Material Authorization (RMA) with pre-paid return freight labels.
-2. Full 100% credit memo for all quarantined inventory and return shipments.
-3. Confirmation of non-recalled alternative availability.
-
-Please reply within 48 business hours with RMA paperwork.`;
 
             // Reset preview
             const previewEl = document.getElementById('sup-message-preview');
@@ -4314,7 +4442,376 @@ Please reply within 48 business hours with RMA paperwork.`;
                 if (btn) btn.innerHTML = `<i class="fas fa-eye me-1"></i>Preview`;
             }
 
+            // Populate catalog checkboxes and hospital visibility
+            const checkboxList = document.getElementById('sup-catalog-checkbox-list');
+            const hospitalsBox = document.getElementById('sup-impacted-hospitals-box');
+            if (checkboxList) {
+                checkboxList.innerHTML = `<div class="text-center py-2 text-muted small"><div class="spinner-border spinner-border-sm text-primary me-1"></div>Loading catalogs...</div>`;
+            }
+            if (hospitalsBox) {
+                hospitalsBox.innerHTML = `<div class="text-center py-2 text-muted small"><div class="spinner-border spinner-border-sm text-primary me-1"></div>Loading impacted hospitals...</div>`;
+            }
+
             modalSupplierActionInstance.show();
+
+            try {
+                const [catRes, hospRes] = await Promise.all([
+                    fetch(`/api/suppliers/${encodeURIComponent(manufacturer)}/catalogs`),
+                    fetch(`/api/suppliers/${encodeURIComponent(manufacturer)}/hospitals`)
+                ]);
+
+                if (catRes.ok) {
+                    const catData = await catRes.json();
+                    activeSupplierCatalogsData = catData.catalogs || [];
+                } else {
+                    activeSupplierCatalogsData = [];
+                }
+
+                if (hospRes.ok) {
+                    const hospData = await hospRes.json();
+                    activeSupplierHospitalsData = hospData.hospitals || [];
+                } else {
+                    activeSupplierHospitalsData = [];
+                }
+
+                renderSupplierCatalogCheckboxes(catalog);
+                onSupplierCatalogSelectionChanged(productDesc, claimAmount);
+
+            } catch (err) {
+                console.error("Error fetching supplier data for modal:", err);
+                if (checkboxList) {
+                    checkboxList.innerHTML = `
+                    <div class="form-check small">
+                        <input class="form-check-input sup-cat-cb" type="checkbox" value="${escapeHtml(catalog || '')}" id="sup-cb-default" checked onchange="onSupplierCatalogSelectionChanged()">
+                        <label class="form-check-label fw-bold font-monospace" for="sup-cb-default">${escapeHtml(catalog || 'DEFAULT')}</label>
+                    </div>`;
+                }
+                const amt = parseFloat(claimAmount) || 5000.0;
+                document.getElementById('sup-field-catalog').value = catalog || '';
+                document.getElementById('sup-field-claim').value = amt.toFixed(2);
+                document.getElementById('sup-field-claim-display').value = formatCurrencyNumber(amt);
+            }
+        }
+
+        function renderSupplierCatalogCheckboxes(initialCatalog) {
+            const checkboxList = document.getElementById('sup-catalog-checkbox-list');
+            if (!checkboxList) return;
+
+            if (activeSupplierCatalogsData.length === 0) {
+                const initCat = initialCatalog || 'DEFAULT';
+                checkboxList.innerHTML = `
+                <div class="form-check small py-1">
+                    <input class="form-check-input sup-cat-cb" type="checkbox" value="${escapeHtml(initCat)}" id="sup-cb-0" checked onchange="onSupplierCatalogSelectionChanged()">
+                    <label class="form-check-label fw-bold font-monospace text-dark" for="sup-cb-0">${escapeHtml(initCat)}</label>
+                </div>`;
+                return;
+            }
+
+            checkboxList.innerHTML = activeSupplierCatalogsData.map((item, idx) => {
+                // Check if this item is the initial catalog, or default to checked if only 1 item
+                const isChecked = (initialCatalog && item.catalog === initialCatalog) || (!initialCatalog && idx === 0) || (activeSupplierCatalogsData.length === 1);
+                const spendFmt = (item.total_spend || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                const riskBadge = item.fda_classification === 'Class I' ? '<span class="badge bg-danger-subtle text-danger" style="font-size: 0.6rem;">Class I</span>' : '';
+
+                return `
+                <div class="form-check py-1 px-2 rounded hover-bg-light small border-bottom border-light">
+                    <input class="form-check-input sup-cat-cb" type="checkbox" value="${escapeHtml(item.catalog)}" id="sup-cat-cb-${idx}" data-idx="${idx}" ${isChecked ? 'checked' : ''} onchange="onSupplierCatalogSelectionChanged()">
+                    <label class="form-check-label d-flex justify-content-between align-items-center cursor-pointer w-100" for="sup-cat-cb-${idx}">
+                        <div>
+                            <span class="font-monospace fw-bold text-dark">${escapeHtml(item.catalog)}</span>
+                            ${riskBadge}
+                            <div class="text-muted text-truncate" style="max-width: 190px; font-size: 0.68rem;" title="${escapeHtml(item.description || '')}">${escapeHtml(item.description || '')}</div>
+                        </div>
+                        <span class="font-monospace fw-semibold text-success ms-1" style="font-size: 0.72rem;">$${spendFmt}</span>
+                    </label>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function selectAllSupplierCatalogs(selectAll) {
+            const checkboxes = document.querySelectorAll('.sup-cat-cb');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            onSupplierCatalogSelectionChanged();
+        }
+
+        function onSupplierCatalogSelectionChanged(customDesc, fallbackClaim) {
+            const checkboxes = Array.from(document.querySelectorAll('.sup-cat-cb'));
+            const selectedCatalogs = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+            const mfg = document.getElementById('sup-field-mfg').value || 'Supplier';
+
+            const badgeEl = document.getElementById('sup-catalog-selected-badge');
+            const labelEl = document.getElementById('sup-catalog-dropdown-label');
+            const hiddenCatInput = document.getElementById('sup-field-catalog');
+
+            if (badgeEl) badgeEl.innerText = `${selectedCatalogs.length} Selected`;
+
+            if (selectedCatalogs.length === 0) {
+                if (labelEl) labelEl.innerText = "Select catalog(s)...";
+                if (hiddenCatInput) hiddenCatInput.value = "";
+                updateImpactedHospitalsBox([]);
+                return;
+            }
+
+            if (hiddenCatInput) hiddenCatInput.value = selectedCatalogs.join(', ');
+
+            if (labelEl) {
+                if (selectedCatalogs.length <= 2) {
+                    labelEl.innerText = selectedCatalogs.join(', ');
+                } else {
+                    labelEl.innerText = `${selectedCatalogs.slice(0, 2).join(', ')} +${selectedCatalogs.length - 2} more`;
+                }
+            }
+
+            // Calculate aggregated claim amount and identify descriptions
+            let totalSpend = 0;
+            let sampleDescs = [];
+            const selectedSet = new Set(selectedCatalogs);
+
+            activeSupplierCatalogsData.forEach(item => {
+                if (selectedSet.has(item.catalog)) {
+                    totalSpend += (item.total_spend || 0);
+                    if (item.description && sampleDescs.length < 3) {
+                        sampleDescs.push(item.description);
+                    }
+                }
+            });
+
+            if (totalSpend === 0 && fallbackClaim) {
+                totalSpend = parseFloat(fallbackClaim) || 5000.0;
+            } else if (totalSpend === 0) {
+                totalSpend = 5000.0;
+            }
+
+            document.getElementById('sup-field-claim').value = totalSpend.toFixed(2);
+            document.getElementById('sup-field-claim-display').value = formatCurrencyNumber(totalSpend);
+
+            // Update impacted hospitals box
+            updateImpactedHospitalsBox(selectedCatalogs);
+
+            // Update subject and default message
+            const catSummary = selectedCatalogs.length === 1 ? `Cat ${selectedCatalogs[0]}` : `${selectedCatalogs.length} Catalogs (${selectedCatalogs.slice(0, 3).join(', ')}${selectedCatalogs.length > 3 ? '...' : ''})`;
+            const descSummary = sampleDescs.length > 0 ? sampleDescs[0] : (customDesc || 'Recalled Medical Devices');
+            
+            document.getElementById('sup-field-subject').value = `TRINITY HEALTH RECALL CLAIM: Request for RMA & 100% Credit - ${catSummary}`;
+            
+            const itemizedList = selectedCatalogs.slice(0, 10).map(c => `  - Catalog: ${c}`).join('\n');
+            const moreText = selectedCatalogs.length > 10 ? `\n  - ...and ${selectedCatalogs.length - 10} additional catalogs` : '';
+
+            document.getElementById('sup-field-message').value = `Dear Supplier Recall Coordinator at ${mfg}:
+
+Trinity Health System has identified multiple hospital purchases of recalled products under your manufacturer account:
+${itemizedList}${moreText}
+Product Description: ${descSummary}
+Total Spend at Risk & Credit Claim: $${formatCurrencyNumber(totalSpend)}
+
+Under our master supply agreement, we request:
+1. Immediate issuance of Return Material Authorization (RMA) with pre-paid return freight labels for all affected hospital facilities.
+2. Full 100% credit memo for all quarantined inventory and return shipments totaling $${formatCurrencyNumber(totalSpend)}.
+3. Confirmation of non-recalled alternative product availability.
+
+Please reply within 48 business hours with RMA paperwork and shipment instructions.`;
+        }
+
+        function updateImpactedHospitalsBox(selectedCatalogs) {
+            const hospitalsBox = document.getElementById('sup-impacted-hospitals-box');
+            const countBadge = document.getElementById('sup-impacted-hospitals-count-badge');
+            if (!hospitalsBox) return;
+
+            if (!selectedCatalogs || selectedCatalogs.length === 0) {
+                hospitalsBox.innerHTML = `<div class="text-muted text-center py-2">Select catalog(s) above to view impacted hospital sites.</div>`;
+                if (countBadge) countBadge.innerText = '0 Hospitals';
+                return;
+            }
+
+            const selectedSet = new Set(selectedCatalogs);
+            // Filter hospitals that purchased ANY of the selected catalogs
+            const matchingHospitals = activeSupplierHospitalsData.filter(h => {
+                if (!h.catalogs || h.catalogs.length === 0) return true; // include if general
+                return h.catalogs.some(cat => selectedSet.has(cat));
+            });
+
+            if (countBadge) countBadge.innerText = `${matchingHospitals.length} Hospitals`;
+
+            if (matchingHospitals.length === 0) {
+                hospitalsBox.innerHTML = `<div class="text-muted text-center py-2">No hospital facilities recorded with purchase history for selected catalog(s).</div>`;
+                return;
+            }
+
+            hospitalsBox.innerHTML = matchingHospitals.map(h => {
+                const matchedCats = (h.catalogs || []).filter(c => selectedSet.has(c));
+                const catInfo = matchedCats.length > 0 ? `Holds: ${matchedCats.slice(0, 3).join(', ')}${matchedCats.length > 3 ? '...' : ''}` : `${h.catalogs_count || 1} catalogs`;
+                const spendFmt = (h.total_spend || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+                return `
+                <div class="d-flex justify-content-between align-items-center py-1 px-1.5 border-bottom border-light">
+                    <div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.74rem;">${escapeHtml(h.facility_display || h.facility)}</div>
+                        <div class="text-muted" style="font-size: 0.67rem;">${catInfo} &bull; ${h.total_pos || 0} POs</div>
+                    </div>
+                    <span class="font-monospace fw-bold text-primary" style="font-size: 0.73rem;">$${spendFmt}</span>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // ========================================================
+        // SUPPLIER CATALOGS & HOSPITALS LIGHTBOX HANDLERS
+        // ========================================================
+        async function openSupplierCatalogsModal(manufacturer) {
+            const titleEl = document.getElementById('modal-sup-cat-title');
+            const countEl = document.getElementById('modal-sup-cat-count');
+            const tbody = document.getElementById('modal-sup-cat-tbody');
+            const filterInput = document.getElementById('modal-sup-cat-filter');
+
+            if (titleEl) titleEl.innerText = `Recalled Catalogs \u2022 ${manufacturer}`;
+            if (countEl) countEl.innerText = `Loading catalogs for ${manufacturer}...`;
+            if (filterInput) filterInput.value = '';
+            if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading recalled catalogs...</td></tr>`;
+
+            if (modalSupplierCatalogsInstance) {
+                modalSupplierCatalogsInstance.show();
+            }
+
+            try {
+                const res = await fetch(`/api/suppliers/${encodeURIComponent(manufacturer)}/catalogs`);
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-danger">Failed to load catalogs for ${escapeHtml(manufacturer)}.</td></tr>`;
+                    return;
+                }
+                const data = await res.json();
+                modalCatalogsData = data.catalogs || [];
+                renderSupplierCatalogsModalTable(modalCatalogsData, manufacturer);
+            } catch (err) {
+                console.error("Error loading supplier catalogs:", err);
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-danger">Error: ${escapeHtml(err.message)}</td></tr>`;
+            }
+        }
+
+        function renderSupplierCatalogsModalTable(catalogs, manufacturer) {
+            const tbody = document.getElementById('modal-sup-cat-tbody');
+            const countEl = document.getElementById('modal-sup-cat-count');
+            if (!tbody) return;
+
+            if (countEl) countEl.innerText = `Showing ${catalogs.length} recalled catalogs from ${manufacturer}`;
+
+            if (catalogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No catalogs found matching criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = catalogs.map(c => {
+                const spendFmt = (c.total_spend || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const riskBadge = c.fda_classification === 'Class I' 
+                    ? `<span class="badge bg-danger text-white">Class I</span>`
+                    : `<span class="badge bg-secondary-subtle text-secondary border">Class II</span>`;
+
+                return `
+                <tr class="align-middle">
+                    <td>
+                        <span class="font-monospace fw-bold text-dark">${escapeHtml(c.catalog)}</span>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark" style="font-size: 0.77rem;">${escapeHtml(c.description || '')}</div>
+                        ${c.recall_reason ? `<div class="text-muted small text-truncate" style="max-width: 320px; font-size: 0.68rem;" title="${escapeHtml(c.recall_reason)}">Reason: ${escapeHtml(c.recall_reason)}</div>` : ''}
+                    </td>
+                    <td class="text-center">${riskBadge}</td>
+                    <td class="text-center font-monospace">${(c.facilities_count || 0).toLocaleString()} Sites</td>
+                    <td class="text-end font-monospace fw-bold text-success">$${spendFmt}</td>
+                    <td class="text-center">
+                        <button class="btn btn-xs btn-outline-dark fw-bold py-1 px-2" onclick="modalSupplierCatalogsInstance.hide(); openSupplierModal('${escapeHtml(manufacturer)}', '${escapeHtml(c.catalog)}', '${escapeHtml(c.description || '').replace(/'/g, "\\'")}', ${c.total_spend || 0})" title="Claim RMA for this catalog">
+                            <i class="fas fa-paper-plane me-1"></i>Claim RMA
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function filterSupplierCatalogsModal() {
+            const query = (document.getElementById('modal-sup-cat-filter')?.value || '').toLowerCase().trim();
+            const filtered = modalCatalogsData.filter(c => {
+                return (c.catalog || '').toLowerCase().includes(query) ||
+                       (c.description || '').toLowerCase().includes(query) ||
+                       (c.recall_reason || '').toLowerCase().includes(query);
+            });
+            const mfg = document.getElementById('modal-sup-cat-title')?.innerText.split('\u2022')[1]?.trim() || '';
+            renderSupplierCatalogsModalTable(filtered, mfg);
+        }
+
+        async function openSupplierHospitalsModal(manufacturer) {
+            const titleEl = document.getElementById('modal-sup-hosp-title');
+            const countEl = document.getElementById('modal-sup-hosp-count');
+            const tbody = document.getElementById('modal-sup-hosp-tbody');
+            const filterInput = document.getElementById('modal-sup-hosp-filter');
+
+            if (titleEl) titleEl.innerText = `Impacted Hospitals \u2022 ${manufacturer}`;
+            if (countEl) countEl.innerText = `Loading hospitals for ${manufacturer}...`;
+            if (filterInput) filterInput.value = '';
+            if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading impacted hospitals...</td></tr>`;
+
+            if (modalSupplierHospitalsInstance) {
+                modalSupplierHospitalsInstance.show();
+            }
+
+            try {
+                const res = await fetch(`/api/suppliers/${encodeURIComponent(manufacturer)}/hospitals`);
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-danger">Failed to load hospitals for ${escapeHtml(manufacturer)}.</td></tr>`;
+                    return;
+                }
+                const data = await res.json();
+                modalHospitalsData = data.hospitals || [];
+                renderSupplierHospitalsModalTable(modalHospitalsData, manufacturer);
+            } catch (err) {
+                console.error("Error loading supplier hospitals:", err);
+                if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-danger">Error: ${escapeHtml(err.message)}</td></tr>`;
+            }
+        }
+
+        function renderSupplierHospitalsModalTable(hospitals, manufacturer) {
+            const tbody = document.getElementById('modal-sup-hosp-tbody');
+            const countEl = document.getElementById('modal-sup-hosp-count');
+            if (!tbody) return;
+
+            if (countEl) countEl.innerText = `Showing ${hospitals.length} acute care facilities impacted by ${manufacturer}`;
+
+            if (hospitals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No hospitals found matching criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = hospitals.map(h => {
+                const spendFmt = (h.total_spend || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const catPills = (h.catalogs || []).slice(0, 4).map(c => `<span class="badge bg-light text-dark border font-monospace me-1" style="font-size: 0.65rem;">${escapeHtml(c)}</span>`).join('');
+                const extraPills = (h.catalogs || []).length > 4 ? `<span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.65rem;">+${(h.catalogs || []).length - 4} more</span>` : '';
+
+                return `
+                <tr class="align-middle">
+                    <td>
+                        <div class="fw-bold text-dark" style="font-size: 0.8rem;">${escapeHtml(h.facility_display || h.facility)}</div>
+                        <div class="text-muted font-monospace small" style="font-size: 0.68rem;">${escapeHtml(h.facility)}</div>
+                    </td>
+                    <td class="text-center font-monospace fw-bold text-dark">${(h.catalogs_count || 0).toLocaleString()}</td>
+                    <td class="text-center font-monospace text-secondary">${(h.total_pos || 0).toLocaleString()}</td>
+                    <td class="text-end font-monospace fw-bold text-success">$${spendFmt}</td>
+                    <td>
+                        <div>${catPills}${extraPills}</div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function filterSupplierHospitalsModal() {
+            const query = (document.getElementById('modal-sup-hosp-filter')?.value || '').toLowerCase().trim();
+            const filtered = modalHospitalsData.filter(h => {
+                return (h.facility || '').toLowerCase().includes(query) ||
+                       (h.facility_display || '').toLowerCase().includes(query) ||
+                       (h.catalogs || []).some(c => c.toLowerCase().includes(query));
+            });
+            const mfg = document.getElementById('modal-sup-hosp-title')?.innerText.split('\u2022')[1]?.trim() || '';
+            renderSupplierHospitalsModalTable(filtered, mfg);
         }
 
         async function draftAISupplierDemand() {
@@ -4503,20 +5000,20 @@ Please reply within 48 business hours with RMA paperwork.`;
                                 </div>
                                 <div class="fw-bold text-dark mb-2" style="font-size: 0.92rem; letter-spacing: -0.01em;">${item.product_description}</div>
                                 
-                                <!-- Sleek Reason Callout Box -->
-                                <div class="p-2.5 rounded-2 mb-2.5" style="background-color: #F8FAFC; border-left: 3px solid ${item.fda_classification === 'Class I' ? '#DC2626' : '#F59E0B'}; font-size: 0.78rem; line-height: 1.45;">
-                                    <div class="text-muted fw-bold text-uppercase mb-0.5" style="font-size: 0.68rem; letter-spacing: 0.03em;">FDA Hazard &amp; Root Cause</div>
+                                <!-- Sleek Reason Callout Box with generous left indent and padding -->
+                                <div class="py-2.5 px-3 mb-2.5 rounded-2" style="background-color: #F8FAFC; border-left: 4px solid ${item.fda_classification === 'Class I' ? '#DC2626' : '#F59E0B'}; padding-left: 1.15rem !important; font-size: 0.78rem; line-height: 1.5;">
+                                    <div class="text-muted fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.03em;">FDA Hazard &amp; Root Cause</div>
                                     <div class="text-dark">${item.fda_reason_for_recall}</div>
                                 </div>
 
                                 <div class="d-flex flex-wrap align-items-center gap-3 pt-1 text-muted" style="font-size: 0.76rem;">
-                                    <span class="d-flex align-items-center gap-1.5">
-                                        <i class="fas fa-hospital text-muted" style="font-size: 0.72rem;"></i>
+                                    <span class="d-inline-flex align-items-center">
+                                        <i class="fas fa-hospital text-muted me-2" style="font-size: 0.76rem;"></i>
                                         <span>Exposure: <strong class="text-dark">${item.facilities_count} Facilities</strong></span>
                                     </span>
                                     <span class="text-muted">&bull;</span>
-                                    <span class="d-flex align-items-center gap-1.5">
-                                        <i class="fas fa-dollar-sign text-muted" style="font-size: 0.72rem;"></i>
+                                    <span class="d-inline-flex align-items-center">
+                                        <i class="fas fa-dollar-sign text-muted me-2" style="font-size: 0.76rem;"></i>
                                         <span>Spend at Risk: <strong class="text-dark font-monospace fw-bold">$${item.total_spend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span>
                                     </span>
                                 </div>
@@ -5976,10 +6473,18 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                             <div class="fw-bold text-dark" style="font-size: 0.82rem;">${escapeHtml(s.manufacturer)}</div>
                             <div class="text-muted small" style="font-size: 0.7rem;">Sample: ${escapeHtml(s.sample_catalog)} &bull; ${escapeHtml(s.sample_product || '').slice(0, 35)}</div>
                         </td>
-                        <td class="text-center font-monospace fw-bold text-dark">${(s.total_catalogs || 0).toLocaleString()}</td>
+                        <td class="text-center font-monospace">
+                            <a href="javascript:void(0)" onclick="openSupplierCatalogsModal('${escapeHtml(s.manufacturer)}')" class="fw-bold font-monospace text-primary text-decoration-underline" title="View all ${(s.total_catalogs || 0).toLocaleString()} recalled catalogs from ${escapeHtml(s.manufacturer)}">
+                                ${(s.total_catalogs || 0).toLocaleString()}
+                            </a>
+                        </td>
                         <td class="text-center font-monospace text-secondary">${(s.total_pos || 0).toLocaleString()}</td>
                         <td class="text-end font-monospace fw-bold text-success">$${spendVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                        <td class="text-center font-monospace text-primary fw-semibold">${(s.facilities_impacted || 0).toLocaleString()} Sites</td>
+                        <td class="text-center font-monospace">
+                            <a href="javascript:void(0)" onclick="openSupplierHospitalsModal('${escapeHtml(s.manufacturer)}')" class="font-monospace text-primary fw-bold text-decoration-underline" title="View ${(s.facilities_impacted || 0).toLocaleString()} impacted hospital sites for ${escapeHtml(s.manufacturer)}">
+                                ${(s.facilities_impacted || 0).toLocaleString()} Sites
+                            </a>
+                        </td>
                         <td class="text-center">${severityBadge}</td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">

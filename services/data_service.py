@@ -756,6 +756,64 @@ class DataService:
 
         return grouped.to_dict(orient="records")
 
+    def get_supplier_catalogs(self, manufacturer: str) -> List[Dict[str, Any]]:
+        """Returns all recalled catalogs and associated facilities/spend for a specific manufacturer."""
+        if self._df.empty or not manufacturer:
+            return []
+        m_clean = manufacturer.strip().upper()
+        sub = self._df[self._df["manufacturer"].str.upper() == m_clean]
+        if sub.empty:
+            sub = self._df[self._df["manufacturer"].str.upper().str.contains(m_clean, na=False)]
+        if sub.empty:
+            return []
+
+        grouped = sub.groupby("catalog").agg(
+            description=("product_description", "first"),
+            fda_classification=("fda_classification", "first"),
+            fda_event_id=("fda_event_id", "first"),
+            total_spend=("total_spend", "sum"),
+            total_pos=("po_number", "count"),
+            facilities_count=("facility", "nunique"),
+            facilities=("facility_display", lambda s: sorted(list(s.unique())))
+        ).reset_index().sort_values(by="total_spend", ascending=False)
+
+        results = []
+        for r in grouped.to_dict(orient="records"):
+            eid = str(r.get("fda_event_id", "")).strip()
+            event = self._fda_lookup.get(eid, {})
+            r["recall_reason"] = event.get("fda_reason_for_recall", "Recall notice issued by manufacturer.")
+            r["code_info"] = event.get("code_info", "All lots on record")
+            r["total_spend"] = float(r.get("total_spend", 0))
+            results.append(r)
+
+        return results
+
+    def get_supplier_hospitals(self, manufacturer: str) -> List[Dict[str, Any]]:
+        """Returns all hospital facilities impacted by a specific manufacturer with catalogs and spend."""
+        if self._df.empty or not manufacturer:
+            return []
+        m_clean = manufacturer.strip().upper()
+        sub = self._df[self._df["manufacturer"].str.upper() == m_clean]
+        if sub.empty:
+            sub = self._df[self._df["manufacturer"].str.upper().str.contains(m_clean, na=False)]
+        if sub.empty:
+            return []
+
+        grouped = sub.groupby(["facility", "facility_display"]).agg(
+            total_spend=("total_spend", "sum"),
+            total_pos=("po_number", "count"),
+            catalogs_count=("catalog", "nunique"),
+            catalogs=("catalog", lambda s: sorted(list(s.unique()))),
+            class_1_alerts=("fda_classification", lambda s: int((s == "Class I").sum()))
+        ).reset_index().sort_values(by="total_spend", ascending=False)
+
+        results = []
+        for r in grouped.to_dict(orient="records"):
+            r["total_spend"] = float(r.get("total_spend", 0))
+            results.append(r)
+
+        return results
+
 
 data_service = DataService()
 

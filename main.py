@@ -535,6 +535,18 @@ async def get_suppliers(
     )
     return {"suppliers": suppliers, "count": len(suppliers)}
 
+@app.get("/api/suppliers/{manufacturer}/catalogs")
+async def get_supplier_catalogs(manufacturer: str):
+    """Returns all recalled catalogs and associated hospital exposures for a specific manufacturer."""
+    catalogs = data_service.get_supplier_catalogs(manufacturer)
+    return {"manufacturer": manufacturer, "count": len(catalogs), "catalogs": catalogs}
+
+@app.get("/api/suppliers/{manufacturer}/hospitals")
+async def get_supplier_hospitals(manufacturer: str):
+    """Returns all hospital facilities impacted by a specific manufacturer with relevant catalogs."""
+    hospitals = data_service.get_supplier_hospitals(manufacturer)
+    return {"manufacturer": manufacturer, "count": len(hospitals), "hospitals": hospitals}
+
 @app.get("/api/jira/lifecycle-stages")
 async def get_jira_lifecycle_stages():
     """Returns the 8 standard operating model stages for health system recall workflow."""
