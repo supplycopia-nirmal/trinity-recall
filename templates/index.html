@@ -778,7 +778,7 @@
                         BD Vacutainer EDTA Tubes (Cat #367861) &mdash; Critical Class I Blood Lead Interference
                     </h6>
                     <div class="text-white-50 small mt-0.5" style="font-size: 0.76rem;">
-                        Impacts <strong>45 Trinity Health hospitals</strong> &bull; <strong>3,400 physical units</strong> detected in Phlebotomy &amp; CSD &bull; Pre-approved Greiner substitute in stock.
+                        Impacts <strong>45 Network Facilities</strong> &bull; <strong>3,400 physical units</strong> detected in Phlebotomy &amp; CSD &bull; Pre-approved Greiner substitute in stock.
                     </div>
                 </div>
             </div>
@@ -818,7 +818,7 @@
             <div class="col-xl col-md-4 col-sm-6">
                 <div class="card-executive p-3 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Hospitals Impacted</span>
+                        <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Facilities Impacted</span>
                         <i class="fas fa-hospital text-muted small"></i>
                     </div>
                     <div class="d-flex align-items-baseline gap-2">
@@ -826,7 +826,7 @@
                         <span class="badge bg-light text-muted border small" style="font-size: 0.68rem;">100% Monitored</span>
                     </div>
                     <div class="small text-muted mt-1" style="font-size: 0.74rem;">
-                        Across Trinity Health Care Sites
+                        Across Network Facilities
                     </div>
                 </div>
             </div>
@@ -1520,7 +1520,7 @@
                     <div class="card-executive p-3 bg-white h-100 shadow-xs">
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
                             <span class="fw-bold text-dark text-uppercase small" style="font-size: 0.76rem; letter-spacing: 0.5px;">
-                                <i class="fas fa-hospital text-primary me-1"></i>TOP 10 ACUTE CARE HOSPITALS &bull; CONTAINMENT COMPLIANCE
+                                <i class="fas fa-hospital text-primary me-1"></i>TOP 10 ACUTE CARE FACILITIES &bull; CONTAINMENT COMPLIANCE
                             </span>
                             <span class="text-muted small" style="font-size: 0.70rem;">Quarantined vs. Bedside Risk</span>
                         </div>
@@ -3094,7 +3094,7 @@
                         <div class="col-md-5">
                             <div class="p-2.5 bg-light rounded-2 border">
                                 <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.65rem;">Ordering Hospital Facility</div>
-                                <div class="fw-bold text-dark text-truncate mt-0.5" id="po-modal-facility" style="font-size: 0.8rem;" title="Facility">Saint Joseph Health System</div>
+                                <div class="fw-bold font-monospace text-dark text-truncate mt-0.5" id="po-modal-facility" style="font-size: 0.8rem;" title="Facility">FACILITY-141</div>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -4184,7 +4184,7 @@
                             return `<option value="${escapeHtml(f.facility)}">${escapeHtml(f.facility_display || f.facility)} (${f.total_quantity.toLocaleString()} units)</option>`;
                         }).join('');
                     } else {
-                        hospSelect.innerHTML = `<option value="FACILITY-150">Trinity Health System Regional DC [FACILITY-150]</option>`;
+                        hospSelect.innerHTML = `<option value="FACILITY-150">FACILITY-150 (Central DC)</option>`;
                     }
                 }
 
@@ -4389,7 +4389,7 @@
                 const res = await fetch(`/api/recalls/${catalog}/facilities`);
                 const data = await res.json();
                 const facilities = data.facilities;
-                document.getElementById('drawer-summary-count').innerText = `Found ${facilities.length} Trinity Health hospital facilities affected`;
+                document.getElementById('drawer-summary-count').innerText = `Found ${facilities.length} network facilities affected`;
 
                 if (!facilities || facilities.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No facility purchases found for this catalog.</td></tr>`;
@@ -4786,7 +4786,7 @@
             goToWizardStep2(
                 'FACILITY_ALERT',
                 'ALL-FACILITIES',
-                'Trinity Health System-Wide (All 104 Hospitals)',
+                'System-Wide (All Network Facilities)',
                 activeProductForDrawer.catalog,
                 activeProductForDrawer.product_description,
                 activeProductForDrawer.manufacturer,
@@ -5672,7 +5672,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Wallstent Carotid Bare Metal Stent 10x31mm",
                             mfg: "BOSTON SCIENTIFIC CORP",
                             facility: "FACILITY-153",
-                            facility_display: "Mercy Health - Saint Mary's Campus (MI) [FACILITY-153]",
+                            facility_display: "FACILITY-153",
                             spend: "$61,385.00",
                             dos: 14.0,
                             riskSignal: "50% Supplier Allocation Cap & Nitinol Constraint",
@@ -5685,7 +5685,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Endopath XCEL Bladeless Trocar 12mm",
                             mfg: "ETHICON ENDO-SURGERY",
                             facility: "FACILITY-142",
-                            facility_display: "Trinity Health Grand Rapids Hospital (MI) [FACILITY-142]",
+                            facility_display: "FACILITY-142",
                             spend: "$715,096.15",
                             dos: 11.0,
                             riskSignal: "Sterile Packaging Resin Shortage at Assembly DC",
@@ -5698,7 +5698,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Suction Tubing & Yankauer Surgical Kit",
                             mfg: "MEDLINE INDUSTRIES LP",
                             facility: "FACILITY-147",
-                            facility_display: "Trinity Health Oakland Hospital (MI) [FACILITY-147]",
+                            facility_display: "FACILITY-147",
                             spend: "$59,387.95",
                             dos: 12.0,
                             riskSignal: "Southeast Logistics Hub Container Congestion",
@@ -5714,7 +5714,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Wallstent Carotid Bare Metal Stent 10x31mm",
                             mfg: vendorLabel,
                             facility: "FACILITY-153",
-                            facility_display: "Mercy Health - Saint Mary's Campus (MI) [FACILITY-153]",
+                            facility_display: "FACILITY-153",
                             spend: "$61,385.00",
                             dos: 14.0,
                             riskSignal: "50% Allocation Cap Quota Active; Upstream Raw Material Bottleneck",
@@ -5727,7 +5727,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Wallstent Carotid Stent Delivery System 10x37mm",
                             mfg: vendorLabel,
                             facility: "FACILITY-142",
-                            facility_display: "Trinity Health Grand Rapids Hospital (MI) [FACILITY-142]",
+                            facility_display: "FACILITY-142",
                             spend: "$41,445.00",
                             dos: 9.5,
                             riskSignal: "Inpatient Buffer Depleted (<10 Days of Supply Remaining)",
@@ -5740,7 +5740,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             desc: "Endopath XCEL Bladeless Trocar 12mm",
                             mfg: vendorLabel,
                             facility: "FACILITY-142",
-                            facility_display: "Trinity Health Grand Rapids Hospital (MI) [FACILITY-142]",
+                            facility_display: "FACILITY-142",
                             spend: "$715,096.15",
                             dos: 10.0,
                             riskSignal: "Sterile Packaging Resin Shortage at Assembly DC",
@@ -5852,9 +5852,9 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
         function exportThreatDossierCSV() {
             const rows = [
                 ["Facility Node", "Facility Name", "Catalog", "Description", "Manufacturer", "Spend", "Runway DoS", "Disruption Signal"],
-                ["FACILITY-153", "Mercy Health - Saint Mary's Campus (MI)", "M001719050", "Wallstent Carotid Bare Metal Stent 10x31mm", "BOSTON SCIENTIFIC CORP", "$61,385.00", "14.0", "50% Supplier Allocation Cap & Nitinol Constraint"],
-                ["FACILITY-142", "Trinity Health Grand Rapids Hospital (MI)", "24200007", "Endopath XCEL Bladeless Trocar 12mm", "ETHICON ENDO-SURGERY", "$715,096.15", "11.0", "Sterile Packaging Resin Shortage at Assembly DC"],
-                ["FACILITY-147", "Trinity Health Oakland Hospital (MI)", "DYNJP2002S", "Suction Tubing & Yankauer Surgical Kit", "MEDLINE INDUSTRIES LP", "$59,387.95", "12.0", "Southeast Logistics Hub Container Congestion"]
+                ["FACILITY-153", "FACILITY-153", "M001719050", "Wallstent Carotid Bare Metal Stent 10x31mm", "BOSTON SCIENTIFIC CORP", "$61,385.00", "14.0", "50% Supplier Allocation Cap & Nitinol Constraint"],
+                ["FACILITY-142", "FACILITY-142", "24200007", "Endopath XCEL Bladeless Trocar 12mm", "ETHICON ENDO-SURGERY", "$715,096.15", "11.0", "Sterile Packaging Resin Shortage at Assembly DC"],
+                ["FACILITY-147", "FACILITY-147", "DYNJP2002S", "Suction Tubing & Yankauer Surgical Kit", "MEDLINE INDUSTRIES LP", "$59,387.95", "12.0", "Southeast Logistics Hub Container Congestion"]
             ];
             const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
             const encodedUri = encodeURI(csvContent);
@@ -5926,7 +5926,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             <div class="text-uppercase text-muted fw-bold small mb-2" style="font-size: 0.70rem;">
                                 <i class="fas fa-warehouse text-primary me-1"></i>Originating Facility Hub
                             </div>
-                            <div class="fw-bold text-dark fs-6">${escapeHtml(sourceFacility)} &mdash; Central Health System Supply Hub (Trinity Health Ann Arbor)</div>
+                            <div class="fw-bold text-dark fs-6">${escapeHtml(sourceFacility)} &mdash; Central Health System Supply Hub</div>
                             <div class="text-muted small mt-1" style="font-size: 0.74rem;">
                                 <i class="fas fa-shield-alt text-success me-1"></i>100% Operational &bull; Zero Inundation Exposure &bull; Central Clinical Reserve
                             </div>
@@ -5938,10 +5938,10 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             <div class="text-uppercase text-muted fw-bold small mb-2" style="font-size: 0.70rem;">
                                 <i class="fas fa-hospital text-danger me-1"></i>Destination Acute Facility
                             </div>
-                            <select class="form-select form-select-sm fw-bold text-dark" id="storm-buffer-target-facility" onchange="updateStormBufferTarget(this.value)">
-                                <option value="FACILITY-65" ${facility === 'FACILITY-65' ? 'selected' : ''}>FACILITY-65 &mdash; Trinity Health Regional Care Site 65 (Coastal Trauma Center)</option>
-                                <option value="FACILITY-72" ${facility === 'FACILITY-72' ? 'selected' : ''}>FACILITY-72 &mdash; Trinity Health Regional Care Site 72 (Coastal Acute Care)</option>
-                                <option value="FACILITY-136" ${facility === 'FACILITY-136' ? 'selected' : ''}>FACILITY-136 &mdash; Loyola University Medical Center [FACILITY-136] (Coastal Surgical Hub)</option>
+                            <select class="form-select form-select-sm fw-bold text-dark font-monospace" id="storm-buffer-target-facility" onchange="updateStormBufferTarget(this.value)">
+                                <option value="FACILITY-65" ${facility === 'FACILITY-65' ? 'selected' : ''}>FACILITY-65 (Coastal Trauma Center)</option>
+                                <option value="FACILITY-72" ${facility === 'FACILITY-72' ? 'selected' : ''}>FACILITY-72 (Coastal Acute Care)</option>
+                                <option value="FACILITY-136" ${facility === 'FACILITY-136' ? 'selected' : ''}>FACILITY-136 (Coastal Surgical Hub)</option>
                             </select>
                             <div class="text-muted small mt-1" style="font-size: 0.74rem;">
                                 <i class="fas fa-clock text-warning me-1"></i>Current Runway: <strong>4.2 Days</strong> &bull; Protected Runway Post-Buffer: <strong>+18 Days</strong>
@@ -6455,7 +6455,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
             if (!facTbody) return;
 
             if (!facList || facList.length === 0) {
-                facTbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">No Trinity Health facilities currently holding active stock.</td></tr>`;
+                facTbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">No facilities currently holding active stock.</td></tr>`;
                 return;
             }
 
@@ -6468,10 +6468,9 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 return `
                 <tr class="align-middle ${isSelected ? 'table-primary border-primary' : ''}" id="dossier-fac-row-${f.facility}">
                     <td>
-                        <div class="fw-bold ${isSelected ? 'text-primary' : 'text-dark'}">
-                            ${isSelected ? '<i class="fas fa-check-circle text-primary me-1"></i>' : ''}${escapeHtml(f.facility_display)}
+                        <div class="fw-bold font-monospace ${isSelected ? 'text-primary' : 'text-dark'}">
+                            ${isSelected ? '<i class="fas fa-check-circle text-primary me-1"></i>' : ''}${escapeHtml(f.facility)}
                         </div>
-                        <div class="text-muted font-monospace small" style="font-size: 0.7rem;">Site ID: ${escapeHtml(f.facility)}</div>
                     </td>
                     <td class="text-center font-monospace">${f.po_count}</td>
                     <td class="text-end font-monospace fw-bold">${(f.total_quantity || 0).toLocaleString()}</td>
@@ -6910,10 +6909,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 const hospCtx = document.getElementById('hospitalComplianceChart');
                 if (hospCtx && hospData.length > 0) {
                     if (hospitalComplianceChartInstance) hospitalComplianceChartInstance.destroy();
-                    const hospLabels = hospData.map(h => {
-                        const name = (h.facility_display || h.facility).replace(/Trinity Health Regional Care Site |Trinity Health Hospital |Trinity /gi, '');
-                        return name.length > 20 ? name.substring(0, 20) + '...' : name;
-                    });
+                    const hospLabels = hospData.map(h => (h.facility || h.facility_display || ''));
 
                     hospitalComplianceChartInstance = new Chart(hospCtx, {
                         type: 'bar',
@@ -7029,28 +7025,33 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     const prodDesc = (row.product_description || 'N/A').length > 30 ? row.product_description.substring(0, 30) + '...' : row.product_description;
                     const codeInfo = (row.code_information || row.code_info || 'N/A').length > 28 ? (row.code_information || row.code_info).substring(0, 28) + '...' : (row.code_information || row.code_info || 'N/A');
                     const reason = (row.recall_reason || 'N/A').length > 28 ? row.recall_reason.substring(0, 28) + '...' : row.recall_reason;
-                    const facShort = (row.facility_display || row.facility || '').replace(/Trinity Health Regional Care Site |Trinity Health Hospital |Trinity /gi, '');
                     const avgSpend = row.total_spend || (row.quantity * 145.5);
                     const riskSev = row.risk_severity || (row.risk_score >= 75 ? 'Critical' : (row.risk_score >= 40 ? 'Medium' : 'Low'));
                     const riskScoreVal = row.risk_score_val || row.risk_score || 50;
 
-                    const sevBadgeClass = riskSev === 'Critical' ? 'bg-danger text-white' : (riskSev === 'Medium' ? 'bg-warning text-dark' : 'bg-secondary text-white');
-                    const actionBadge = row.action_needed === 'Purchasing Violation'
-                        ? `<span class="badge bg-danger text-white text-nowrap" style="font-size:0.72rem;"><i class="fas fa-ban me-1"></i>Purchasing Violation</span>`
-                        : `<span class="badge bg-warning text-dark text-nowrap" style="font-size:0.72rem;"><i class="fas fa-boxes-packing me-1"></i>Stock Pull Required</span>`;
+                    let riskPillStyle = 'background-color: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;';
+                    if (riskSev === 'Critical') {
+                        riskPillStyle = 'background-color: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;';
+                    } else if (riskSev === 'Medium') {
+                        riskPillStyle = 'background-color: #FFFBEB; color: #D97706; border: 1px solid #FDE68A;';
+                    }
+                    const riskBadgeHtml = `<span class="badge rounded-pill font-monospace fw-semibold px-2.5 py-1 text-nowrap" style="${riskPillStyle}; font-size:0.75rem;">${riskScoreVal} - ${escapeHtml(riskSev)}</span>`;
+
+                    let actionPillStyle = 'background-color: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;';
+                    if (row.action_needed === 'Purchasing Violation') {
+                        actionPillStyle = 'background-color: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;';
+                    } else {
+                        actionPillStyle = 'background-color: #FFFBEB; color: #D97706; border: 1px solid #FDE68A;';
+                    }
+                    const actionBadgeHtml = `<span class="badge rounded-pill font-monospace fw-semibold px-2.5 py-1 text-nowrap" style="${actionPillStyle}; font-size:0.75rem;">${escapeHtml(row.action_needed)}</span>`;
 
                     return `
                     <tr class="align-middle">
                         <td>
-                            <span class="badge ${sevBadgeClass} font-monospace fw-bold" style="font-size:0.70rem;">
-                                ${escapeHtml(riskSev)}
-                            </span>
-                            <div class="small font-monospace text-muted mt-0.5" style="font-size:0.70rem;">
-                                Score: <strong class="text-dark">${riskScoreVal}</strong>
-                            </div>
+                            ${riskBadgeHtml}
                         </td>
                         <td>
-                            ${actionBadge}
+                            ${actionBadgeHtml}
                         </td>
                         <td>
                             <span class="font-monospace text-dark text-nowrap">${escapeHtml(row.po_date || 'N/A')}</span>
@@ -7062,8 +7063,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                             <span class="font-monospace fw-bold text-dark text-nowrap">${escapeHtml(row.po_number || 'N/A')}</span>
                         </td>
                         <td>
-                            <div class="fw-bold text-dark text-truncate" style="max-width: 140px;" title="${escapeHtml(row.facility_display)}">${escapeHtml(facShort)}</div>
-                            <div class="text-muted font-monospace small" style="font-size:0.68rem;">${escapeHtml(row.facility)}</div>
+                            <span class="font-monospace fw-bold text-dark text-nowrap">${escapeHtml(row.facility)}</span>
                         </td>
                         <td>
                             <div class="fw-bold text-dark text-truncate" style="max-width: 130px;" title="${escapeHtml(row.manufacturer)}">${escapeHtml((row.manufacturer || '').toUpperCase())}</div>

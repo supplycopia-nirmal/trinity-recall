@@ -48,7 +48,7 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 class GenerateClinicalMemoRequest(BaseModel):
     catalog: str
     facility: Optional[str] = "FACILITY-150"
-    facility_display: Optional[str] = "Trinity Health Ann Arbor Hospital (MI)"
+    facility_display: Optional[str] = "FACILITY-150"
     product_description: Optional[str] = ""
     manufacturer: Optional[str] = ""
     risk_class: Optional[str] = "Class II"
@@ -280,7 +280,7 @@ async def update_lot_quarantine(payload: QuarantineLotRequest):
         "status": "Verified",
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "facility": payload.facility,
-        "facility_display": f"Trinity Health Hospital [{payload.facility}]",
+        "facility_display": payload.facility,
         "catalog": payload.catalog,
         "product_description": f"Lot {payload.lot_number} status updated to {payload.status}",
         "manufacturer": "Materials Management Terminal",
@@ -466,7 +466,7 @@ async def generate_clinical_memo(payload: GenerateClinicalMemoRequest):
     memo = clinical_memo_service.generate_clinical_memo(
         catalog=payload.catalog,
         facility=payload.facility or "FACILITY-150",
-        facility_display=payload.facility_display or "Trinity Health Hospital Site",
+        facility_display=payload.facility_display or payload.facility or "FACILITY-150",
         product_description=payload.product_description or "Medical Device / Clinical Supply",
         manufacturer=payload.manufacturer or "Medical Supply Manufacturer",
         risk_class=payload.risk_class or "Class II",

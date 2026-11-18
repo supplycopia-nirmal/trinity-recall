@@ -11,38 +11,13 @@ from services.risk_service import risk_service
 
 logger = logging.getLogger(__name__)
 
-# Realistic Trinity Health System Facility Name Mapping
-TRINITY_FACILITY_NAMES: Dict[str, str] = {
-    "FACILITY-150": "Trinity Health Ann Arbor Hospital (MI)",
-    "FACILITY-142": "Trinity Health Grand Rapids Hospital (MI)",
-    "FACILITY-73": "Mount Carmel East Medical Center (OH)",
-    "FACILITY-147": "Trinity Health Oakland Hospital (MI)",
-    "FACILITY-152": "Saint Alphonsus Regional Medical Center (ID)",
-    "FACILITY-153": "Mercy Health - Saint Mary's Campus (MI)",
-    "FACILITY-143": "Trinity Health Livonia Hospital (MI)",
-    "FACILITY-136": "Loyola University Medical Center (IL)",
-    "FACILITY-141": "Saint Joseph Health System - Mishawaka (IN)",
-    "FACILITY-57": "Mount Carmel Grove City Hospital (OH)",
-    "FACILITY-41": "Holy Cross Hospital - Silver Spring (MD)",
-    "FACILITY-149": "MercyOne Des Moines Medical Center (IA)",
-    "FACILITY-134": "Saint Agnes Medical Center - Fresno (CA)",
-    "FACILITY-123": "Trinity Health Muskegon Hospital (MI)",
-    "FACILITY-7": "Saint Joseph Mercy Chelsea Hospital (MI)",
-    "FACILITY-21": "Holy Cross Hospital - Fort Lauderdale (FL)",
-    "FACILITY-118": "Mercy Hospital of Buffalo (NY)",
-    "FACILITY-105": "Saint Alphonsus Medical Center - Nampa (ID)",
-    "FACILITY-98": "Mount Carmel St. Ann's Hospital (OH)",
-    "FACILITY-88": "Gottlieb Memorial Hospital - Loyola (IL)",
-}
+# Facility Name Mapping (Anonymized)
+TRINITY_FACILITY_NAMES: Dict[str, str] = {}
 
 def get_facility_display_name(fac_id: str) -> str:
-    """Return friendly Trinity Health hospital name or formatted facility id."""
-    fac_clean = str(fac_id).strip()
-    if fac_clean in TRINITY_FACILITY_NAMES:
-        return f"{TRINITY_FACILITY_NAMES[fac_clean]} [{fac_clean}]"
-    # Format generic facility as a Trinity Health affiliate site
-    num = fac_clean.replace("FACILITY-", "").strip()
-    return f"Trinity Health Regional Care Site {num} [{fac_clean}]"
+    """Return anonymized facility identifier (e.g. FACILITY-65)."""
+    fac_clean = str(fac_id).strip().upper()
+    return fac_clean
 
 
 class DataService:
