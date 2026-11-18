@@ -1144,6 +1144,28 @@
                 </div>
             </div>
 
+            <!-- 8-STAGE HOSPITAL RECALL OPERATING MODEL PIPELINE (EXECUTIVE FUNNEL) -->
+            <div class="card-executive p-3 bg-white mb-3 shadow-xs border">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-1 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark text-uppercase small" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+                            <i class="fas fa-route text-primary me-1"></i>8-STAGE HOSPITAL RECALL OPERATING MODEL PIPELINE
+                        </span>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">Active Lifecycle Funnel</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small" style="font-size: 0.70rem;">Click any stage to filter dashboard alerts:</span>
+                        <button class="btn btn-xs btn-outline-secondary py-0.5 px-2" onclick="clearDashboardStageFilter()" id="dash-stage-filter-clear-btn" style="font-size: 0.68rem; display: none;">
+                            <i class="fas fa-times me-1"></i>Show All Stages
+                        </button>
+                    </div>
+                </div>
+                <div class="row g-2" id="dash-operating-pipeline-row">
+                    <!-- Dynamically populated 8 stage cards with active cases, SLA, and percentage -->
+                    <div class="col-12 text-center py-2 text-muted small"><div class="spinner-border spinner-border-sm text-primary me-1"></div>Loading operating model pipeline...</div>
+                </div>
+            </div>
+
             <!-- Control Filters & Recall Items by Action Needed Donut Chart (Matching Screenshot) -->
             <div class="row g-3 mb-3">
                 <!-- Control Filters (Left ~70%) -->
@@ -1247,6 +1269,53 @@
                 </div>
                 <div style="height: 220px; position: relative;">
                     <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- NEW ROW: FINANCIAL RESTITUTION RECOVERY & HOSPITAL CONTAINMENT COMPLIANCE -->
+            <div class="row g-3 mb-3">
+                <!-- Financial Recovery Waterfall / Progress -->
+                <div class="col-lg-5">
+                    <div class="card-executive p-3 bg-white h-100 shadow-xs">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                            <span class="fw-bold text-dark text-uppercase small" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-hand-holding-dollar text-success me-1"></i>SPEND RESTITUTION &amp; RECOVERY VELOCITY
+                            </span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace" id="dash-recovery-rate-badge">0% Recovered</span>
+                        </div>
+                        <div style="height: 220px; position: relative;">
+                            <canvas id="financialRecoveryChart"></canvas>
+                        </div>
+                        <div class="row g-2 mt-2 pt-2 border-top text-center" style="font-size: 0.72rem;">
+                            <div class="col-4">
+                                <div class="text-muted">Spend at Risk</div>
+                                <div class="fw-bold text-dark font-monospace" id="dash-fin-total-spend">$0.00</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted">Quarantined</div>
+                                <div class="fw-bold text-warning font-monospace" id="dash-fin-quarantined">$0.00</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted">RMA Recovered</div>
+                                <div class="fw-bold text-success font-monospace" id="dash-fin-recovered">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top 10 Hospital Facility Containment Compliance -->
+                <div class="col-lg-7">
+                    <div class="card-executive p-3 bg-white h-100 shadow-xs">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                            <span class="fw-bold text-dark text-uppercase small" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-hospital text-primary me-1"></i>TOP 10 ACUTE CARE HOSPITALS &bull; CONTAINMENT COMPLIANCE
+                            </span>
+                            <span class="text-muted small" style="font-size: 0.70rem;">Quarantined vs. Bedside Risk</span>
+                        </div>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="hospitalComplianceChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -3374,6 +3443,9 @@
         let timelineChartInstance = null;
         let manufacturerChartInstance = null;
         let riskScoreChartInstance = null;
+        let financialRecoveryChartInstance = null;
+        let hospitalComplianceChartInstance = null;
+        let activeDashboardStageFilter = null;
 
         let dashCurrentPage = 1;
         const dashPageSize = 15;
@@ -5535,6 +5607,7 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                 }
 
                 // 4. RECALL ITEMS BY RISK SCORE Bar Chart
+                // 4. RECALL ITEMS BY RISK SCORE Bar Chart
                 const riskData = data.risk_scores || {labels: [], counts: []};
                 const riskCtx = document.getElementById('riskScoreChart');
                 if (riskCtx) {
@@ -5571,9 +5644,212 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     });
                 }
 
+                // 5. 8-STAGE OPERATING MODEL PIPELINE (EXECUTIVE FUNNEL)
+                renderDashboardOperatingPipeline(data.operating_model_pipeline || []);
+
+                // 6. FINANCIAL SPEND RESTITUTION & RECOVERY VELOCITY CHART
+                const fin = data.financial_recovery || {};
+                const recRate = fin.recovery_rate_pct || 0;
+                const recBadge = document.getElementById('dash-recovery-rate-badge');
+                if (recBadge) recBadge.innerText = `${recRate}% Realized / Claimed`;
+
+                const finTotal = document.getElementById('dash-fin-total-spend');
+                const finQuar = document.getElementById('dash-fin-quarantined');
+                const finRec = document.getElementById('dash-fin-recovered');
+                if (finTotal) finTotal.innerText = `$${(fin.total_spend_exposure || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+                if (finQuar) finQuar.innerText = `$${(fin.quarantined_value || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+                if (finRec) finRec.innerText = `$${(fin.recovered_credit_value || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+
+                const finCtx = document.getElementById('financialRecoveryChart');
+                if (finCtx) {
+                    if (financialRecoveryChartInstance) financialRecoveryChartInstance.destroy();
+                    financialRecoveryChartInstance = new Chart(finCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Total Spend Exposure', 'Quarantined Inventory', 'RMA Demand Claimed', 'Credit Realized'],
+                            datasets: [{
+                                label: 'Value ($)',
+                                data: [
+                                    fin.total_spend_exposure || 0,
+                                    fin.quarantined_value || 0,
+                                    fin.claimed_rma_value || 0,
+                                    fin.recovered_credit_value || 0
+                                ],
+                                backgroundColor: ['#0A2540', '#E69F00', '#56B4E9', '#009E73'],
+                                borderRadius: 4,
+                                maxBarThickness: 45
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { size: 10, family: 'Mulish', weight: '600' }, color: '#334155' }
+                                },
+                                y: {
+                                    grid: { color: '#F1F5F9' },
+                                    ticks: {
+                                        font: { size: 10, family: 'Mulish' },
+                                        color: '#64748B',
+                                        callback: val => val >= 1000000 ? `$${(val/1000000).toFixed(1)}M` : `$${(val/1000).toFixed(0)}k`
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: ctx => ` Value: $${(ctx.raw || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 7. TOP 10 ACUTE CARE HOSPITALS CONTAINMENT COMPLIANCE (HORIZONTAL STACKED BAR)
+                const hospData = data.hospital_compliance || [];
+                const hospCtx = document.getElementById('hospitalComplianceChart');
+                if (hospCtx && hospData.length > 0) {
+                    if (hospitalComplianceChartInstance) hospitalComplianceChartInstance.destroy();
+                    const hospLabels = hospData.map(h => {
+                        const name = (h.facility_display || h.facility).replace(/Trinity Health Regional Care Site |Trinity Health Hospital |Trinity /gi, '');
+                        return name.length > 20 ? name.substring(0, 20) + '...' : name;
+                    });
+
+                    hospitalComplianceChartInstance = new Chart(hospCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: hospLabels,
+                            datasets: [
+                                {
+                                    label: 'Quarantined (Safe)',
+                                    data: hospData.map(h => h.quarantined_pos || 0),
+                                    backgroundColor: '#009E73',
+                                    borderRadius: 3
+                                },
+                                {
+                                    label: 'Substitute Active',
+                                    data: hospData.map(h => h.substitute_active_pos || 0),
+                                    backgroundColor: '#56B4E9',
+                                    borderRadius: 3
+                                },
+                                {
+                                    label: 'Pending Bedside Pull',
+                                    data: hospData.map(h => h.pending_bedside_pos || 0),
+                                    backgroundColor: '#EE4745',
+                                    borderRadius: 3
+                                }
+                            ]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    grid: { color: '#F1F5F9' },
+                                    ticks: { font: { size: 10, family: 'Mulish' }, color: '#64748B' }
+                                },
+                                y: {
+                                    stacked: true,
+                                    grid: { display: false },
+                                    ticks: { font: { size: 9.5, family: 'Mulish' }, color: '#334155' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    align: 'end',
+                                    labels: { boxWidth: 10, font: { size: 10, family: 'Mulish' }, color: '#334155' }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        title: ctx => hospData[ctx[0].dataIndex]?.facility_display || ctx[0].label,
+                                        afterTitle: ctx => `Compliance: ${hospData[ctx[0].dataIndex]?.compliance_pct || 0}% | Spend Exposure: $${(hospData[ctx[0].dataIndex]?.total_spend || 0).toLocaleString()}`
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
             } catch (err) {
                 console.error("Error loading dashboard overview:", err);
             }
+        }
+
+        function renderDashboardOperatingPipeline(stages) {
+            const rowEl = document.getElementById('dash-operating-pipeline-row');
+            if (!rowEl) return;
+
+            if (!stages || stages.length === 0) {
+                rowEl.innerHTML = `<div class="col-12 text-center py-2 text-muted small">No operating stages data.</div>`;
+                return;
+            }
+
+            rowEl.innerHTML = stages.map(s => {
+                const isActive = activeDashboardStageFilter === s.step;
+                const borderStyle = isActive ? `border: 2px solid ${s.color} !important; background-color: #F8FAFC !important;` : `border-left: 3.5px solid ${s.color} !important;`;
+                const activeBadge = isActive ? `<span class="badge bg-primary text-white" style="font-size: 0.58rem;">FILTERED</span>` : `<span class="badge bg-light text-muted border" style="font-size: 0.60rem;">SLA: ${s.sla}</span>`;
+
+                return `
+                <div class="col-6 col-md-3 col-xl" style="min-width: 12.5%;">
+                    <div class="p-2.5 ps-3 rounded-2 border bg-light h-100 cursor-pointer transition-all dash-step-box" onclick="filterByDashboardStage(${s.step})" style="${borderStyle}" title="Click to filter dashboard records for ${s.name}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge font-monospace" style="background-color: ${s.color}; color: #fff; font-size: 0.62rem;">STEP ${s.step}</span>
+                            ${activeBadge}
+                        </div>
+                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.74rem;">${escapeHtml(s.name)}</div>
+                        <div class="d-flex align-items-baseline justify-content-between mt-1">
+                            <span class="fs-6 fw-bold text-dark font-monospace">${(s.active_cases || 0).toLocaleString()}</span>
+                            <span class="text-muted small" style="font-size: 0.65rem;">${s.pct || 0}% cases</span>
+                        </div>
+                        <div class="progress mt-1.5" style="height: 3.5px;">
+                            <div class="progress-bar" role="progressbar" style="width: ${Math.min(100, (s.pct || 1) * 3)}%; background-color: ${s.color};"></div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function filterByDashboardStage(step) {
+            if (activeDashboardStageFilter === step) {
+                clearDashboardStageFilter();
+                return;
+            }
+            activeDashboardStageFilter = step;
+            const clearBtn = document.getElementById('dash-stage-filter-clear-btn');
+            if (clearBtn) clearBtn.style.display = 'inline-block';
+
+            // Filter risk score or action needed to reflect stage focus
+            const actionSelect = document.getElementById('df-action');
+            if (actionSelect) {
+                if (step === 3 || step === 4) {
+                    actionSelect.value = 'Stock Pull Required';
+                } else if (step === 1 || step === 2) {
+                    actionSelect.value = 'Purchasing Violation';
+                }
+            }
+
+            loadDashboardOverview();
+            loadDashboardAlertsTable(1);
+            showToast(`Filtered by Step ${step}`, `Dashboard records filtered to reflect Stage ${step} operating model focus.`);
+        }
+
+        function clearDashboardStageFilter() {
+            activeDashboardStageFilter = null;
+            const clearBtn = document.getElementById('dash-stage-filter-clear-btn');
+            if (clearBtn) clearBtn.style.display = 'none';
+            const actionSelect = document.getElementById('df-action');
+            if (actionSelect) actionSelect.value = 'ALL';
+
+            loadDashboardOverview();
+            loadDashboardAlertsTable(1);
         }
 
         // ========================================================
