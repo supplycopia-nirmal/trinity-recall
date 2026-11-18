@@ -1,0 +1,215 @@
+[
+  {
+    "id": "ACT-1010",
+    "action_type": "FACILITY_ALERT",
+    "type_label": "Facility Clinical Alert",
+    "status": "Delivered",
+    "timestamp": "2026-11-17 16:31:31",
+    "facility": "FACILITY-150",
+    "facility_display": "Trinity Health Ann Arbor Hospital (MI) [FACILITY-150]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML HEMOGARD CLOSURE LAVENDER",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "cno-annarbor@trinity-health.org",
+    "subject": "[CRITICAL] Immediate Cease-Use Recall for BD Vacutainer 367861",
+    "message": "FDA Class I safety notice. Cease clinical usage immediately. Quarantining all units.",
+    "jira_key": "TRM-6",
+    "jira_url": "https://supplycopia.atlassian.net/browse/TRM-6",
+    "details": {
+      "risk_class": "Class I",
+      "priority": "Critical",
+      "lifecycle_step": "Step 4: Contain Exposure",
+      "acknowledged": false
+    }
+  },
+  {
+    "id": "ACT-1009",
+    "action_type": "ORDER_STOP",
+    "type_label": "Order Management Cancellation Hold",
+    "status": "Order Hold Placed",
+    "timestamp": "2026-11-17 15:22:05",
+    "facility": "FACILITY-155",
+    "facility_display": "Trinity Health Regional Care Site 155 [FACILITY-155]",
+    "catalog": "DTPA2QQ",
+    "product_description": "DEFIBRILLATOR CARDIAC 40 J 74X51X13 MM 35.5 CC 83 GM COBALT XT HF QUAD MRI SURESCAN",
+    "manufacturer": "MEDTRONIC",
+    "recipient": "purchasing-agents@trinity-health.org, dock-receiving@trinity-health.org",
+    "subject": "PURCHASING STOP: Cancel PO 91210000727 & Hold Cat DTPA2QQ",
+    "message": "CRITICAL ORDER STOP:\n\nA purchasing violation / recall conflict has been detected for:\nPO #: 91210000727\nCatalog: DTPA2QQ\nDescription: DEFIBRILLATOR CARDIAC 40 J 74X51X13 MM 35.5 CC 83 GM COBALT XT HF QUAD MRI SURESCAN\nManufacturer: MEDTRONIC\n\nRequired Action:\n1. Cancel in-flight PO in Oracle / Workday ERP.\n2. Suspend outbound EDI 850 transmissions for this line item.\n3. Activate dock receiving alert to reject any incoming deliveries from distributor/supplier.",
+    "jira_key": "TRM-5",
+    "jira_url": "https://supplycopia.atlassian.net/browse/TRM-5",
+    "details": {
+      "po_number": "91210000727",
+      "spend_avoided": 500.0,
+      "lifecycle_step": "Step 4: Contain Exposure",
+      "edi_block": "Active (EDI 850/855 Suspended)",
+      "dock_receiving_block": "Active"
+    }
+  },
+  {
+    "id": "ACT-1008",
+    "action_type": "INVENTORY_PULL",
+    "type_label": "Inventory Quarantine Work Order",
+    "status": "Work Order Dispatched",
+    "timestamp": "2026-11-17 15:21:49",
+    "facility": "FACILITY-155",
+    "facility_display": "Trinity Health Regional Care Site 155 [FACILITY-155]",
+    "catalog": "DTPA2QQ",
+    "product_description": "DEFIBRILLATOR CARDIAC 40 J 74X51X13 MM 35.5 CC 83 GM COBALT XT HF QUAD MRI SURESCAN",
+    "manufacturer": "MEDTRONIC",
+    "recipient": "materials-lead-facility-155@trinity-health.org, central-supply-facility-155@trinity-health.org",
+    "subject": "WORK ORDER: Physical Stock Quarantine - Cat DTPA2QQ",
+    "message": "WORK ORDER: Immediate Physical Stock Pull & Quarantine Required.\n\nTarget Catalog: DTPA2QQ\nDescription: DEFIBRILLATOR CARDIAC 40 J 74X51X13 MM 35.5 CC 83 GM COBALT XT HF QUAD MRI SURESCAN\nManufacturer: MEDTRONIC\n\nAction Steps:\n1. Dispatch inventory materials staff immediately across Central Supply, clean utility rooms, and department par bins.\n2. Collect all units and transport to assigned Quarantine Area.\n3. Affix bright RED FDA Recall Quarantine Tags.\n4. Log physical lot count in ERP recall module.",
+    "jira_key": "TRM-4",
+    "jira_url": "https://supplycopia.atlassian.net/browse/TRM-4",
+    "details": {
+      "quarantine_location": "Quarantine Bay 1 - Red Bin (Central Supply)",
+      "estimated_units": 372.0,
+      "work_order_num": "WO-DDCB38",
+      "lifecycle_step": "Step 4: Contain Exposure",
+      "pull_status": "In Progress"
+    }
+  },
+  {
+    "id": "ACT-1007",
+    "action_type": "INVENTORY_PULL",
+    "type_label": "Inventory Quarantine Work Order",
+    "status": "Work Order Dispatched",
+    "timestamp": "2026-11-17 15:16:26",
+    "facility": "FACILITY-150",
+    "facility_display": "Trinity Health Ann Arbor Hospital (MI) [FACILITY-150]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "materials-lead@trinity-health.org",
+    "subject": "WORK ORDER: Immediate Physical Stock Pull & Quarantine",
+    "message": "URGENT FDA Class I recall: Dispatch materials staff immediately to clean utility rooms and pull all stock to Quarantine Bay 1.",
+    "jira_key": "TRM-3",
+    "jira_url": "https://supplycopia.atlassian.net/browse/TRM-3",
+    "details": {
+      "quarantine_location": "Quarantine Bay 1 - Red Bin",
+      "estimated_units": 150.0,
+      "work_order_num": "WO-F19B50",
+      "lifecycle_step": "Step 4: Contain Exposure",
+      "pull_status": "In Progress"
+    }
+  },
+  {
+    "id": "ACT-1006",
+    "action_type": "INVENTORY_PULL",
+    "type_label": "Lot Stock Release",
+    "status": "Verified",
+    "timestamp": "2026-11-16 21:32:44",
+    "facility": "FACILITY-150",
+    "facility_display": "Trinity Health Hospital [FACILITY-150]",
+    "catalog": "367861",
+    "product_description": "Lot LOT-2026BD-9723A status updated to CLEAN_RELEASED",
+    "manufacturer": "Materials Management Terminal",
+    "recipient": "materials-dock@facility-150.trinity-health.org",
+    "subject": "LOT STATUS MUTATION: LOT-2026BD-9723A -> CLEAN_RELEASED",
+    "message": "Physical lot quarantine status changed for 367861 at FACILITY-150.",
+    "details": {
+      "lot_number": "LOT-2026BD-9723A",
+      "status": "CLEAN_RELEASED"
+    }
+  },
+  {
+    "id": "ACT-1005",
+    "action_type": "FACILITY_ALERT",
+    "type_label": "Facility Clinical Alert",
+    "status": "Delivered",
+    "timestamp": "2026-11-16 20:18:11",
+    "facility": "FACILITY-150",
+    "facility_display": "Trinity Health Ann Arbor Hospital (MI) [FACILITY-150]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "cno@trinity-health.org",
+    "subject": "TEST CLINICAL ALERT: Cease Use",
+    "message": "Immediate patient safety test notice",
+    "details": {
+      "risk_class": "Class I",
+      "priority": "Critical",
+      "acknowledged": false
+    }
+  },
+  {
+    "id": "ACT-1001",
+    "action_type": "FACILITY_ALERT",
+    "type_label": "Facility Clinical Alert",
+    "status": "Delivered",
+    "timestamp": "2026-11-16 08:30:12",
+    "facility": "FACILITY-150",
+    "facility_display": "Trinity Health Ann Arbor Hospital (MI) [FACILITY-150]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML HEMOGARD CLOSURE LAVENDER",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "dr.patel@trinity-health.org, nursing-leads-annarbor@trinity-health.org",
+    "subject": "CRITICAL CLASS I RECALL: Cease Clinical Use - BD Vacutainer 367861",
+    "message": "URGENT CLINICAL SAFETY NOTICE: FDA Class I recall issued for BD Vacutainer EDTA tubes due to chemical interference underestimating blood lead levels. All bedside units must immediately cease use.",
+    "details": {
+      "risk_class": "Class I",
+      "priority": "High"
+    }
+  },
+  {
+    "id": "ACT-1002",
+    "action_type": "INVENTORY_PULL",
+    "type_label": "Inventory Quarantine Work Order",
+    "status": "Quarantine Verified",
+    "timestamp": "2026-11-16 09:15:45",
+    "facility": "FACILITY-142",
+    "facility_display": "Trinity Health Grand Rapids Hospital (MI) [FACILITY-142]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML HEMOGARD CLOSURE LAVENDER",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "materials.grandrapids@trinity-health.org",
+    "subject": "WORK ORDER #WO-9042: Physical Stock Pull & Red-Bin Quarantine",
+    "message": "Dispatch materials staff to Central Supply, Clean Utility Rooms, and Phlebotomy carts. Pull all units of catalog 367861 into Quarantine Bay 4. Attach red hazard tags.",
+    "details": {
+      "quarantine_bay": "Quarantine Bay 4 (Red Bin)",
+      "units_pulled": 400,
+      "verified_by": "J. Miller (Materials Lead)"
+    }
+  },
+  {
+    "id": "ACT-1003",
+    "action_type": "ORDER_STOP",
+    "type_label": "Order Management Cancellation Hold",
+    "status": "PO Cancelled",
+    "timestamp": "2026-11-16 10:02:20",
+    "facility": "FACILITY-141",
+    "facility_display": "Saint Joseph Health System - Mishawaka (IN) [FACILITY-141]",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML HEMOGARD CLOSURE LAVENDER",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "purchasing-holds@trinity-health.org",
+    "subject": "PO CANCELLATION NOTICE: Hold and Cancel PO 61350201190",
+    "message": "Purchasing violation detected. PO 61350201190 placed for recalled catalog 367861. Immediate EDI 850 cancellation dispatched; dock receiving alert active.",
+    "details": {
+      "po_number": "61350201190",
+      "spend_avoided": 6.95,
+      "dock_alert": "Enabled"
+    }
+  },
+  {
+    "id": "ACT-1004",
+    "action_type": "SUPPLIER_ACTION",
+    "type_label": "Supplier RMA & Credit Request",
+    "status": "RMA Pending",
+    "timestamp": "2026-11-16 11:40:00",
+    "facility": "TRINITY HEALTH SYSTEM-WIDE",
+    "facility_display": "Trinity Health System-Wide Supply Chain",
+    "catalog": "367861",
+    "product_description": "TUBE BLOOD COLLECTION K2 EDTA 13MM X 75MM 4ML HEMOGARD CLOSURE LAVENDER",
+    "manufacturer": "BECTON DICKINSON AND CO",
+    "recipient": "recalls.coordinator@bd.com, commercial.support@bd.com",
+    "subject": "TRINITY HEALTH RECALL CLAIM: Request for RMA, Credit Memo & Disposition for Cat 367861",
+    "message": "Trinity Health has identified multiple affected POs for BD Vacutainer 367861. We request formal RMA documentation, prepaid return shipping labels, and immediate 100% credit memo.",
+    "details": {
+      "supplier_action_type": "RMA & Credit Request",
+      "claim_amount": 12845.5,
+      "rma_number": "PENDING-BD-994"
+    }
+  }
+]
