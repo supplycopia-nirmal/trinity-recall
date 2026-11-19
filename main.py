@@ -1105,6 +1105,11 @@ async def get_all_manufacturers_list():
     suppliers = data_service.get_all_suppliers()
     return suppliers
 
+@app.get("/api/logistics/weather")
+async def get_logistics_weather_advisories():
+    """Returns active real-time NOAA storm advisories and coastal staging buffer directives."""
+    return logistics_service.get_weather_triggers()
+
 @app.post("/api/logistics/stage-storm-buffer")
 async def trigger_stage_storm_buffer(req: StageStormBufferRequest):
     """Executes a 72-hour pre-landfall storm buffer staging protocol to coastal hospital facilities."""
