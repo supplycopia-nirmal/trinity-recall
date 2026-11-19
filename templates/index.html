@@ -732,7 +732,6 @@
             z-index: 100002 !important;
             box-shadow: 0 0 0 4px #dc2626, 0 0 35px rgba(220, 38, 38, 0.5) !important;
             border-radius: 8px !important;
-            background-color: #ffffff;
             transition: box-shadow 0.25s ease;
         }
         .sc-tour-popover {
@@ -915,13 +914,6 @@
 
             <!-- Header Right: System Status & User Profile Dropdown -->
             <div class="d-flex align-items-center gap-2.5">
-                <!-- Real-time FDA Surveillance Live Sync Status -->
-                <div class="d-none d-lg-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-light border text-dark shadow-xs" style="font-size: 0.74rem;" title="openFDA RES Recalls, CDRH Device Shortages & MAUDE Live Surveillance Active">
-                    <span class="pulse-green-dot"></span>
-                    <span class="text-muted fw-semibold">FDA Sync:</span>
-                    <span class="text-success fw-bold">Live &bull; Nov 19, 2026</span>
-                </div>
-
                 <button class="btn btn-sm btn-outline-danger fw-semibold d-flex align-items-center shadow-xs" onclick="openMedWatchGrievancesModal()" style="border-radius: 20px; font-size: 0.78rem;" title="Inspect FDA MedWatch & MAUDE Quality Grievances">
                     <i class="fas fa-bullhorn text-danger me-1.5"></i>FDA MedWatch Feeds
                     <span class="badge bg-danger text-white ms-2 px-2 font-monospace" style="font-size: 0.70rem;">6</span>
@@ -1437,11 +1429,11 @@
                             <div>
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="badge bg-danger text-white">NOAA SEVERE ADVISORY</span>
-                                    <span class="badge bg-warning text-dark font-monospace" style="font-size: 0.70rem;">REAL-TIME: NOV 19, 2026</span>
-                                    <strong class="text-dark" id="radar-storm-title">Atlantic Coastal Gale &amp; Severe Inbound Storm Surge (Real-Time Advisory as of Today, Nov 19, 2026)</strong>
+                                    <span class="badge bg-warning text-dark font-monospace" style="font-size: 0.70rem;">AS OF NOV 19, 2026</span>
+                                    <strong class="text-dark" id="radar-storm-title">Atlantic Coastal Gale &amp; Severe Inbound Storm Surge (Category 3 Cone)</strong>
                                 </div>
                                 <div class="small text-muted mt-1" id="radar-storm-desc">
-                                    Southeast &amp; Mid-Atlantic Coastal Corridors (Savannah, GA to Norfolk, VA) &bull; Verified Active: Today, Nov 19, 2026. Recommended Action: <strong>Execute 72-hour advance buffer staging from central supply hub FACILITY-150 to coastal hospital facilities (FACILITY-65, FACILITY-72 &amp; FACILITY-136).</strong>
+                                    Southeast &amp; Mid-Atlantic Coastal Corridors (Savannah, GA to Norfolk, VA). Recommended Action: <strong>Execute 72-hour advance buffer staging from central supply hub FACILITY-150 to coastal hospital facilities (FACILITY-65, FACILITY-72 &amp; FACILITY-136).</strong>
                                 </div>
                             </div>
                         </div>
@@ -3697,7 +3689,7 @@
                             ---
                         </div>
                         <div class="catalog-detail-title">Affected Code Information / Lots</div>
-                        <div class="p-2.5 rounded-2 bg-light border font-monospace small mb-2" id="side-dossier-code-info" style="font-size: 0.75rem;">
+                        <div class="p-2.5 rounded-2 bg-light border font-monospace small mb-2" id="side-dossier-code-info" style="font-size: 0.75rem; max-height: 140px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.45;">
                             ---
                         </div>
                     </div>
@@ -4318,6 +4310,13 @@
             document.getElementById('side-dossier-reason').innerText = product && product.fda_reason_for_recall ? 
                 product.fda_reason_for_recall : 'FDA Recall notice issued by manufacturer. Review clinical guidelines.';
             
+            // Populate affected lot and serial parameters
+            const codeInfoEl = document.getElementById('side-dossier-code-info');
+            const initialLots = product ? (product.affected_lots || product.code_info || product.code_information) : '';
+            if (codeInfoEl) {
+                codeInfoEl.innerText = (initialLots && initialLots !== '---') ? initialLots : 'Loading FDA lot and serial parameters...';
+            }
+
             document.getElementById('side-dossier-spend').innerText = product ? '$' + product.total_spend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '$0.00';
             document.getElementById('side-dossier-po-count').innerText = product ? product.po_count : '0';
             document.getElementById('side-dossier-qty').innerText = product ? product.total_quantity.toLocaleString() : '0';
@@ -4332,15 +4331,28 @@
                 subName.innerText = 'GREINER BIO-ONE (GRE-456043) &bull; 480 Units';
             } else {
                 aiDirective.innerHTML = `<strong>OPERATIONAL DIRECTIVE:</strong> Purchasing hold required. EDI 850 cancellation dispatched; dock receiving block active for incoming distributor deliveries.`;
-                subName.innerText = 'CARDINAL HEALTH ALTERNATIVE (CH-BD-4400)';
+                subName.innerText = 'TRINITY HEALTH PRE-APPROVED SUBSTITUTE (TH-ALT-4400)';
             }
 
             // Show Offcanvas Drawer
             drawerInspectionInstance.show();
 
-            // Populate lots and facilities asynchronously
+            // Populate lots, dossier intelligence, and facilities asynchronously
             try {
-                // Fetch facilities impact first
+                // Fetch full catalog dossier to retrieve complete FDA lot and serial parameters
+                try {
+                    const dossierRes = await fetch(`/api/catalog/${encodeURIComponent(catalog)}/dossier`);
+                    if (dossierRes.ok) {
+                        const dossierData = await dossierRes.json();
+                        if (codeInfoEl && dossierData.code_info) {
+                            codeInfoEl.innerText = dossierData.code_info;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Async dossier lot retrieval fallback:", e);
+                }
+
+                // Fetch facilities impact
                 let facilities = [];
                 const facRes = await fetch(`/api/recalls/${catalog}/facilities`);
                 if (facRes.ok) {
@@ -6133,10 +6145,10 @@ Please reply within 48 business hours with RMA paperwork and shipment instructio
                     <div>
                         <div class="fw-bold text-danger d-flex align-items-center gap-2" style="font-size: 0.95rem;">
                             Atlantic Coastal Gale Pre-Storm Staging Protocol Active
-                            <span class="badge bg-danger text-white font-monospace" style="font-size: 0.68rem;">REAL-TIME: NOV 19, 2026</span>
+                            <span class="badge bg-danger text-white font-monospace" style="font-size: 0.68rem;">AS OF NOV 19, 2026</span>
                         </div>
                         <div class="text-dark small" style="font-size: 0.8rem; line-height: 1.45;">
-                            NOAA Category 3 Gale &amp; Storm Surge trajectory verified active as of Today, Nov 19, 2026. Pre-positions 450 critical inpatient buffer units from central supply facility reserves (FACILITY-150) before coastal bridge and highway closures occur.
+                            NOAA Category 3 Gale &amp; Storm Surge trajectory indicates high probability of coastal bridge and highway disruptions within 72 hours. Pre-positions 450 critical inpatient buffer units from central supply facility reserves (FACILITY-150) before coastal route closures occur.
                         </div>
                     </div>
                 </div>
@@ -8756,9 +8768,13 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             const total = window._tourCurrentSteps.length;
             const pct = Math.round(((index + 1) / total) * 100);
 
-            // Remove previous highlight
+            // Remove previous highlight and restore background if modified
             if (window._tourCurrentTarget) {
                 window._tourCurrentTarget.classList.remove('sc-tour-highlight');
+                if (window._tourCurrentTarget.hasAttribute('data-tour-prev-bg')) {
+                    window._tourCurrentTarget.style.backgroundColor = window._tourCurrentTarget.getAttribute('data-tour-prev-bg');
+                    window._tourCurrentTarget.removeAttribute('data-tour-prev-bg');
+                }
             }
 
             // Find target element
@@ -8783,6 +8799,19 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
 
             window._tourCurrentTarget = targetEl;
             targetEl.classList.add('sc-tour-highlight');
+
+            // Prevent invisible text:
+            // If the element has a transparent background, give it an opaque white background so dark text is readable.
+            // If the element already has a solid background (e.g. btn-dark, btn-brand, cards), keep its natural background!
+            try {
+                const compStyle = window.getComputedStyle(targetEl);
+                const compBg = compStyle.backgroundColor;
+                if (!compBg || compBg === 'transparent' || compBg === 'rgba(0, 0, 0, 0)') {
+                    targetEl.setAttribute('data-tour-prev-bg', targetEl.style.backgroundColor || '');
+                    targetEl.style.backgroundColor = '#ffffff';
+                }
+            } catch (e) {}
+
             targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             // Create or update popover
@@ -8834,6 +8863,10 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
         function exitTour() {
             if (window._tourCurrentTarget) {
                 window._tourCurrentTarget.classList.remove('sc-tour-highlight');
+                if (window._tourCurrentTarget.hasAttribute('data-tour-prev-bg')) {
+                    window._tourCurrentTarget.style.backgroundColor = window._tourCurrentTarget.getAttribute('data-tour-prev-bg');
+                    window._tourCurrentTarget.removeAttribute('data-tour-prev-bg');
+                }
                 window._tourCurrentTarget = null;
             }
             const popover = document.getElementById('sc-tour-popover');

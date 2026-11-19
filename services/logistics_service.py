@@ -33,12 +33,12 @@ class LogisticsService:
         active_storms = [
             {
                 "event_id": f"NOAA-STORM-{now.strftime('%Y-%m')}-{now.strftime('%d')}",
-                "name": f"Atlantic Coastal Gale & Severe Inbound Storm Surge (Real-Time Advisory as of Today, {date_short})",
-                "corridor": f"Southeast & Mid-Atlantic Coastal Corridors (Savannah, GA to Norfolk, VA) &bull; Verified Active: Today, {date_short} at {time_str}",
-                "category": "NOAA Category 3 Gale & Coastal Inundation Advisory",
-                "landfall_window": f"Active Real-Time Window as of Today, {date_full} (T-24 to T-72 Hours)",
+                "name": "Atlantic Coastal Gale & Severe Inbound Storm Surge",
+                "corridor": "Southeast & Mid-Atlantic Coastal Corridors (Savannah, GA to Norfolk, VA)",
+                "category": "Category 3 Cone",
+                "landfall_window": "T-24 to T-72 Hours",
                 "wind_velocity_mph": 64,
-                "impacted_cardinal_dcs": ["DC-28 (Jacksonville Hub)", "DC-19 (DFW Transit Corridor)"],
+                "impacted_cardinal_dcs": ["East Coast Regional DC (Jacksonville)", "Transit Hub Corridor (DFW)"],
                 "impacted_manufacturing_sites": [
                     "Saint-Gobain Tubing Plant (Clearwater, FL)",
                     "Sterigenics Sterilization Hub (Atlanta, GA)"
@@ -48,7 +48,7 @@ class LogisticsService:
                     {"catalog": "2B8011", "desc": "Baxter 0.9% NaCl Viaflex 1000mL", "normal_dos": 8.2, "storm_risk": "STOCKOUT_RISK"},
                     {"catalog": "367861", "desc": "BD Vacutainer Plus Tubes 4mL", "normal_dos": 14.0, "storm_risk": "DELAY_VULNERABLE"}
                 ],
-                "directive": f"Execute 72-hour advance buffer staging from central supply hub FACILITY-150 to coastal hospital facilities (FACILITY-65, FACILITY-72 & FACILITY-136) &mdash; Real-Time Protocol Active as of {date_short}.",
+                "directive": "Execute 72-hour advance buffer staging from central supply hub FACILITY-150 to coastal hospital facilities (FACILITY-65, FACILITY-72 & FACILITY-136).",
                 "status": "PRE_LANDFALL_BUFFER_RECOMMENDED"
             }
         ]

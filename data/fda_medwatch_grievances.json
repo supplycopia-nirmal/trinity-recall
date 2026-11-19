@@ -13,7 +13,7 @@
     "clinical_frustration": "Nursing reported 3 syringe pump occlusion false alarms during enteral feeding runs, requiring urgent line replacement in Pediatric Intensive Care.",
     "user_grievance_quote": "'Plunger sticks halfway through the feed cycle triggering occlusion alarms. Milliliter graduation markings smear off when wiped down with CaviWipes.'",
     "manufacturer_response": "Cardinal Health QA investigating silicone barrel lubricant batch CH-2026-11A and ink curing temperature at Dublin manufacturing facility. Issued voluntary customer inspection advisory.",
-    "recommended_action": "Quarantine affected lot #CH-2026-11A in PICU/NICU floor stock immediately. Dispatch NeoMed ENFit 60mL replacement buffer from Cardinal Health Dublin DC-04."
+    "recommended_action": "Quarantine affected lot #CH-2026-11A in PICU/NICU floor stock immediately. Dispatch NeoMed ENFit 60mL replacement buffer from Trinity Health System Central Distribution Center."
   },
   {
     "id": "MW-2026-9041",
@@ -45,7 +45,7 @@
     "clinical_frustration": "Procedure prolonged by 45 minutes to retrieve detached delivery wire under fluoroscopy. Required secondary femoral cutdown.",
     "user_grievance_quote": "'The deployment thumb-wheel bound up completely midway through release. Extreme force was needed, causing the wire to shear at the hub.'",
     "manufacturer_response": "Boston Scientific issued Class I voluntary recall alert for lots manufactured between June and August 2026.",
-    "recommended_action": "Quarantine shelf units in Cath Lab suites 1-4 immediately. Utilize pre-approved Abbott XACT Carotid Stent (ABT-XACT-1030) or Terumo Roadsaver via Cardinal Health prime distribution."
+    "recommended_action": "Quarantine shelf units in Cath Lab suites 1-4 immediately. Utilize pre-approved Abbott XACT Carotid Stent (ABT-XACT-1030) or Terumo Roadsaver from Trinity Health verified on-hand stock."
   },
   {
     "id": "MW-2026-7731",
@@ -61,7 +61,7 @@
     "clinical_frustration": "Medication infusion diluted with exterior saline seepage; wet ICU floor hazard and medication wastage.",
     "user_grievance_quote": "'Infusion port weld cracks under pressure bags. Saline leaks onto pump chassis and bedsheets during rapid resuscitation.'",
     "manufacturer_response": "Baxter confirmed thermal sealing bar alignment issue at Cleveland MS plant. Added reinforced ultrasonic weld check.",
-    "recommended_action": "Inspect batch port welds prior to pressure bag deployment. Request Cardinal Health Dublin DC-04 buffer stock."
+    "recommended_action": "Inspect batch port welds prior to pressure bag deployment. Stage Trinity Central Logistics reserve buffer stock across acute ICU units."
   },
   {
     "id": "MW-2026-6549",
@@ -93,6 +93,6 @@
     "clinical_frustration": "Staff wasting up to 3 glove pairs per case, causing inventory burn rate acceleration.",
     "user_grievance_quote": "'Cuffs rip at the bead every time we pull them on in a hurry. We are burning through boxes twice as fast.'",
     "manufacturer_response": "Medline polymer reformulation in progress to increase tensile elasticity to 22 MPa.",
-    "recommended_action": "Recommend Cardinal Health Esteem Synthetic Exam Gloves with reinforced beaded cuffs."
+    "recommended_action": "Recommend standardizing on Trinity Health formulary pre-approved exam gloves with reinforced beaded cuffs."
   }
 ]
