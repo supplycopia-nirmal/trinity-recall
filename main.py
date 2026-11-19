@@ -172,7 +172,7 @@ async def home_page(request: Request):
         "project_name": settings.PROJECT_NAME
     })
 
-@app.get("/login", response_class=HTMLResponse)
+@app.api_route("/login", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def login_page(request: Request, returnUrl: Optional[str] = "/"):
     # If already logged in, redirect directly to destination
     if request.session.get("user"):
@@ -252,9 +252,9 @@ async def logout(request: Request):
     return RedirectResponse(url="/login?returnUrl=/", status_code=status.HTTP_302_FOUND)
 
 # Health Check Endpoints for Load Balancers & Docker
-@app.get("/health")
-@app.get("/healthz")
-@app.get("/api/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
+@app.api_route("/healthz", methods=["GET", "HEAD"])
+@app.api_route("/api/health", methods=["GET", "HEAD"])
 async def health_check():
     """Health check endpoint for AWS ALB, Nginx, and Docker Compose."""
     return {
