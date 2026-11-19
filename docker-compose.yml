@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  trinity_recall:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trinity_recall_app
+    restart: unless-stopped
+    ports:
+      - "8010:8010"
+    env_file:
+      - .env
+    environment:
+      - PORT=8010
+      - HOST=0.0.0.0
+    volumes:
+      # Persist actions audit logs across container rebuilds
+      - ./data/actions_log.json:/app/data/actions_log.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

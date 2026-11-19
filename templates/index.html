@@ -928,44 +928,38 @@
         <!-- ======================================================== -->
         <div id="tab-recalls" class="tab-pane-content">
             <div class="card-executive mb-3">
-                <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2 bg-white rounded-top">
+                <div class="p-3 border-bottom d-flex align-items-center justify-content-between gap-2.5 bg-white rounded-top flex-nowrap" style="overflow-x: auto;">
                     <!-- Search Input -->
-                    <div class="search-box-wrap flex-grow-1" style="max-width: 440px;">
+                    <div class="search-box-wrap flex-grow-1" style="min-width: 240px; max-width: 400px;">
                         <i class="fas fa-search"></i>
                         <input type="text" id="recall-search-input" onkeyup="if(event.key==='Enter') searchRecalls()" class="form-control form-control-sm search-box-input" placeholder="Search product description, catalog #, manufacturer, or hazard keywords...">
                     </div>
 
-                    <!-- Filter Controls & Density Toggle -->
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-dark fw-bold px-3" onclick="searchRecalls()">
+                    <!-- Filter Controls & Reset Action -->
+                    <div class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
+                        <button class="btn btn-sm btn-dark fw-bold px-3 text-nowrap" onclick="searchRecalls()">
                             <i class="fas fa-filter me-1"></i>Apply Filters
                         </button>
                         
-                        <select id="filter-class" onchange="searchRecalls()" class="form-select form-select-sm" style="font-size: 0.8rem; width: auto;">
+                        <select id="filter-class" onchange="searchRecalls()" class="form-select form-select-sm text-nowrap" style="font-size: 0.8rem; width: auto;">
                             <option value="ALL">All FDA Classes</option>
                             <option value="Class I">Class I (Critical Patient Risk)</option>
                             <option value="Class II">Class II (Standard Hazard)</option>
                             <option value="Class III">Class III (Minor Exposure)</option>
                         </select>
 
-                        <select id="filter-action" onchange="searchRecalls()" class="form-select form-select-sm" style="font-size: 0.8rem; width: auto;">
+                        <select id="filter-action" onchange="searchRecalls()" class="form-select form-select-sm text-nowrap" style="font-size: 0.8rem; width: auto;">
                             <option value="ALL">All Operational Actions</option>
                             <option value="PULL">Stock Pulls Required</option>
                             <option value="STOP">Order Stops Required</option>
                         </select>
 
-                        <select id="filter-facility" onchange="searchRecalls()" class="form-select form-select-sm" style="font-size: 0.8rem; max-width: 240px;">
-                            <option value="ALL">All Hospital Facilities (104)</option>
+                        <select id="filter-facility" onchange="searchRecalls()" class="form-select form-select-sm text-nowrap" style="font-size: 0.8rem; max-width: 210px;">
+                            <option value="ALL">All Facilities (104)</option>
                         </select>
 
-                        <!-- Density Switcher -->
-                        <div class="btn-group btn-group-sm border rounded" role="group" title="Table Density">
-                            <button type="button" class="btn btn-light px-2" id="density-compact" onclick="setTableDensity('compact')"><i class="fas fa-bars-staggered" style="font-size: 0.75rem;"></i></button>
-                            <button type="button" class="btn btn-light px-2 active" id="density-normal" onclick="setTableDensity('normal')"><i class="fas fa-bars" style="font-size: 0.75rem;"></i></button>
-                        </div>
-
-                        <button class="btn btn-sm btn-outline-brand" onclick="resetFilters()" title="Reset all filters">
-                            <i class="fas fa-redo text-muted"></i>
+                        <button class="btn btn-sm btn-outline-secondary px-2.5 fw-semibold text-nowrap d-flex align-items-center gap-1.5" onclick="resetFilters()" title="Reset all filters">
+                            <i class="fas fa-redo"></i><span>Reset</span>
                         </button>
                     </div>
                 </div>
@@ -3827,7 +3821,7 @@
                 const res = await fetch('/api/facilities');
                 allFacilities = await res.json();
                 const sel = document.getElementById('filter-facility');
-                sel.innerHTML = '<option value="ALL">All Hospital Facilities (104)</option>' + 
+                sel.innerHTML = '<option value="ALL">All Facilities (104)</option>' + 
                     allFacilities.map(f => `<option value="${f.facility}">${f.facility_display}</option>`).join('');
             } catch (err) {
                 console.error("Error loading facilities:", err);
@@ -3985,16 +3979,23 @@
             const btnCompact = document.getElementById('density-compact');
             const btnNormal = document.getElementById('density-normal');
 
-            if (density === 'compact') {
-                table.style.setProperty('--bs-table-padding-y', '6px');
-                table.style.setProperty('--bs-table-padding-x', '8px');
-                btnCompact.classList.add('active');
-                btnNormal.classList.remove('active');
-            } else {
-                table.style.setProperty('--bs-table-padding-y', '12px');
-                table.style.setProperty('--bs-table-padding-x', '14px');
-                btnNormal.classList.add('active');
-                btnCompact.classList.remove('active');
+            if (table) {
+                if (density === 'compact') {
+                    table.style.setProperty('--bs-table-padding-y', '6px');
+                    table.style.setProperty('--bs-table-padding-x', '8px');
+                } else {
+                    table.style.setProperty('--bs-table-padding-y', '12px');
+                    table.style.setProperty('--bs-table-padding-x', '14px');
+                }
+            }
+            if (btnCompact && btnNormal) {
+                if (density === 'compact') {
+                    btnCompact.classList.add('active');
+                    btnNormal.classList.remove('active');
+                } else {
+                    btnNormal.classList.add('active');
+                    btnCompact.classList.remove('active');
+                }
             }
         }
 
