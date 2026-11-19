@@ -27,5 +27,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Local logs
+# Local logs & archives
 *.log
+*.zip
+

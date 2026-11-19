@@ -50,4 +50,16 @@ class Settings:
     GITHUB_REPO_URL: str = os.getenv("GITHUB_REPO_URL", "https://github.com/supplycopia-nirmal/trinity-recall.git")
     GITHUB_PAT: str = os.getenv("GITHUB_PAT", "")
 
+    # Microsoft Entra ID (Azure AD) SAML 2.0 SSO Configuration
+    SAML_SP_ENTITY_ID: str = os.getenv("SAML_SP_ENTITY_ID", "https://trinity-recall.supplycopia.com/saml/metadata")
+    SAML_SP_ACS_URL: str = os.getenv("SAML_SP_ACS_URL", "https://trinity-recall.supplycopia.com/saml/acs")
+    AZURE_SAML_IDP_METADATA_URL: str = os.getenv(
+        "AZURE_SAML_IDP_METADATA_URL",
+        "https://login.microsoftonline.com/ae81ad54-d58a-4097-9fc7-98a2954a7a6d/federationmetadata/2007-06/federationmetadata.xml?appid=3bcdeecf-0d95-45a3-8097-26efe86f2b07"
+    )
+    AZURE_SAML_IDP_ENTITY_ID: str = os.getenv("AZURE_SAML_IDP_ENTITY_ID", "https://sts.windows.net/ae81ad54-d58a-4097-9fc7-98a2954a7a6d/")
+    AZURE_SAML_SSO_URL: str = os.getenv("AZURE_SAML_SSO_URL", "https://login.microsoftonline.com/ae81ad54-d58a-4097-9fc7-98a2954a7a6d/saml2")
+    AZURE_SAML_LOGOUT_URL: str = os.getenv("AZURE_SAML_LOGOUT_URL", "https://login.microsoftonline.com/ae81ad54-d58a-4097-9fc7-98a2954a7a6d/saml2")
+    AZURE_SAML_CERT_PATH: Path = BASE_DIR / "trinity-recall-sso" / "trinity-recall.cer"
+
 settings = Settings()

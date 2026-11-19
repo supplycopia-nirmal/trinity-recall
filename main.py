@@ -20,6 +20,7 @@ from services.bom_service import bom_service
 from services.financial_service import financial_service
 from services.logistics_service import logistics_service
 from services.serper_service import serper_service
+from services.saml_service import saml_service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("trinity_recall_hub")
@@ -158,19 +159,12 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
-# HTML Routes
+# HTML & Authentication Routes
 @app.get("/", response_class=HTMLResponse)
 async def home_page(request: Request):
     user = request.session.get("user")
     if not user:
-        # Default session user for demo convenience if not set
-        request.session["user"] = {
-            "name": "Sarah Jenkins, RN, CMRP",
-            "role": "Director of Supply Chain & Patient Safety",
-            "health_system": "Trinity Health",
-            "email": settings.DEMO_USER
-        }
-        user = request.session.get("user")
+        return RedirectResponse(url="/login?returnUrl=/", status_code=status.HTTP_302_FOUND)
         
     return templates.TemplateResponse("index.html", {
         "request": request,
@@ -179,12 +173,64 @@ async def home_page(request: Request):
     })
 
 @app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
+async def login_page(request: Request, returnUrl: Optional[str] = "/"):
+    # If already logged in, redirect directly to destination
+    if request.session.get("user"):
+        return RedirectResponse(url=returnUrl or "/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("login.html", {
         "request": request,
-        "default_user": settings.DEMO_USER,
-        "default_pass": settings.DEMO_PASS
+        "returnUrl": returnUrl or "/"
     })
+
+@app.get("/saml/login")
+async def saml_login(request: Request, returnUrl: Optional[str] = "/"):
+    """Initiates SAML 2.0 SP-Initiated SSO redirect to Microsoft Entra ID."""
+    redirect_url = saml_service.generate_authn_request_url(relay_state=returnUrl or "/")
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+
+@app.post("/saml/acs")
+async def saml_acs(request: Request):
+    """Assertion Consumer Service endpoint for SAML 2.0 Response from Microsoft Entra ID."""
+    try:
+        body_bytes = await request.body()
+        import urllib.parse
+        form_data = urllib.parse.parse_qs(body_bytes.decode("utf-8", errors="replace"))
+        
+        saml_response = form_data.get("SAMLResponse", [None])[0]
+        relay_state = form_data.get("RelayState", ["/"])[0]
+        
+        if not saml_response:
+            logger.error("SAML ACS received empty SAMLResponse")
+            raise HTTPException(status_code=400, detail="Missing SAMLResponse in payload")
+
+        user_info = saml_service.parse_saml_response(saml_response)
+        request.session["user"] = user_info
+        logger.info(f"User {user_info.get('email')} logged in via Microsoft Entra ID SSO")
+        return RedirectResponse(url=relay_state or "/", status_code=status.HTTP_302_FOUND)
+    except Exception as e:
+        logger.error(f"SAML ACS processing failure: {e}", exc_info=True)
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": f"SAML Authentication Failed: {str(e)}"
+        }, status_code=400)
+
+@app.get("/saml/metadata")
+async def saml_metadata():
+    """Serves SAML 2.0 SP metadata XML for Microsoft Entra ID integration."""
+    xml_content = saml_service.generate_sp_metadata()
+    return HTMLResponse(content=xml_content, media_type="application/xml")
+
+@app.get("/saml/dev-login")
+async def saml_dev_login(request: Request, returnUrl: Optional[str] = "/"):
+    """Local developer bypass to authenticate as demo administrator."""
+    request.session["user"] = {
+        "name": "Sarah Jenkins, RN, CMRP",
+        "role": "Director of Supply Chain & Patient Safety",
+        "health_system": "Trinity Health",
+        "email": settings.DEMO_USER,
+        "auth_type": "Dev_Bypass"
+    }
+    return RedirectResponse(url=returnUrl or "/", status_code=status.HTTP_302_FOUND)
 
 @app.post("/api/auth/login")
 async def login_submit(request: Request, payload: LoginRequest):
@@ -194,7 +240,8 @@ async def login_submit(request: Request, payload: LoginRequest):
             "name": "Sarah Jenkins, RN, CMRP",
             "role": "Director of Supply Chain & Patient Safety",
             "health_system": "Trinity Health",
-            "email": payload.username
+            "email": payload.username,
+            "auth_type": "Direct_Credentials"
         }
         return {"status": "ok", "redirect": "/"}
     raise HTTPException(status_code=400, detail="Invalid credentials")
@@ -202,7 +249,8 @@ async def login_submit(request: Request, payload: LoginRequest):
 @app.get("/logout")
 async def logout(request: Request):
     request.session.clear()
-    return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/login?returnUrl=/", status_code=status.HTTP_302_FOUND)
+
 
 # REST API Endpoints
 @app.get("/api/kpi")

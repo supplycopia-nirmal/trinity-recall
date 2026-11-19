@@ -1,236 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trinity Health &mdash; Sign In | Recall Management Command</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://qa-ahp.supplycopia.com/assets/images/new-sc-favicon.svg">
-    
-    <!-- Google Fonts: Mulish & Open Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --sc-red: #DC2626;
-            --sc-red-soft: #FFEAEA;
-            --sc-red-hover: #B91C1C;
-            --bg-color: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --text-heading: #0F172A;
-            --text-primary: #334155;
-            --text-muted: #64748B;
-            --border-color: #E2E8F0;
-        }
-
-        body {
-            font-family: 'Mulish', 'Open Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-wrapper {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            background: #FFFFFF;
-        }
-
-        .login-left {
-            flex: 0 0 38%;
-            background-color: var(--sc-red-soft);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 60px 48px;
-            position: relative;
-            border-right: 1px solid #FECACA;
-        }
-
-        .login-left h2 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.5px;
-            margin-top: 15px;
-            line-height: 1.25;
-        }
-
-        .login-left h2 span {
-            color: var(--sc-red);
-        }
-
-        .login-right {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            background-color: #FFFFFF;
-        }
-
-        .login-card-inner {
-            width: 100%;
-            max-width: 440px;
-        }
-
-        .btn-brand-red {
-            background-color: var(--sc-red);
-            color: #FFFFFF;
-            font-weight: 700;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-brand-red:hover {
-            background-color: var(--sc-red-hover);
-            color: #FFFFFF;
-        }
-
-        .form-control {
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            font-size: 0.88rem;
-            border-radius: 6px;
-        }
-
-        .form-control:focus {
-            border-color: var(--sc-red);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
-        }
-
-        .badge-system {
-            background-color: #1E293B;
-            color: #FFFFFF;
-            font-weight: 700;
-            font-size: 0.76rem;
-            border-radius: 6px;
-            padding: 4px 8px;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>SupplyCopia | Making Healthcare Affordable, One Part at a Time</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="/static/login_assets/new-sc-favicon.svg">
+  <link rel="shortcut icon" href="/static/login_assets/new-sc-favicon.svg">
+  <link rel="alternate icon" type="image/png" href="/static/SC_Logo.png">
+  <link rel="stylesheet" href="/static/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
+  <div class="container-wrapper">
+    <!-- Left Column: Carousel Slider -->
+    <div class="slider-container">
+      <img src="/static/login_assets/Group_4099.svg" alt="SupplyCopia" class="mainLogo">
 
-    <div class="login-wrapper">
-        <!-- Left Hero Section with SupplyCopia & Trinity Health info -->
-        <div class="login-left d-none d-lg-flex">
-            <div>
-                <img src="/static/SC_Logo.png" alt="SupplyCopia" style="height: 48px; object-fit: contain;">
-                <div class="mt-4">
-                    <span class="badge-system">Health System Command</span>
-                    <h2><span>Trinity Health</span><br>Recall Management & Patient Safety</h2>
-                    <p class="text-secondary mt-3" style="font-size: 0.95rem; line-height: 1.6;">
-                        Centralized hospital recall command center &bull; FDA device & drug intelligence correlated with acute care purchase order history across 104 hospital facilities.
-                    </p>
-                </div>
+      <div class="carousel-viewport">
+        <!-- Slide 1: CFO -->
+        <div class="slide-item active" data-slide="0">
+          <div class="picsum-img-wrapper">
+            <div class="image-slider">
+              <img src="/static/login_assets/slider_Img_01.png" alt="CFO">
             </div>
-
-            <div class="p-3 rounded-3 bg-white border border-danger-subtle shadow-sm">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <i class="fas fa-shield-halved text-danger fs-5"></i>
-                    <strong class="text-dark small">Hospital Patient Safety Operations</strong>
-                </div>
-                <div class="text-muted small" style="font-size: 0.76rem;">
-                    Immediate containment: Facility clinical notifications, inventory stock pull work orders, purchasing cancellation holds, and direct supplier RMA action.
-                </div>
-            </div>
-
-            <div class="small text-muted" style="font-size: 0.72rem;">
-                &copy; 2026 SupplyCopia & Trinity Health. Authorized Health System Operations Only.
-            </div>
+          </div>
+          <div class="carousel-caption">
+            <p>We make life better for <span class="slider-main-text">CFO</span></p>
+          </div>
         </div>
 
-        <!-- Right Login Form -->
-        <div class="login-right">
-            <div class="login-card-inner">
-                <div class="text-center mb-4">
-                    <div class="d-lg-none mb-3">
-                        <img src="/static/SC_Logo.png" alt="SupplyCopia" style="height: 42px;">
-                    </div>
-                    <h3 class="fw-bold text-dark mb-1" style="letter-spacing: -0.5px;">Welcome Back</h3>
-                    <p class="text-muted small">Sign in to Trinity Health Supply Chain Operations</p>
-                </div>
-
-                <form id="loginForm" class="mb-3">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.72rem;">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted border-end-0"><i class="fas fa-envelope"></i></span>
-                            <input type="email" id="username" value="{{ default_user }}" class="form-control border-start-0 ps-1" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.72rem;">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted border-end-0"><i class="fas fa-key"></i></span>
-                            <input type="password" id="password" value="{{ default_pass }}" class="form-control border-start-0 ps-1" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-brand-red w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3">
-                        <i class="fas fa-sign-in-alt"></i><span>Sign In to Platform</span>
-                    </button>
-                </form>
-
-                <div class="border-top pt-3 text-center">
-                    <button type="button" onclick="quickDemoLogin()" class="btn btn-sm btn-outline-secondary w-100 fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" style="font-size: 0.82rem;">
-                        <span class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 8px; height: 8px;"></span>
-                        <span>Instant Demo Login (Sarah Jenkins, RN &bull; Dir. Supply Chain)</span>
-                    </button>
-                </div>
-
-                <div class="text-center text-muted mt-4 small" style="font-size: 0.72rem;">
-                    Protected healthcare data environment. All administrative actions logged.
-                </div>
+        <!-- Slide 2: Supply Chain -->
+        <div class="slide-item" data-slide="1">
+          <div class="picsum-img-wrapper">
+            <div class="image-slider">
+              <img src="/static/login_assets/slider_Img_02.png" alt="Supply Chain">
             </div>
+          </div>
+          <div class="carousel-caption">
+            <p>We make life better for <span class="slider-main-text">Supply Chain</span></p>
+          </div>
         </div>
+
+        <!-- Slide 3: Data & Analytics -->
+        <div class="slide-item" data-slide="2">
+          <div class="picsum-img-wrapper">
+            <div class="image-slider">
+              <img src="/static/login_assets/slider_Img_03.png" alt="Data & Analytics">
+            </div>
+          </div>
+          <div class="carousel-caption">
+            <p>We make life better for <span class="slider-main-text">Data & Analytics</span></p>
+          </div>
+        </div>
+
+        <!-- Slide 4: Sales -->
+        <div class="slide-item" data-slide="3">
+          <div class="picsum-img-wrapper">
+            <div class="image-slider">
+              <img src="/static/login_assets/slider_Img_04.png" alt="Sales">
+            </div>
+          </div>
+          <div class="carousel-caption">
+            <p>We make life better for <span class="slider-main-text">Sales</span></p>
+          </div>
+        </div>
+
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+          <span class="dot active" onclick="goToSlide(0)"></span>
+          <span class="dot" onclick="goToSlide(1)"></span>
+          <span class="dot" onclick="goToSlide(2)"></span>
+          <span class="dot" onclick="goToSlide(3)"></span>
+        </div>
+      </div>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username, password})
-                });
-                if (res.ok) {
-                    window.location.href = '/';
-                } else {
-                    alert('Invalid login credentials');
-                }
-            } catch (err) {
-                alert('Connection error');
-            }
-        });
+    <!-- Right Column: SSO Login Form -->
+    <div class="form-container">
+      <div class="main-content">
+        <h1 class="get-started">Get started</h1>
+        <p class="email-valid">Sign in with your organization SSO to access the Recall Intelligence Hub.</p>
 
-        function quickDemoLogin() {
-            document.getElementById('username').value = "{{ default_user }}";
-            document.getElementById('password').value = "{{ default_pass }}";
-            document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-        }
-    </script>
+        <div class="sso-button-group">
+          <a href="/saml/login" class="primary-btn-normal sso-login-button" id="btnSsoLogin">
+            <svg class="sso-icon" viewBox="0 0 21 21" width="20" height="20">
+              <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+              <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+              <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+            </svg>
+            <span>Sign in with SupplyCopia SSO</span>
+          </a>
+
+          <!-- Local dev helper (auto-displayed on localhost or with ?dev=true) -->
+          <div id="devBypassWrapper" style="display:none; text-align:center; margin-top:10px;">
+            <a href="/saml/dev-login" class="dev-bypass-link" title="Use mock authentication for localhost testing">
+              ⚡ Local Developer Bypass (Test User)
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Section replicating sc-demo.supplycopia.com / enrichment.supplycopia.com -->
+      <div class="bottom-info">
+        <div class="footer-wrapper">
+          <div class="link-text">
+            <a href="https://www.supplycopia.com/about-us/" target="_blank">About Us</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/ceo-corner/" target="_blank">CEO Corner</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/customer-stories/" target="_blank">Customer Stories</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/blogs/" target="_blank">Blog</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/contact-us/" target="_blank">Contact Us</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/terms-of-service/" target="_blank">Terms</a>
+            <span class="seperator">|</span>
+            <a href="https://www.supplycopia.com/privacy-policy/" target="_blank">Privacy policy</a>
+          </div>
+          <div class="icon-wrapper">
+            <div class="reserved-text">
+              &copy; <span id="currentYear">2026</span> <a href="https://www.supplycopia.com/" target="_blank">SupplyCopia Inc.</a> | All Rights Reserved
+            </div>
+            <div class="link-icons">
+              <a href="https://www.linkedin.com/company/supplycopia/mycompany/" target="_blank" title="LinkedIn">
+                <img src="/static/login_assets/linkedin-icon.svg" alt="LinkedIn">
+              </a>
+              <a href="https://www.youtube.com/channel/UCIN4jaNLnDnR5kBy1u-mFog" target="_blank" title="YouTube">
+                <img src="/static/login_assets/youtube-icon.svg" alt="YouTube">
+              </a>
+              <a href="https://www.facebook.com/supplycopia" target="_blank" title="Facebook">
+                <img src="/static/login_assets/facebook-icon.svg" alt="Facebook">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dynamic Year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Check if on localhost or 127.0.0.1 to display dev bypass link
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.search.includes('dev=true')) {
+      var devBypass = document.getElementById('devBypassWrapper');
+      if (devBypass) devBypass.style.display = 'block';
+    }
+
+    // Carousel Slider Logic
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-item');
+    const dots = document.querySelectorAll('.carousel-indicators .dot');
+    let slideInterval = null;
+
+    function goToSlide(index) {
+      if (!slides.length) return;
+      slides[currentSlide].classList.remove('active');
+      dots[currentSlide].classList.remove('active');
+      currentSlide = (index + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+      resetTimer();
+    }
+
+    function nextSlide() {
+      goToSlide(currentSlide + 1);
+    }
+
+    function resetTimer() {
+      if (slideInterval) clearInterval(slideInterval);
+      slideInterval = setInterval(nextSlide, 4500);
+    }
+
+    resetTimer();
+  </script>
 </body>
 </html>
