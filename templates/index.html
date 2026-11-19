@@ -693,6 +693,160 @@
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.35); }
             50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
         }
+
+        /* ======================================================== */
+        /* GUIDED APPLICATION TOUR COMPONENT STYLES                 */
+        /* ======================================================== */
+        .sc-tour-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.72);
+            z-index: 100000;
+            pointer-events: auto;
+            transition: opacity 0.25s ease;
+            opacity: 0;
+        }
+        .sc-tour-backdrop.active {
+            opacity: 1;
+        }
+        .sc-tour-highlight {
+            position: relative !important;
+            z-index: 100002 !important;
+            box-shadow: 0 0 0 4px #dc2626, 0 0 35px rgba(220, 38, 38, 0.45) !important;
+            border-radius: 8px !important;
+            background-color: #ffffff;
+            transition: box-shadow 0.25s ease;
+        }
+        .sc-tour-popover {
+            position: fixed;
+            z-index: 100005;
+            width: 440px;
+            max-width: calc(100vw - 32px);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.9);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: tourFadeScale 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        @keyframes tourFadeScale {
+            from { opacity: 0; transform: scale(0.96) translateY(5px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .sc-tour-popover-header {
+            padding: 10px 16px;
+            background: #0f172a;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sc-tour-badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2.5px 8px;
+            border-radius: 20px;
+            background: #dc2626;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .sc-tour-step-counter {
+            font-size: 0.74rem;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+        .sc-tour-close-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 2px 4px;
+            transition: color 0.15s;
+        }
+        .sc-tour-close-btn:hover {
+            color: #ffffff;
+        }
+        .sc-tour-progress-bar {
+            height: 3px;
+            background: #334155;
+            width: 100%;
+            position: relative;
+        }
+        .sc-tour-progress-fill {
+            height: 100%;
+            background: #dc2626;
+            transition: width 0.25s ease;
+        }
+        .sc-tour-body {
+            padding: 16px 18px;
+            color: #334155;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        .sc-tour-title {
+            font-size: 1.02rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-tour-title i {
+            color: #dc2626;
+        }
+        .sc-tour-footer {
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sc-tour-btn {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sc-tour-btn-primary {
+            background: #dc2626;
+            color: #ffffff;
+        }
+        .sc-tour-btn-primary:hover {
+            background: #b91c1c;
+        }
+        .sc-tour-btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        .sc-tour-btn-secondary:hover {
+            background: #cbd5e1;
+        }
+        .sc-tour-btn-text {
+            background: transparent;
+            color: #64748b;
+            padding: 6px 8px;
+        }
+        .sc-tour-btn-text:hover {
+            color: #0f172a;
+        }
     </style>
 </head>
 <body>
@@ -749,6 +903,12 @@
                             <div class="text-secondary small fw-semibold" style="font-size: 0.75rem;">{{ user.role }} &bull; Trinity Health</div>
                             <div class="text-muted small" style="font-size: 0.70rem;">Enterprise Recall Command Center</div>
                         </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 rounded fw-semibold d-flex align-items-center text-primary" href="javascript:void(0)" onclick="startTabGuidedTour()">
+                                <i class="fas fa-compass me-2 text-primary"></i>Guided Application Tour
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
                         <li>
                             <a class="dropdown-item py-2 px-3 rounded text-danger fw-semibold d-flex align-items-center" href="/logout">
                                 <i class="fas fa-sign-out-alt me-2 text-danger"></i>Sign Out
@@ -8145,6 +8305,468 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             document.getElementById('toast-msg').innerText = msg;
             toastInstance.show();
         }
+
+        /* ======================================================== */
+        /* TAB-SPECIFIC GUIDED APPLICATION TOUR ENGINE              */
+        /* ======================================================== */
+        window._tourCurrentSteps = [];
+        window._tourCurrentIndex = 0;
+        window._tourCurrentTarget = null;
+        window._tourKeyHandler = null;
+
+        function startTabGuidedTour() {
+            // Close the user profile dropdown if open
+            const dropdownEl = document.getElementById('userMenuDropdown');
+            if (dropdownEl && window.bootstrap && window.bootstrap.Dropdown) {
+                const bsDrop = bootstrap.Dropdown.getInstance(dropdownEl);
+                if (bsDrop) bsDrop.hide();
+            }
+
+            // Detect currently active tab
+            let activeTabId = 'tab-recalls';
+            const activeBtn = document.querySelector('#topNavTabs .nav-link.active');
+            if (activeBtn && activeBtn.id) {
+                activeTabId = activeBtn.id.replace('-btn', '');
+            }
+
+            // Build Common Global Shell Steps (Steps 1-4)
+            const commonSteps = [
+                {
+                    selector: '#mainAppHeader',
+                    badge: 'Network Command',
+                    title: '<i class="fas fa-hospital-user"></i>104 Multi-Hospital Network Command Center',
+                    content: 'Welcome to Trinity Health\'s centralized <strong>Recall Management & Patient Safety Platform</strong>.<br><br>This system connects 104 hospital facilities with live FDA MedWatch surveillance, proactive supplier engagement, and ERP purchase order holds. Click the <strong>FDA MedWatch Feeds</strong> button in the header at any time to review real-time clinical safety and hazard grievances.'
+                },
+                {
+                    selector: '.hero-command-ribbon',
+                    badge: 'Critical Incidents',
+                    title: '<i class="fas fa-bell"></i>Active Incident Hero Alert Ribbon',
+                    content: 'High-priority, life-critical <strong>Class I recalls</strong> (such as Cardinal Health Monoject Syringes or surgical staple reloads) surface here immediately with live patient safety alerts, impacted facility counts, and containment status.'
+                },
+                {
+                    selector: '.row.g-2.mb-3',
+                    badge: 'Executive KPIs',
+                    title: '<i class="fas fa-chart-line"></i>Operational & Risk Exposure Tiles',
+                    content: 'Monitor organizational risk across 5 primary tiles:<br>' +
+                             '• <strong>Recalled Catalogs:</strong> Total active recall notices and Class I life-critical items.<br>' +
+                             '• <strong>Facilities Impacted:</strong> Network facilities monitored in real-time.<br>' +
+                             '• <strong>Spend Exposure:</strong> Dollar exposure across 424,000 purchase orders.<br>' +
+                             '• <strong>Physical Stock Pulls:</strong> Central Supply & clean utility work orders.<br>' +
+                             '• <strong>Order Stops (PO Hold):</strong> Immediate ERP dock holds and EDI purchasing freezes (highlighted in red).'
+                },
+                {
+                    selector: '#topNavTabs',
+                    badge: 'Navigation',
+                    title: '<i class="fas fa-layer-group"></i>Specialized Command Modules',
+                    content: 'Navigate seamlessly between 6 operational modules:<br>' +
+                             '1. <strong>Recalled Products:</strong> Search catalogs, check bin inventory & quarantine batches.<br>' +
+                             '2. <strong>Supplier Actions:</strong> Demand RMA & 100% financial reimbursement.<br>' +
+                             '3. <strong>Disruption Radar:</strong> Scan supply chain threats & BOM chokepoints.<br>' +
+                             '4. <strong>Executive Dashboards:</strong> Deep PO analytics & risk score breakdowns.<br>' +
+                             '5. <strong>Workflow Management:</strong> Live Atlassian Jira TRM board & RACI governance.<br>' +
+                             '6. <strong>Action Audit Trail:</strong> Chronological regulatory proof-of-action logs.'
+                }
+            ];
+
+            // Tab-Specific Deep Dive Steps
+            let tabSteps = [];
+
+            if (activeTabId === 'tab-recalls') {
+                tabSteps = [
+                    {
+                        selector: '#tab-recalls .search-box-wrap',
+                        badge: 'Search Intelligence',
+                        title: '<i class="fas fa-search"></i>Full-Text Hazard Search',
+                        content: 'Quickly search across catalog numbers, product descriptions, manufacturers, or hazard keywords (e.g. <em>embolism, syringe, sterility, leak</em>). Press Enter or click Apply Filters to search instantaneously.'
+                    },
+                    {
+                        selector: '#tab-recalls .d-flex.align-items-center.gap-2.flex-nowrap',
+                        badge: 'Granular Filtering',
+                        title: '<i class="fas fa-filter"></i>Multi-Criteria Filtering & Reset',
+                        content: 'Filter the recall database by:<br>' +
+                                 '• <strong>FDA Risk Class:</strong> Class I (Critical Patient Risk), Class II, or Class III.<br>' +
+                                 '• <strong>Action Needed:</strong> Stock Pulls Required vs Order Stops.<br>' +
+                                 '• <strong>Hospital Facility:</strong> Isolate exposure to any of Trinity Health\'s 104 facilities.<br>' +
+                                 '• <strong>Reset Button:</strong> Instantly clear all active filters back to the full dataset.'
+                    },
+                    {
+                        selector: '#mainRecallsTable thead',
+                        badge: 'Exposure Matrix',
+                        title: '<i class="fas fa-table"></i>Recalled Products & Exposure Table',
+                        content: 'Each row displays severity, catalog number, manufacturer, and the verified FDA recall reason. Check the <strong>Impacted Facilities</strong> count and <strong>Spend at Risk</strong> to evaluate financial and clinical exposure.'
+                    },
+                    {
+                        selector: '#mainRecallsTable tbody tr:first-child td:nth-child(8), #mainRecallsTable tbody tr:first-child',
+                        badge: 'Operational Action',
+                        title: '<i class="fas fa-box-archive"></i>Action Badge: Stock Pull vs PO Hold',
+                        content: 'Badges dictate required front-line protocol:<br>' +
+                                 '• <span class="badge bg-danger">STOCK PULL</span>: Immediate physical retrieval from storerooms, clean utilities, and procedural carts.<br>' +
+                                 '• <span class="badge bg-warning text-dark">ORDER STOP</span>: EDI purchasing hold to prevent dock deliveries.'
+                    },
+                    {
+                        selector: '#mainRecallsTable tbody tr:first-child td:last-child, #mainRecallsTable tbody tr:first-child',
+                        badge: 'Triage Workflows',
+                        title: '<i class="fas fa-bolt"></i>Triage Actions: Dossier & Facility Dispatch',
+                        content: 'Click <strong>Inspect Dossier</strong> to view real-time facility par levels, storeroom bin coordinates, and batch quarantine controls. Click <strong>Dispatch Action</strong> to open the Stepwise Wizard: generate AI clinical memos and notify hospital materials managers.'
+                    },
+                    {
+                        selector: '#check-all-recalls',
+                        badge: 'Batch Operations',
+                        title: '<i class="fas fa-check-double"></i>Batch Multi-Selection',
+                        content: 'Use the master checkbox to select multiple or all recalled catalogs at once for bulk quarantine, batch facility notification, or executive audit exports.'
+                    },
+                    {
+                        selector: '#pagination-info',
+                        badge: 'Dataset Navigation',
+                        title: '<i class="fas fa-list-ol"></i>Pagination & Record Counter',
+                        content: 'Browse the complete collection of 2,493+ recalled catalogs with responsive pagination (15 items per page) and real-time record count indicators.'
+                    }
+                ];
+            } else if (activeTabId === 'tab-suppliers') {
+                tabSteps = [
+                    {
+                        selector: '#tab-suppliers .row.g-3.mb-4',
+                        badge: 'Top Recalling Vendors',
+                        title: '<i class="fas fa-truck-loading"></i>High-Exposure Supplier Cards',
+                        content: 'Highlights vendors with the highest financial and volume exposure across Trinity Health (e.g. Medtronic, Intuitive Surgical, Becton Dickinson). Click <strong>Request RMA & Credit Memo</strong> to initiate recovery immediately.'
+                    },
+                    {
+                        selector: '#tab-suppliers .card.bg-light.border.p-3',
+                        badge: 'Directory Search',
+                        title: '<i class="fas fa-search-plus"></i>Manufacturer Search, FDA Class & Sort Toolbar',
+                        content: 'Search across all 199 medical device manufacturers, isolate Class I high-severity suppliers, and sort by Total Spend ($), PO Alert Count, or Catalog Volume.'
+                    },
+                    {
+                        selector: '#tab-suppliers .border.rounded-3.overflow-hidden',
+                        badge: 'Vendor Directory',
+                        title: '<i class="fas fa-building"></i>Medical Device Manufacturer Directory',
+                        content: 'Comprehensive table listing recalled catalog counts, PO alerts, and total spend exposure for every supplier, with direct 1-click claim buttons.'
+                    },
+                    {
+                        selector: '#tab-suppliers button[onclick*="openGenericSupplierModal"], #tab-suppliers .d-flex.gap-2',
+                        badge: 'Recovery Workflow',
+                        title: '<i class="fas fa-file-invoice-dollar"></i>RMA & 100% Credit Claim Generator',
+                        content: 'Click <strong>Draft Custom Supplier Claim</strong> to launch the claim generator: calculate 100% credit recovery, designate carrier return tracking, and automatically synchronize the case into Jira TRM.'
+                    },
+                    {
+                        selector: '#supplier-actions-log-container',
+                        badge: 'Audit Ledger',
+                        title: '<i class="fas fa-receipt"></i>Dispatched Claims & Carrier Receipts Log',
+                        content: 'Chronological audit trail documenting all issued supplier notices, RMA claim numbers, courier tracking, and manufacturer credit acknowledgments.'
+                    }
+                ];
+            } else if (activeTabId === 'tab-radar') {
+                tabSteps = [
+                    {
+                        selector: '#radar-category-select, #radar-mfg-select',
+                        badge: 'Threat Scope',
+                        title: '<i class="fas fa-crosshairs"></i>Clinical Spend Category & Vendor Scope',
+                        content: 'Select clinical spend categories (Cardiovascular, Orthopedics, Infusion, PPE) and choose deep scan scopes across Top 10 network suppliers or specific manufacturers.'
+                    },
+                    {
+                        selector: '#radar-scenario-input',
+                        badge: 'Scenario Modeling',
+                        title: '<i class="fas fa-radiation"></i>Threat Trigger & Scenario Simulation',
+                        content: 'Simulate real-world operational stressors such as port strikes, plant fires, sterilization plant closures, or raw resin shortages to evaluate network vulnerability.'
+                    },
+                    {
+                        selector: '#radar-weather-banner, #btn-stage-storm-buffer',
+                        badge: 'Severe Weather',
+                        title: '<i class="fas fa-cloud-bolt"></i>NOAA Weather Advisory & Pre-Storm Buffer',
+                        content: 'Live weather intelligence tracks tropical storms and severe weather cones affecting Trinity facilities. Click <strong>Stage 72h Pre-Storm Buffer</strong> to transfer emergency units from distribution hubs to coastal hospitals (e.g. FACILITY-65, FACILITY-72, FACILITY-136).'
+                    },
+                    {
+                        selector: '#radar-ai-summary',
+                        badge: 'AI Synthesis',
+                        title: '<i class="fas fa-brain"></i>\'Ask The Bee\' Ground-Truth Disruption Brief',
+                        content: 'AI-synthesized disruption analysis evaluating upstream supply chokepoints, clinical procedural risk, and actionable mitigation tactics.'
+                    },
+                    {
+                        selector: '#radar-bom-widget',
+                        badge: 'Upstream BOM',
+                        title: '<i class="fas fa-sitemap"></i>Tier-2 & Tier-3 Component BOM Mapping',
+                        content: 'Maps upstream sub-tier component dependencies (resins, microchips, packaging) to pinpoint single-source chokepoints and calculate network blast radius.'
+                    },
+                    {
+                        selector: '#radar-financial-widget',
+                        badge: 'Financial Solvency',
+                        title: '<i class="fas fa-chart-line"></i>Supplier Financial Solvency & SEC 10-Q Radar',
+                        content: 'Monitors vendor Altman Z-Scores, Quick Ratios, and Debt-to-Equity metrics to detect early warning signs of supplier insolvency before delivery disruptions occur.'
+                    },
+                    {
+                        selector: '#radar-impact-matrix-card',
+                        badge: 'Impact Matrix',
+                        title: '<i class="fas fa-table-cells"></i>Disruption Impact & Corrective Action Matrix',
+                        content: 'Cross-references active purchase orders and facility par levels with clinically approved alternative catalog substitutes to prevent surgical cancellations.'
+                    },
+                    {
+                        selector: '#radar-results-container',
+                        badge: 'Live Feed',
+                        title: '<i class="far fa-newspaper"></i>Live Threat Intelligence Articles',
+                        content: 'Real-time web and regulatory intelligence monitoring FDA safety alerts, import alerts, and manufacturer news worldwide.'
+                    }
+                ];
+            } else if (activeTabId === 'tab-dashboards') {
+                tabSteps = [
+                    {
+                        selector: '#tab-dashboards .row.g-3.mb-3:first-child',
+                        badge: 'Executive Metrics',
+                        title: '<i class="fas fa-tachometer-alt"></i>High-Level Dashboard Metrics Strip',
+                        content: 'Overview of Total Recall Items (1,099), Active Alerts (336k+), Shortage Risks (0), and Open Jira TRM Tasks with direct link to the Atlassian Kanban board.'
+                    },
+                    {
+                        selector: '#control-filters-form',
+                        badge: 'Multi-Dimensional Slicing',
+                        title: '<i class="fas fa-sliders"></i>Control Filters Panel',
+                        content: 'Granular filtering by PO Date range, Recall Date range, Action Needed (Purchasing Violation vs Stock Pull), Risk Score (Critical 80–100, Medium 40–79, Low 0–39), PO Number, Facility, Manufacturer, and Catalog #.'
+                    },
+                    {
+                        selector: '#chartRecallItems, #chartRecallRisk',
+                        badge: 'Visual Analytics',
+                        title: '<i class="fas fa-chart-pie"></i>Donut Charts: Action Needed & Risk Score',
+                        content: 'Dynamic visualization of recall distributions broken down by required operational action and clinical risk score severity.'
+                    },
+                    {
+                        selector: '#tab-dashboards .table-responsive',
+                        badge: 'PO Alert Records',
+                        title: '<i class="fas fa-list-check"></i>Comprehensive 17-Column PO Alerts Table',
+                        content: 'In-depth transactional record containing Risk Score, Action Needed, PO Date, Recall Date, PO #, Facility, Manufacturer, Qty Ordered, Catalog #, Description, Code Info, Recall Reason, Suggested Alternatives, and Assignee.'
+                    },
+                    {
+                        selector: '#dashboard-alerts-tbody tr:first-child',
+                        badge: 'Item Inspection',
+                        title: '<i class="fas fa-box"></i>Line-Item Catalog Dossier & Workflows',
+                        content: 'Click any Catalog # to open the Catalog Intelligence Dossier and view physical storeroom bin inventory. Use Communicate and Workflow action buttons to resolve alerts directly.'
+                    },
+                    {
+                        selector: '#dashboard-table-page-info',
+                        badge: 'Alerts Navigation',
+                        title: '<i class="fas fa-angles-right"></i>Alert Records Pagination',
+                        content: 'Navigate through all 336,000+ purchase order alerts with responsive pagination controls.'
+                    }
+                ];
+            } else if (activeTabId === 'tab-jira') {
+                tabSteps = [
+                    {
+                        selector: '#tab-jira .card-executive:first-child',
+                        badge: 'Jira Integration',
+                        title: '<i class="fab fa-jira text-primary"></i>Live Atlassian Jira Cloud TRM Connection',
+                        content: 'Bidirectional integration with Atlassian Jira Cloud (Project: TRM, Board #497). Click <strong>Open Jira Board</strong> to view full Kanban swimlanes, or <strong>Register Case in Jira</strong> to log a new ticket.'
+                    },
+                    {
+                        selector: '#tab-jira .row.g-2.mb-3',
+                        badge: '8-Stage Operating Model',
+                        title: '<i class="fas fa-timeline"></i>Trinity Health 8-Stage Operating Model',
+                        content: 'Tracks recall cases across Trinity\'s standard 8 stages:<br>' +
+                                 '1. Ingestion & Triage &bull; 2. Exposure & Traceability &bull; 3. Clinical & Safety Risk &bull; 4. Quarantine & Containment &bull; 5. Communication & Dispatch &bull; 6. Supplier Resolution &bull; 7. Alternative Sourcing &bull; 8. Verify & Close.<br>' +
+                                 '<em>Click any step card to filter tickets for that stage instantly!</em>'
+                    },
+                    {
+                        selector: '#tab-jira .card-executive.mb-3.p-3',
+                        badge: 'RACI Governance',
+                        title: '<i class="fas fa-users-gear text-primary"></i>Role Accountabilities & RACI Governance',
+                        content: 'Designates clear responsibilities across:<br>' +
+                                 '• <strong>Program Owner:</strong> Central Recall Coordinator<br>' +
+                                 '• <strong>Supply Chain:</strong> Materials & Inventory Lead<br>' +
+                                 '• <strong>Clinical:</strong> Service Line Chair / Physician Lead<br>' +
+                                 '• <strong>Safety & Risk:</strong> Quality Officer'
+                    },
+                    {
+                        selector: '#jira-issues-table',
+                        badge: 'Live Cases',
+                        title: '<i class="fas fa-tasks"></i>Live Jira Cases & Work Orders Table',
+                        content: 'Real-time synchronized tickets showing Jira Key, summary, current operating stage, assignee, and direct <strong>Advance Workflow</strong> buttons to transition cases through the lifecycle.'
+                    }
+                ];
+            } else if (activeTabId === 'tab-audit') {
+                tabSteps = [
+                    {
+                        selector: '#tab-audit .card-executive',
+                        badge: 'Regulatory Compliance',
+                        title: '<i class="fas fa-clipboard-check"></i>Operational Action & Notification Audit Log',
+                        content: 'An immutable, time-stamped proof-of-action ledger recording every dispatched clinical memo, stock pull order, PO dock hold, and supplier RMA request across all 104 facilities.'
+                    },
+                    {
+                        selector: '#audit-table-body',
+                        badge: 'Traceability',
+                        title: '<i class="fas fa-file-shield"></i>Audit Record Traceability & Jira Links',
+                        content: 'Inspect Action ID, dispatch timestamp, target hospital facility, catalog #, action details, linked Jira TRM ticket ID, and confirmed delivery status.'
+                    }
+                ];
+            }
+
+            window._tourCurrentSteps = [...commonSteps, ...tabSteps];
+            window._tourCurrentIndex = 0;
+
+            createTourBackdrop();
+            renderTourStep(0);
+
+            // Bind keyboard navigation
+            if (window._tourKeyHandler) {
+                window.removeEventListener('keydown', window._tourKeyHandler);
+            }
+            window._tourKeyHandler = function(e) {
+                if (e.key === 'ArrowRight') {
+                    nextTourStep();
+                } else if (e.key === 'ArrowLeft') {
+                    prevTourStep();
+                } else if (e.key === 'Escape') {
+                    exitTour();
+                }
+            };
+            window.addEventListener('keydown', window._tourKeyHandler);
+        }
+
+        function createTourBackdrop() {
+            let backdrop = document.getElementById('sc-tour-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.id = 'sc-tour-backdrop';
+                backdrop.className = 'sc-tour-backdrop';
+                backdrop.onclick = function(e) {
+                    if (e.target === backdrop) exitTour();
+                };
+                document.body.appendChild(backdrop);
+            }
+            setTimeout(() => backdrop.classList.add('active'), 10);
+        }
+
+        function renderTourStep(index) {
+            if (index < 0 || index >= window._tourCurrentSteps.length) {
+                exitTour();
+                return;
+            }
+
+            window._tourCurrentIndex = index;
+            const step = window._tourCurrentSteps[index];
+            const total = window._tourCurrentSteps.length;
+            const pct = Math.round(((index + 1) / total) * 100);
+
+            // Remove previous highlight
+            if (window._tourCurrentTarget) {
+                window._tourCurrentTarget.classList.remove('sc-tour-highlight');
+            }
+
+            // Find target element
+            let targetEl = document.querySelector(step.selector);
+            // If target is null or hidden (e.g. dynamically hidden sub-widget), fallback to parent or document.body
+            if (!targetEl || targetEl.offsetParent === null) {
+                targetEl = document.getElementById('topNavTabs') || document.body;
+            }
+
+            window._tourCurrentTarget = targetEl;
+            targetEl.classList.add('sc-tour-highlight');
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Create or update popover
+            let popover = document.getElementById('sc-tour-popover');
+            if (!popover) {
+                popover = document.createElement('div');
+                popover.id = 'sc-tour-popover';
+                popover.className = 'sc-tour-popover';
+                document.body.appendChild(popover);
+            }
+
+            popover.innerHTML = `
+                <div class="sc-tour-popover-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="sc-tour-badge">${step.badge}</span>
+                        <span class="sc-tour-step-counter">Step ${index + 1} of ${total}</span>
+                    </div>
+                    <button type="button" class="sc-tour-close-btn" onclick="exitTour()" title="Close Tour (Esc)">&times;</button>
+                </div>
+                <div class="sc-tour-progress-bar">
+                    <div class="sc-tour-progress-fill" style="width: ${pct}%;"></div>
+                </div>
+                <div class="sc-tour-body">
+                    <div class="sc-tour-title">${step.title}</div>
+                    <div class="sc-tour-text">${step.content}</div>
+                </div>
+                <div class="sc-tour-footer">
+                    <div>
+                        <button type="button" class="sc-tour-btn sc-tour-btn-text" onclick="exitTour()">Skip Tour</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        ${index > 0 ? `<button type="button" class="sc-tour-btn sc-tour-btn-secondary" onclick="prevTourStep()"><i class="fas fa-arrow-left"></i>Back</button>` : ''}
+                        <button type="button" class="sc-tour-btn sc-tour-btn-primary" onclick="${index === total - 1 ? 'exitTour()' : 'nextTourStep()'}">
+                            ${index === total - 1 ? 'Finish Tour <i class="fas fa-check"></i>' : 'Next <i class="fas fa-arrow-right"></i>'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Position popover relative to target
+            setTimeout(() => {
+                positionTourPopover(popover, targetEl);
+            }, 60);
+        }
+
+        function positionTourPopover(popover, targetEl) {
+            if (!popover) return;
+            const pWidth = 440;
+            const pHeight = popover.offsetHeight || 280;
+            const margin = 14;
+
+            if (!targetEl || targetEl === document.body) {
+                popover.style.top = '50%';
+                popover.style.left = '50%';
+                popover.style.transform = 'translate(-50%, -50%)';
+                return;
+            }
+
+            popover.style.transform = 'none';
+            const rect = targetEl.getBoundingClientRect();
+
+            let top = rect.bottom + margin;
+            let left = rect.left + (rect.width / 2) - (pWidth / 2);
+
+            // Bounds check horizontally
+            left = Math.max(16, Math.min(window.innerWidth - pWidth - 16, left));
+
+            // If popover goes off bottom of screen, position above target
+            if (top + pHeight > window.innerHeight - 16) {
+                top = rect.top - pHeight - margin;
+                if (top < 16) {
+                    top = Math.max(16, (window.innerHeight - pHeight) / 2);
+                }
+            }
+
+            popover.style.top = `${top}px`;
+            popover.style.left = `${left}px`;
+        }
+
+        function nextTourStep() {
+            renderTourStep(window._tourCurrentIndex + 1);
+        }
+
+        function prevTourStep() {
+            renderTourStep(window._tourCurrentIndex - 1);
+        }
+
+        function exitTour() {
+            if (window._tourCurrentTarget) {
+                window._tourCurrentTarget.classList.remove('sc-tour-highlight');
+                window._tourCurrentTarget = null;
+            }
+            const popover = document.getElementById('sc-tour-popover');
+            if (popover) popover.remove();
+
+            const backdrop = document.getElementById('sc-tour-backdrop');
+            if (backdrop) {
+                backdrop.classList.remove('active');
+                setTimeout(() => backdrop.remove(), 200);
+            }
+
+            if (window._tourKeyHandler) {
+                window.removeEventListener('keydown', window._tourKeyHandler);
+                window._tourKeyHandler = null;
+            }
+        }
+
+        window.startTabGuidedTour = startTabGuidedTour;
+        window.nextTourStep = nextTourStep;
+        window.prevTourStep = prevTourStep;
+        window.exitTour = exitTour;
     </script>
 </body>
 </html>
