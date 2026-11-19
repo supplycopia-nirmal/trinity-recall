@@ -166,21 +166,25 @@ async def home_page(request: Request):
     if not user:
         return RedirectResponse(url="/login?returnUrl=/", status_code=status.HTTP_302_FOUND)
         
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "user": user,
-        "project_name": settings.PROJECT_NAME
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "user": user,
+            "project_name": settings.PROJECT_NAME
+        }
+    )
 
 @app.api_route("/login", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def login_page(request: Request, returnUrl: Optional[str] = "/"):
     # If already logged in, redirect directly to destination
     if request.session.get("user"):
         return RedirectResponse(url=returnUrl or "/", status_code=status.HTTP_302_FOUND)
-    return templates.TemplateResponse("login.html", {
-        "request": request,
-        "returnUrl": returnUrl or "/"
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context={"returnUrl": returnUrl or "/"}
+    )
 
 @app.get("/saml/login")
 async def saml_login(request: Request, returnUrl: Optional[str] = "/"):
@@ -209,10 +213,12 @@ async def saml_acs(request: Request):
         return RedirectResponse(url=relay_state or "/", status_code=status.HTTP_302_FOUND)
     except Exception as e:
         logger.error(f"SAML ACS processing failure: {e}", exc_info=True)
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": f"SAML Authentication Failed: {str(e)}"
-        }, status_code=400)
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={"error": f"SAML Authentication Failed: {str(e)}"},
+            status_code=400
+        )
 
 @app.get("/saml/metadata")
 async def saml_metadata():
