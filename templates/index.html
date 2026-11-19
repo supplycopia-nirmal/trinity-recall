@@ -703,7 +703,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.72);
+            background: rgba(0, 0, 0, 0.65);
             z-index: 100000;
             pointer-events: auto;
             transition: opacity 0.25s ease;
@@ -715,19 +715,24 @@
         .sc-tour-highlight {
             position: relative !important;
             z-index: 100002 !important;
-            box-shadow: 0 0 0 4px #dc2626, 0 0 35px rgba(220, 38, 38, 0.45) !important;
+            box-shadow: 0 0 0 4px #dc2626, 0 0 35px rgba(220, 38, 38, 0.5) !important;
             border-radius: 8px !important;
             background-color: #ffffff;
             transition: box-shadow 0.25s ease;
         }
         .sc-tour-popover {
-            position: fixed;
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
             z-index: 100005;
             width: 440px;
-            max-width: calc(100vw - 32px);
+            max-width: calc(100vw - 48px);
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.9);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -737,6 +742,18 @@
         @keyframes tourFadeScale {
             from { opacity: 0; transform: scale(0.96) translateY(5px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .sc-tour-menu-btn {
+            color: #1e293b !important;
+            background: transparent !important;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .sc-tour-menu-btn:hover, .sc-tour-menu-btn:focus, .sc-tour-menu-btn:active {
+            color: #0f172a !important;
+            background: #f1f5f9 !important;
+        }
+        .sc-tour-menu-btn i {
+            color: #dc2626 !important;
         }
         .sc-tour-popover-header {
             padding: 10px 16px;
@@ -904,8 +921,8 @@
                             <div class="text-muted small" style="font-size: 0.70rem;">Enterprise Recall Command Center</div>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2 px-3 rounded fw-semibold d-flex align-items-center text-primary" href="javascript:void(0)" onclick="startTabGuidedTour()">
-                                <i class="fas fa-compass me-2 text-primary"></i>Guided Application Tour
+                            <a class="dropdown-item py-2 px-3 rounded fw-semibold d-flex align-items-center sc-tour-menu-btn" href="javascript:void(0)" onclick="startTabGuidedTour()">
+                                <i class="fas fa-compass me-2"></i>Guided Application Tour
                             </a>
                         </li>
                         <li><hr class="dropdown-divider my-1"></li>
@@ -924,7 +941,7 @@
     <main class="app-fluid-container py-3">
 
         <!-- ACTIVE INCIDENT HERO COMMAND RIBBON -->
-        <div class="hero-command-ribbon d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div id="active-incident-ribbon" class="hero-command-ribbon d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="d-flex align-items-center justify-content-center bg-danger bg-opacity-25 border border-danger border-opacity-50 rounded-circle" style="width: 44px; height: 44px;">
                     <span class="pulse-critical-dot"></span>
@@ -956,7 +973,7 @@
         </div>
 
         <!-- EXECUTIVE KPI CARDS (Full Width 5 Columns, Color-Blind Safe Accents & Operational Categories) -->
-        <div class="row g-3 mb-3">
+        <div id="main-executive-kpis" class="row g-3 mb-3">
             <!-- 1. Recalled Products -->
             <div class="col-xl col-md-4 col-sm-6">
                 <div class="card-executive p-3 h-100">
@@ -1090,13 +1107,13 @@
             <div class="card-executive mb-3">
                 <div class="p-3 border-bottom d-flex align-items-center justify-content-between gap-2.5 bg-white rounded-top flex-nowrap" style="overflow-x: auto;">
                     <!-- Search Input -->
-                    <div class="search-box-wrap flex-grow-1" style="min-width: 240px; max-width: 400px;">
+                    <div id="recalls-search-wrap" class="search-box-wrap flex-grow-1" style="min-width: 240px; max-width: 400px;">
                         <i class="fas fa-search"></i>
                         <input type="text" id="recall-search-input" onkeyup="if(event.key==='Enter') searchRecalls()" class="form-control form-control-sm search-box-input" placeholder="Search product description, catalog #, manufacturer, or hazard keywords...">
                     </div>
 
                     <!-- Filter Controls & Reset Action -->
-                    <div class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
+                    <div id="recalls-filters-toolbar" class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
                         <button class="btn btn-sm btn-dark fw-bold px-3 text-nowrap" onclick="searchRecalls()">
                             <i class="fas fa-filter me-1"></i>Apply Filters
                         </button>
@@ -1118,7 +1135,7 @@
                             <option value="ALL">All Facilities (104)</option>
                         </select>
 
-                        <button class="btn btn-sm btn-outline-secondary px-2.5 fw-semibold text-nowrap d-flex align-items-center gap-1.5" onclick="resetFilters()" title="Reset all filters">
+                        <button id="recalls-btn-reset" class="btn btn-sm btn-outline-secondary px-2.5 fw-semibold text-nowrap d-flex align-items-center gap-1.5" onclick="resetFilters()" title="Reset all filters">
                             <i class="fas fa-redo"></i><span>Reset</span>
                         </button>
                     </div>
@@ -1190,14 +1207,14 @@
                         <button class="btn btn-sm btn-outline-secondary fw-bold px-3" onclick="loadAllSuppliers()">
                             <i class="fas fa-sync-alt me-1.5"></i>Refresh Directory
                         </button>
-                        <button class="btn btn-sm btn-dark fw-bold px-3" onclick="openGenericSupplierModal()">
+                        <button id="supplier-btn-draft-claim" class="btn btn-sm btn-dark fw-bold px-3" onclick="openGenericSupplierModal()">
                             <i class="fas fa-plus me-1.5"></i>Draft Custom Supplier Claim
                         </button>
                     </div>
                 </div>
 
                 <!-- Top Recalling Suppliers Cards -->
-                <div class="row g-3 mb-4">
+                <div id="supplier-top-cards" class="row g-3 mb-4">
                     <div class="col-md-4">
                         <div class="card border rounded-3 p-3 bg-light h-100 shadow-xs">
                             <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem;">Top Recalling Supplier (Spend)</div>
@@ -1231,7 +1248,7 @@
                 </div>
 
                 <!-- Comprehensive Filter & Search Bar -->
-                <div class="card bg-light border p-3 mb-3">
+                <div id="supplier-filter-card" class="card bg-light border p-3 mb-3">
                     <div class="row g-2 align-items-center">
                         <div class="col-md-5">
                             <div class="input-group input-group-sm">
@@ -1347,7 +1364,7 @@
                     </div>
                 </div>
 
-                <div class="row align-items-center mb-3 g-3">
+                <div id="radar-scope-controls" class="row align-items-center mb-3 g-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold text-muted">Product / Spend Category</label>
                         <select id="radar-category-select" class="form-select form-select-sm">
@@ -1384,7 +1401,7 @@
                         <input type="text" id="radar-scenario-input" class="form-control form-control-sm" placeholder="e.g. port strike, plant fire, raw resin shortage">
                     </div>
                     <div class="col-md-2 pt-4">
-                        <button class="btn btn-dark btn-sm w-100 fw-bold" onclick="scanRadar()">
+                        <button id="radar-scan-scope-btn" class="btn btn-dark btn-sm w-100 fw-bold" onclick="scanRadar()">
                             <i class="fas fa-search me-1"></i>Scan Scope
                         </button>
                     </div>
@@ -1496,7 +1513,7 @@
         <div id="tab-dashboards" class="tab-pane-content d-none">
             
             <!-- Top 4 KPI Metrics Strip (Exact Screenshot Match) -->
-            <div class="row g-3 mb-3">
+            <div id="dashboard-kpi-row" class="row g-3 mb-3">
                 <div class="col-xl-3 col-md-6">
                     <div class="card-executive p-3 bg-white h-100">
                         <div class="text-muted small fw-bold text-uppercase d-flex justify-content-between" style="font-size: 0.68rem; letter-spacing: 0.5px;">
@@ -1778,7 +1795,7 @@
         <!-- ======================================================== -->
         <div id="tab-jira" class="tab-pane-content d-none">
             <!-- Header Integration Card with Live Atlassian Board Link -->
-            <div class="card-executive p-3 mb-3 bg-white shadow-sm border">
+            <div id="jira-header-card" class="card-executive p-3 mb-3 bg-white shadow-sm border">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div class="d-flex align-items-center gap-3">
                         <div class="rounded-3 p-2.5 d-flex align-items-center justify-content-center" style="background-color: #EBF3FC; width: 48px; height: 48px;">
@@ -1811,7 +1828,7 @@
             </div>
 
             <!-- 8-Stage Health System Operating Model Visual Flow -->
-            <div class="card-executive mb-3 p-3 bg-white shadow-sm border">
+            <div id="jira-operating-model-card" class="card-executive mb-3 p-3 bg-white shadow-sm border">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
                         <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 0.85rem;">
@@ -1917,7 +1934,7 @@
             </div>
 
             <!-- Role Accountability Matrix (RACI Accordion / Cards) -->
-            <div class="card-executive mb-3 p-3 bg-white shadow-sm border">
+            <div id="jira-raci-card" class="card-executive mb-3 p-3 bg-white shadow-sm border">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 0.85rem;">
                         <i class="fas fa-users-gear text-primary"></i>
@@ -2016,7 +2033,7 @@
         <!-- TAB 5: AUDIT TRAIL & ACTION LOG (FULL WIDTH)             -->
         <!-- ======================================================== -->
         <div id="tab-audit" class="tab-pane-content d-none">
-            <div class="card-executive mb-3">
+            <div id="audit-header-card" class="card-executive mb-3">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white rounded-top">
                     <div>
                         <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
@@ -4080,10 +4097,10 @@
                         </td>
                         <td class="text-center" onclick="event.stopPropagation()">
                             <div class="btn-group btn-group-sm">
-                                <button onclick="openSideInspectionDrawer('${item.catalog}')" class="btn btn-outline-brand fw-bold px-2 py-1 shadow-xs" title="Open Slide-Out Drawer">
+                                <button onclick="openSideInspectionDrawer('${item.catalog}')" class="btn btn-outline-brand fw-bold px-2 py-1 shadow-xs btn-inspect-action" title="Open Slide-Out Drawer">
                                     <i class="fas fa-sidebar me-1 text-primary"></i>Inspect
                                 </button>
-                                <button onclick="openFacilitiesDrawer('${item.catalog}')" class="btn btn-brand-red fw-bold px-2 py-1 shadow-xs" title="Direct Action Wizard">
+                                <button onclick="openFacilitiesDrawer('${item.catalog}')" class="btn btn-brand-red fw-bold px-2 py-1 shadow-xs btn-act-action" title="Direct Action Wizard">
                                     <i class="fas fa-bolt me-1"></i>Act
                                 </button>
                             </div>
@@ -8338,13 +8355,13 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                     content: 'Welcome to Trinity Health\'s centralized <strong>Recall Management & Patient Safety Platform</strong>.<br><br>This system connects 104 hospital facilities with live FDA MedWatch surveillance, proactive supplier engagement, and ERP purchase order holds. Click the <strong>FDA MedWatch Feeds</strong> button in the header at any time to review real-time clinical safety and hazard grievances.'
                 },
                 {
-                    selector: '.hero-command-ribbon',
+                    selector: '#active-incident-ribbon',
                     badge: 'Critical Incidents',
                     title: '<i class="fas fa-bell"></i>Active Incident Hero Alert Ribbon',
-                    content: 'High-priority, life-critical <strong>Class I recalls</strong> (such as Cardinal Health Monoject Syringes or surgical staple reloads) surface here immediately with live patient safety alerts, impacted facility counts, and containment status.'
+                    content: 'High-priority, life-critical <strong>Class I recalls</strong> (such as BD Vacutainer EDTA tubes or Cardinal Health Monoject Syringes) surface here immediately with live patient safety alerts, impacted facility counts, and pre-approved clinical substitutes.'
                 },
                 {
-                    selector: '.row.g-2.mb-3',
+                    selector: '#main-executive-kpis',
                     badge: 'Executive KPIs',
                     title: '<i class="fas fa-chart-line"></i>Operational & Risk Exposure Tiles',
                     content: 'Monitor organizational risk across 5 primary tiles:<br>' +
@@ -8374,46 +8391,60 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             if (activeTabId === 'tab-recalls') {
                 tabSteps = [
                     {
-                        selector: '#tab-recalls .search-box-wrap',
+                        selector: '#recalls-search-wrap',
                         badge: 'Search Intelligence',
                         title: '<i class="fas fa-search"></i>Full-Text Hazard Search',
                         content: 'Quickly search across catalog numbers, product descriptions, manufacturers, or hazard keywords (e.g. <em>embolism, syringe, sterility, leak</em>). Press Enter or click Apply Filters to search instantaneously.'
                     },
                     {
-                        selector: '#tab-recalls .d-flex.align-items-center.gap-2.flex-nowrap',
+                        selector: '#recalls-filters-toolbar',
                         badge: 'Granular Filtering',
-                        title: '<i class="fas fa-filter"></i>Multi-Criteria Filtering & Reset',
+                        title: '<i class="fas fa-filter"></i>Multi-Criteria Filtering & Reset Action',
                         content: 'Filter the recall database by:<br>' +
                                  '• <strong>FDA Risk Class:</strong> Class I (Critical Patient Risk), Class II, or Class III.<br>' +
                                  '• <strong>Action Needed:</strong> Stock Pulls Required vs Order Stops.<br>' +
                                  '• <strong>Hospital Facility:</strong> Isolate exposure to any of Trinity Health\'s 104 facilities.<br>' +
-                                 '• <strong>Reset Button:</strong> Instantly clear all active filters back to the full dataset.'
+                                 '• <strong>Reset Action:</strong> Click the <i class="fas fa-redo"></i> <strong>Reset</strong> button at any time to instantly restore the full dataset.'
                     },
                     {
                         selector: '#mainRecallsTable thead',
                         badge: 'Exposure Matrix',
                         title: '<i class="fas fa-table"></i>Recalled Products & Exposure Table',
-                        content: 'Each row displays severity, catalog number, manufacturer, and the verified FDA recall reason. Check the <strong>Impacted Facilities</strong> count and <strong>Spend at Risk</strong> to evaluate financial and clinical exposure.'
+                        content: 'Each row displays severity, catalog number, manufacturer, and the verified FDA recall reason. Check the <strong>Impacted Facilities</strong> count and <strong>Spend at Risk</strong> to evaluate clinical and financial exposure.'
                     },
                     {
                         selector: '#mainRecallsTable tbody tr:first-child td:nth-child(8), #mainRecallsTable tbody tr:first-child',
-                        badge: 'Operational Action',
-                        title: '<i class="fas fa-box-archive"></i>Action Badge: Stock Pull vs PO Hold',
+                        badge: 'Operational Protocol',
+                        title: '<i class="fas fa-box-archive"></i>Action Badges: Stock Pull vs PO Hold',
                         content: 'Badges dictate required front-line protocol:<br>' +
                                  '• <span class="badge bg-danger">STOCK PULL</span>: Immediate physical retrieval from storerooms, clean utilities, and procedural carts.<br>' +
                                  '• <span class="badge bg-warning text-dark">ORDER STOP</span>: EDI purchasing hold to prevent dock deliveries.'
                     },
                     {
-                        selector: '#mainRecallsTable tbody tr:first-child td:last-child, #mainRecallsTable tbody tr:first-child',
-                        badge: 'Triage Workflows',
-                        title: '<i class="fas fa-bolt"></i>Triage Actions: Dossier & Facility Dispatch',
-                        content: 'Click <strong>Inspect Dossier</strong> to view real-time facility par levels, storeroom bin coordinates, and batch quarantine controls. Click <strong>Dispatch Action</strong> to open the Stepwise Wizard: generate AI clinical memos and notify hospital materials managers.'
+                        selector: '#mainRecallsTable tbody tr:first-child .btn-inspect-action, #mainRecallsTable tbody tr:first-child',
+                        badge: 'Action Button',
+                        title: '<i class="fas fa-magnifying-glass"></i>Action Button: \'Inspect\' (Slide-Out Dossier)',
+                        content: 'Clicking <strong>Inspect</strong> opens the instant slide-out Catalog Dossier drawer without navigating away from your workspace. It displays:<br>' +
+                                 '• <strong>Storeroom Bin Coordinates:</strong> Exact shelf/aisle locations across hospital departments.<br>' +
+                                 '• <strong>Facility Par Levels:</strong> Physical stock counts in Central Sterile & CSD.<br>' +
+                                 '• <strong>Lot Quarantine:</strong> Flagged batch lots & expiration dates.<br>' +
+                                 '• <strong>PO Transaction History:</strong> Recent order lines and buyer details.'
+                    },
+                    {
+                        selector: '#mainRecallsTable tbody tr:first-child .btn-act-action, #mainRecallsTable tbody tr:first-child',
+                        badge: 'Action Button',
+                        title: '<i class="fas fa-bolt"></i>Action Button: \'Act\' (Stepwise Triage Wizard)',
+                        content: 'Clicking <strong>Act</strong> launches the direct Action & Clinical Memo Wizard:<br>' +
+                                 '• <strong>Facility Targeting:</strong> Choose to notify all 45 impacted facilities or target specific sites.<br>' +
+                                 '• <strong>AI Clinical Memo Generator:</strong> Automatically drafts physician & surgical risk alerts.<br>' +
+                                 '• <strong>PO Hold Freeze:</strong> Halts incoming dock deliveries in ERP immediately.<br>' +
+                                 '• <strong>Work Order Dispatch:</strong> Dispatches physical stock retrieval orders to materials teams with full audit trail logging.'
                     },
                     {
                         selector: '#check-all-recalls',
                         badge: 'Batch Operations',
                         title: '<i class="fas fa-check-double"></i>Batch Multi-Selection',
-                        content: 'Use the master checkbox to select multiple or all recalled catalogs at once for bulk quarantine, batch facility notification, or executive audit exports.'
+                        content: 'Use the master checkbox to select multiple or all recalled catalogs at once for bulk quarantine, batch facility notifications, or executive audit exports.'
                     },
                     {
                         selector: '#pagination-info',
@@ -8425,13 +8456,25 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             } else if (activeTabId === 'tab-suppliers') {
                 tabSteps = [
                     {
-                        selector: '#tab-suppliers .row.g-3.mb-4',
-                        badge: 'Top Recalling Vendors',
+                        selector: '#supplier-top-cards',
+                        badge: 'Top Vendors',
                         title: '<i class="fas fa-truck-loading"></i>High-Exposure Supplier Cards',
-                        content: 'Highlights vendors with the highest financial and volume exposure across Trinity Health (e.g. Medtronic, Intuitive Surgical, Becton Dickinson). Click <strong>Request RMA & Credit Memo</strong> to initiate recovery immediately.'
+                        content: 'Highlights vendors with the highest financial and volume exposure across Trinity Health (Medtronic, Intuitive Surgical, Becton Dickinson).'
                     },
                     {
-                        selector: '#tab-suppliers .card.bg-light.border.p-3',
+                        selector: '#supplier-top-cards .col-md-4:first-child button',
+                        badge: 'Action Button',
+                        title: '<i class="fas fa-paper-plane"></i>Action Button: \'Request RMA & Credit Memo\'',
+                        content: 'Clicking <strong>Request RMA & Credit Memo</strong> opens the vendor restitution generator pre-populated with vendor details, affected catalog numbers, and total spend for 1-click reimbursement demand.'
+                    },
+                    {
+                        selector: '#supplier-btn-draft-claim',
+                        badge: 'Action Button',
+                        title: '<i class="fas fa-plus-circle"></i>Action Button: \'Draft Custom Supplier Claim\'',
+                        content: 'Clicking <strong>Draft Custom Supplier Claim</strong> allows creating ad-hoc manufacturer claims for unlisted or custom vendor disputes, specifying courier tracking and RMA return terms.'
+                    },
+                    {
+                        selector: '#supplier-filter-card',
                         badge: 'Directory Search',
                         title: '<i class="fas fa-search-plus"></i>Manufacturer Search, FDA Class & Sort Toolbar',
                         content: 'Search across all 199 medical device manufacturers, isolate Class I high-severity suppliers, and sort by Total Spend ($), PO Alert Count, or Catalog Volume.'
@@ -8440,13 +8483,7 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                         selector: '#tab-suppliers .border.rounded-3.overflow-hidden',
                         badge: 'Vendor Directory',
                         title: '<i class="fas fa-building"></i>Medical Device Manufacturer Directory',
-                        content: 'Comprehensive table listing recalled catalog counts, PO alerts, and total spend exposure for every supplier, with direct 1-click claim buttons.'
-                    },
-                    {
-                        selector: '#tab-suppliers button[onclick*="openGenericSupplierModal"], #tab-suppliers .d-flex.gap-2',
-                        badge: 'Recovery Workflow',
-                        title: '<i class="fas fa-file-invoice-dollar"></i>RMA & 100% Credit Claim Generator',
-                        content: 'Click <strong>Draft Custom Supplier Claim</strong> to launch the claim generator: calculate 100% credit recovery, designate carrier return tracking, and automatically synchronize the case into Jira TRM.'
+                        content: 'Comprehensive table listing recalled catalog counts, PO alerts, and total spend exposure for every supplier, with direct 1-click claim buttons on each row.'
                     },
                     {
                         selector: '#supplier-actions-log-container',
@@ -8458,7 +8495,7 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             } else if (activeTabId === 'tab-radar') {
                 tabSteps = [
                     {
-                        selector: '#radar-category-select, #radar-mfg-select',
+                        selector: '#radar-scope-controls',
                         badge: 'Threat Scope',
                         title: '<i class="fas fa-crosshairs"></i>Clinical Spend Category & Vendor Scope',
                         content: 'Select clinical spend categories (Cardiovascular, Orthopedics, Infusion, PPE) and choose deep scan scopes across Top 10 network suppliers or specific manufacturers.'
@@ -8470,10 +8507,10 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                         content: 'Simulate real-world operational stressors such as port strikes, plant fires, sterilization plant closures, or raw resin shortages to evaluate network vulnerability.'
                     },
                     {
-                        selector: '#radar-weather-banner, #btn-stage-storm-buffer',
-                        badge: 'Severe Weather',
-                        title: '<i class="fas fa-cloud-bolt"></i>NOAA Weather Advisory & Pre-Storm Buffer',
-                        content: 'Live weather intelligence tracks tropical storms and severe weather cones affecting Trinity facilities. Click <strong>Stage 72h Pre-Storm Buffer</strong> to transfer emergency units from distribution hubs to coastal hospitals (e.g. FACILITY-65, FACILITY-72, FACILITY-136).'
+                        selector: '#radar-scan-scope-btn',
+                        badge: 'Action Button',
+                        title: '<i class="fas fa-search"></i>Action Button: \'Scan Scope\'',
+                        content: 'Clicking <strong>Scan Scope</strong> triggers AI risk modeling across public supply chain feeds, NOAA weather data, and FDA import alerts to calculate real-time network vulnerability.'
                     },
                     {
                         selector: '#radar-ai-summary',
@@ -8482,22 +8519,10 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                         content: 'AI-synthesized disruption analysis evaluating upstream supply chokepoints, clinical procedural risk, and actionable mitigation tactics.'
                     },
                     {
-                        selector: '#radar-bom-widget',
-                        badge: 'Upstream BOM',
-                        title: '<i class="fas fa-sitemap"></i>Tier-2 & Tier-3 Component BOM Mapping',
-                        content: 'Maps upstream sub-tier component dependencies (resins, microchips, packaging) to pinpoint single-source chokepoints and calculate network blast radius.'
-                    },
-                    {
-                        selector: '#radar-financial-widget',
-                        badge: 'Financial Solvency',
-                        title: '<i class="fas fa-chart-line"></i>Supplier Financial Solvency & SEC 10-Q Radar',
-                        content: 'Monitors vendor Altman Z-Scores, Quick Ratios, and Debt-to-Equity metrics to detect early warning signs of supplier insolvency before delivery disruptions occur.'
-                    },
-                    {
-                        selector: '#radar-impact-matrix-card',
-                        badge: 'Impact Matrix',
-                        title: '<i class="fas fa-table-cells"></i>Disruption Impact & Corrective Action Matrix',
-                        content: 'Cross-references active purchase orders and facility par levels with clinically approved alternative catalog substitutes to prevent surgical cancellations.'
+                        selector: '#tab-radar .card-executive',
+                        badge: 'Disruption Architecture',
+                        title: '<i class="fas fa-sitemap"></i>Multi-Tier BOM & Solvency Radar',
+                        content: 'Maps upstream Tier-2/3 component dependencies (resins, microchips) and vendor financial solvency (Altman Z-Scores) to predict disruptions before they cause stockouts.'
                     },
                     {
                         selector: '#radar-results-container',
@@ -8509,7 +8534,7 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             } else if (activeTabId === 'tab-dashboards') {
                 tabSteps = [
                     {
-                        selector: '#tab-dashboards .row.g-3.mb-3:first-child',
+                        selector: '#dashboard-kpi-row',
                         badge: 'Executive Metrics',
                         title: '<i class="fas fa-tachometer-alt"></i>High-Level Dashboard Metrics Strip',
                         content: 'Overview of Total Recall Items (1,099), Active Alerts (336k+), Shortage Risks (0), and Open Jira TRM Tasks with direct link to the Atlassian Kanban board.'
@@ -8517,11 +8542,11 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                     {
                         selector: '#control-filters-form',
                         badge: 'Multi-Dimensional Slicing',
-                        title: '<i class="fas fa-sliders"></i>Control Filters Panel',
-                        content: 'Granular filtering by PO Date range, Recall Date range, Action Needed (Purchasing Violation vs Stock Pull), Risk Score (Critical 80–100, Medium 40–79, Low 0–39), PO Number, Facility, Manufacturer, and Catalog #.'
+                        title: '<i class="fas fa-sliders"></i>Control Filters & Action Buttons',
+                        content: 'Granular filtering by PO Date range, Recall Date range, Action Needed (Purchasing Violation vs Stock Pull), Risk Score (Critical 80–100, Medium 40–79, Low 0–39), PO Number, Facility, Manufacturer, and Catalog #. Click <strong>Apply Filters</strong> to execute or <strong>Clear Filters</strong> to reset.'
                     },
                     {
-                        selector: '#chartRecallItems, #chartRecallRisk',
+                        selector: '#tab-dashboards canvas#actionDonutChart, #tab-dashboards .card-executive:has(#actionDonutChart)',
                         badge: 'Visual Analytics',
                         title: '<i class="fas fa-chart-pie"></i>Donut Charts: Action Needed & Risk Score',
                         content: 'Dynamic visualization of recall distributions broken down by required operational action and clinical risk score severity.'
@@ -8534,9 +8559,12 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                     },
                     {
                         selector: '#dashboard-alerts-tbody tr:first-child',
-                        badge: 'Item Inspection',
-                        title: '<i class="fas fa-box"></i>Line-Item Catalog Dossier & Workflows',
-                        content: 'Click any Catalog # to open the Catalog Intelligence Dossier and view physical storeroom bin inventory. Use Communicate and Workflow action buttons to resolve alerts directly.'
+                        badge: 'Table Actions',
+                        title: '<i class="fas fa-bolt"></i>Action Buttons: \'Dossier\', \'Communicate\' & \'Workflow\'',
+                        content: 'Action button walkthrough:<br>' +
+                                 '• Click any <strong>Catalog #</strong> to open the Catalog Intelligence Dossier and view physical storeroom bin inventory.<br>' +
+                                 '• Click <strong>Communicate</strong> to send alerts to the PO buyer or facility contact.<br>' +
+                                 '• Click <strong>Workflow</strong> to advance the alert directly to Jira TRM resolution.'
                     },
                     {
                         selector: '#dashboard-table-page-info',
@@ -8548,21 +8576,24 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             } else if (activeTabId === 'tab-jira') {
                 tabSteps = [
                     {
-                        selector: '#tab-jira .card-executive:first-child',
+                        selector: '#jira-header-card',
                         badge: 'Jira Integration',
                         title: '<i class="fab fa-jira text-primary"></i>Live Atlassian Jira Cloud TRM Connection',
-                        content: 'Bidirectional integration with Atlassian Jira Cloud (Project: TRM, Board #497). Click <strong>Open Jira Board</strong> to view full Kanban swimlanes, or <strong>Register Case in Jira</strong> to log a new ticket.'
+                        content: 'Action button walkthrough:<br>' +
+                                 '• Click <strong>Open Jira Board</strong> to view full Kanban swimlanes on Jira Cloud (Project: TRM, Board #497).<br>' +
+                                 '• Click <strong>Register Case in Jira</strong> to log a new ticket with assigned RACI roles.<br>' +
+                                 '• Click <strong>Sync Jira</strong> to pull latest ticket status.'
                     },
                     {
-                        selector: '#tab-jira .row.g-2.mb-3',
-                        badge: '8-Stage Operating Model',
+                        selector: '#jira-operating-model-card',
+                        badge: '8-Stage Model',
                         title: '<i class="fas fa-timeline"></i>Trinity Health 8-Stage Operating Model',
                         content: 'Tracks recall cases across Trinity\'s standard 8 stages:<br>' +
                                  '1. Ingestion & Triage &bull; 2. Exposure & Traceability &bull; 3. Clinical & Safety Risk &bull; 4. Quarantine & Containment &bull; 5. Communication & Dispatch &bull; 6. Supplier Resolution &bull; 7. Alternative Sourcing &bull; 8. Verify & Close.<br>' +
                                  '<em>Click any step card to filter tickets for that stage instantly!</em>'
                     },
                     {
-                        selector: '#tab-jira .card-executive.mb-3.p-3',
+                        selector: '#jira-raci-card',
                         badge: 'RACI Governance',
                         title: '<i class="fas fa-users-gear text-primary"></i>Role Accountabilities & RACI Governance',
                         content: 'Designates clear responsibilities across:<br>' +
@@ -8573,18 +8604,19 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                     },
                     {
                         selector: '#jira-issues-table',
-                        badge: 'Live Cases',
-                        title: '<i class="fas fa-tasks"></i>Live Jira Cases & Work Orders Table',
-                        content: 'Real-time synchronized tickets showing Jira Key, summary, current operating stage, assignee, and direct <strong>Advance Workflow</strong> buttons to transition cases through the lifecycle.'
+                        badge: 'Case Workflows',
+                        title: '<i class="fas fa-tasks"></i>Live Cases Table & \'Advance Workflow\' Action Buttons',
+                        content: 'Real-time synchronized tickets showing Jira Key, summary, current operating stage, assignee, and direct <strong>Advance Workflow</strong> buttons to transition cases through the 8-stage lifecycle.'
                     }
                 ];
             } else if (activeTabId === 'tab-audit') {
                 tabSteps = [
                     {
-                        selector: '#tab-audit .card-executive',
+                        selector: '#audit-header-card',
                         badge: 'Regulatory Compliance',
                         title: '<i class="fas fa-clipboard-check"></i>Operational Action & Notification Audit Log',
-                        content: 'An immutable, time-stamped proof-of-action ledger recording every dispatched clinical memo, stock pull order, PO dock hold, and supplier RMA request across all 104 facilities.'
+                        content: 'Action button walkthrough:<br>' +
+                                 'An immutable, time-stamped proof-of-action ledger recording every dispatched clinical memo, stock pull order, PO dock hold, and supplier RMA request across all 104 facilities. Click <strong>Refresh Log</strong> to update the live audit trail.'
                     },
                     {
                         selector: '#audit-table-body',
@@ -8648,10 +8680,23 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
             }
 
             // Find target element
-            let targetEl = document.querySelector(step.selector);
-            // If target is null or hidden (e.g. dynamically hidden sub-widget), fallback to parent or document.body
-            if (!targetEl || targetEl.offsetParent === null) {
-                targetEl = document.getElementById('topNavTabs') || document.body;
+            let targetEl = null;
+            if (step.selector) {
+                const selectors = step.selector.split(',').map(s => s.trim());
+                for (const sel of selectors) {
+                    try {
+                        const el = document.querySelector(sel);
+                        if (el) {
+                            targetEl = el;
+                            break;
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            // If target is null, fall back to active tab container or topNavTabs
+            if (!targetEl) {
+                targetEl = document.querySelector('.tab-pane-content:not(.d-none)') || document.getElementById('topNavTabs') || document.body;
             }
 
             window._tourCurrentTarget = targetEl;
@@ -8680,7 +8725,7 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                 </div>
                 <div class="sc-tour-body">
                     <div class="sc-tour-title">${step.title}</div>
-                    <div class="sc-tour-text">${step.content}</div>
+                    <div class="sc-tour-text" style="color: #1e293b; font-size: 0.85rem; line-height: 1.55;">${step.content}</div>
                 </div>
                 <div class="sc-tour-footer">
                     <div>
@@ -8694,45 +8739,6 @@ Immediate actions: Lock PO in ERP, inspect storeroom bins, and issue bedside cea
                     </div>
                 </div>
             `;
-
-            // Position popover relative to target
-            setTimeout(() => {
-                positionTourPopover(popover, targetEl);
-            }, 60);
-        }
-
-        function positionTourPopover(popover, targetEl) {
-            if (!popover) return;
-            const pWidth = 440;
-            const pHeight = popover.offsetHeight || 280;
-            const margin = 14;
-
-            if (!targetEl || targetEl === document.body) {
-                popover.style.top = '50%';
-                popover.style.left = '50%';
-                popover.style.transform = 'translate(-50%, -50%)';
-                return;
-            }
-
-            popover.style.transform = 'none';
-            const rect = targetEl.getBoundingClientRect();
-
-            let top = rect.bottom + margin;
-            let left = rect.left + (rect.width / 2) - (pWidth / 2);
-
-            // Bounds check horizontally
-            left = Math.max(16, Math.min(window.innerWidth - pWidth - 16, left));
-
-            // If popover goes off bottom of screen, position above target
-            if (top + pHeight > window.innerHeight - 16) {
-                top = rect.top - pHeight - margin;
-                if (top < 16) {
-                    top = Math.max(16, (window.innerHeight - pHeight) / 2);
-                }
-            }
-
-            popover.style.top = `${top}px`;
-            popover.style.left = `${left}px`;
         }
 
         function nextTourStep() {
