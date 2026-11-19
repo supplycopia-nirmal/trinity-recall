@@ -1,6 +1,6 @@
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Request, HTTPException, Query, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -251,6 +251,17 @@ async def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login?returnUrl=/", status_code=status.HTTP_302_FOUND)
 
+# Health Check Endpoints for Load Balancers & Docker
+@app.get("/health")
+@app.get("/healthz")
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint for AWS ALB, Nginx, and Docker Compose."""
+    return {
+        "status": "healthy",
+        "service": "trinity_recall_hub",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
 
 # REST API Endpoints
 @app.get("/api/kpi")
