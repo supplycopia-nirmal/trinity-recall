@@ -98,13 +98,13 @@ class DataService:
                 final_sevs = []
                 for calc_score, sev_up in zip(raw_scores, sev_list):
                     if sev_up == "CRITICAL":
-                        final_scores.append(max(75, calc_score))
+                        final_scores.append(max(80, calc_score))
                         final_sevs.append("Critical")
                     elif sev_up == "LOW":
                         final_scores.append(min(39, calc_score))
                         final_sevs.append("Low")
                     else:
-                        final_scores.append(min(74, max(40, calc_score)))
+                        final_scores.append(min(79, max(40, calc_score)))
                         final_sevs.append("Medium")
 
                 df["risk_score"] = final_scores
@@ -344,6 +344,18 @@ class DataService:
         unique_facs = self._df[["facility", "facility_display"]].drop_duplicates().sort_values("facility")
         return unique_facs.to_dict(orient="records")
 
+    def get_facility_product_quantity(self, catalog: str, facility: str) -> float:
+        """Returns total ordered units for a specific catalog and hospital facility."""
+        if self._df.empty:
+            return 0.0
+        sub = self._df[
+            (self._df["catalog"] == str(catalog).strip()) &
+            (self._df["facility"] == str(facility).strip())
+        ]
+        if sub.empty:
+            return 0.0
+        return float(sub["quantity"].sum())
+
     def get_catalog_dossier(self, catalog: str, facility: str = "FACILITY-150") -> Optional[Dict[str, Any]]:
         """
         Returns full Catalog Intelligence Dossier:
@@ -378,12 +390,23 @@ class DataService:
         if (not facility or facility == "FACILITY-150") and affected_facilities:
             facility = affected_facilities[0]["facility"]
 
-        # Correlate with inventory service
+        # Determine exact Units Ordered for this facility to ensure 100% parity with Level 3 On-Hand Inventory
+        fac_qty = 0.0
+        if affected_facilities:
+            for f in affected_facilities:
+                if f.get("facility") == facility:
+                    fac_qty = float(f.get("total_quantity", 0.0))
+                    break
+            if fac_qty == 0.0 and affected_facilities:
+                fac_qty = float(affected_facilities[0].get("total_quantity", 0.0))
+
+        # Correlate with inventory service using ground-truth Units Ordered as base_on_hand
         inventory = inventory_service.simulate_inventory(
             catalog=cat,
             facility=facility,
             product_description=product.get("product_description", ""),
             manufacturer=product.get("manufacturer", ""),
+            base_on_hand=fac_qty if fac_qty > 0 else None,
             is_recalled=True,
             fda_event_id=str(product.get("fda_event_id", "")),
             fda_classification=str(product.get("fda_classification", "Class II"))

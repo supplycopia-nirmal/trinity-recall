@@ -98,8 +98,8 @@ class RiskService:
         raw_score = (self.w_reg * s_reg) + (self.w_inv * s_inv) + (self.w_ext * s_ext) + (self.w_clin * s_clin)
         score = int(round(min(100, max(0, raw_score))))
 
-        # Determine Severity Tier
-        if score >= 75:
+        # Determine Severity Tier: Critical (80-100), Medium (40-79), Low (0-39)
+        if score >= 80:
             severity = "Critical"
             action_code = "IMMEDIATE_ACTION_REQUIRED"
         elif score >= 40:
@@ -110,7 +110,7 @@ class RiskService:
             action_code = "MONITOR_INVENTORY"
 
         # Prediction Horizon
-        if days_of_supply <= 30.0 or score >= 75:
+        if days_of_supply <= 30.0 or score >= 80:
             horizon = "30_days"
             horizon_label = "30-Day Critical"
         elif days_of_supply <= 60.0:
@@ -121,7 +121,7 @@ class RiskService:
             horizon_label = "90-Day Strategic"
 
         # Prediction Confidence
-        if score >= 75 or s_reg == 100:
+        if score >= 80 or s_reg == 100:
             confidence = {"level": "High", "percentage": 96, "band": "High (94-98%)"}
         elif score >= 40:
             confidence = {"level": "Medium", "percentage": 85, "band": "Medium (82-89%)"}

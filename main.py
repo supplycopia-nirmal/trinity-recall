@@ -255,11 +255,13 @@ async def get_catalog_dossier(catalog: str, facility: str = Query("FACILITY-150"
 async def get_inventory_item(catalog: str, facility: str = Query("FACILITY-150")):
     """Returns simulated lot-level details, physical bins, and on-hand substitutes."""
     item = data_service.get_product_detail(catalog) or {}
+    fac_qty = data_service.get_facility_product_quantity(catalog, facility)
     return inventory_service.simulate_inventory(
         catalog=catalog,
         facility=facility,
         product_description=item.get("product_description", ""),
         manufacturer=item.get("manufacturer", ""),
+        base_on_hand=fac_qty if fac_qty > 0 else None,
         fda_classification=item.get("fda_classification", "Class II")
     )
 
